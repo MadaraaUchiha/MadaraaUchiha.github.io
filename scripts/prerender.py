@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 import shutil
 from datetime import date
@@ -32,7 +33,11 @@ WEB = ROOT / "web"
 DATA = WEB / "data"
 OUT = WEB / "f"
 
-SITE_URL = "https://majmu.example"          # <- set to the real domain
+# Where the site will live. The deploy workflow passes this in from GitHub's
+# own Pages configuration, so it is right for a project site, a user site or a
+# custom domain without anyone remembering to edit a constant. Locally it falls
+# back to the dev server, which is only ever used for looking at the pages.
+SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=2"
 SITE_CSS_V = "?v=1"
 
@@ -418,14 +423,28 @@ def main() -> int:
     sitemap.append("</urlset>")
     (WEB / "sitemap.xml").write_text("\n".join(sitemap) + "\n", encoding="utf-8")
 
+    # robots.txt carries an absolute sitemap URL, so it is generated here from
+    # the same SITE_URL rather than kept as a second place to get it wrong.
+    (WEB / "robots.txt").write_text(
+        "# MAJMŪʿ — the fatāwā of Ibn Taymiyyah, searchable.\n"
+        "# The pages are meant to be found and read. The corpus files behind\n"
+        "# them are data, not pages: crawling them costs 30 MB and indexes\n"
+        "# nothing readable.\n\n"
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /data/\n\n"
+        f"Sitemap: {SITE_URL}/sitemap.xml\n",
+        encoding="utf-8")
+
     print(f"wrote {len(fatwas)} pages to {OUT}")
     print(f"  {total_bytes / 1024 / 1024:.1f} MB total, "
           f"{total_bytes / len(fatwas) / 1024:.0f} KB average per page")
     print(f"wrote {WEB / 'sitemap.xml'} ({len(urls)} urls)")
-    if "example" in SITE_URL:
-        print("\n  NOTE: SITE_URL is still the placeholder. Set it to the real")
-        print("  domain and re-run before publishing, or the canonical and")
-        print("  Open Graph tags will point at nothing.")
+    print(f"wrote {WEB / 'robots.txt'}")
+    print(f"site url: {SITE_URL}")
+    if "localhost" in SITE_URL:
+        print("\n  NOTE: built against the dev server. The deploy workflow sets")
+        print("  SITE_URL from GitHub Pages, so published pages get the real one.")
     return 0
 
 

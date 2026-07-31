@@ -37,6 +37,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Tells us the URL the site will actually be served from — project site,
+      # user site or custom domain — so the canonical tags, Open Graph tags,
+      # sitemap and robots.txt are all correct without anyone editing a constant.
+      - id: pages
+        uses: actions/configure-pages@v5
+
       - name: Fetch the corpus
         env:
           GH_TOKEN: ${{ github.token }}
@@ -48,7 +54,9 @@ jobs:
       - name: Build citations and stats
         run: python scripts/build_web_data.py
 
-      - name: Pre-render the fatwa pages and the sitemap
+      - name: Pre-render the fatwa pages, the sitemap and robots.txt
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
         run: python scripts/prerender.py
 
       - name: Check nothing is missing
