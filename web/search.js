@@ -109,7 +109,9 @@ const STR = {
     countVol: (n) => `${n.toLocaleString('en')} question${n === 1 ? '' : 's'} extracted from this volume, in the order the edition prints them`,
     countCat: (n) => `${n.toLocaleString('en')} passage${n === 1 ? '' : 's'} under this treatise, in the order the edition prints them`,
     none: 'Nothing in the extracted fatāwā answers to those words.',
-    noneNote: 'Try fewer words, or the Arabic of the term. The engine reaches every volume; this reading view only reaches the questions and answers extracted so far.',
+    noneNote: 'Try fewer words, or the Arabic of the term. This site reaches the questions and answers extracted so far — not yet the whole of the printed work.',
+    noneInTreatise: 'Nothing is extracted from this treatise yet.',
+    noneInTreatiseNote: 'The treatise is named in the edition’s front matter, but none of its questions and answers have been extracted into this site yet.',
     all: 'All volumes',
     volume: (v) => `Volume ${v}`,
     treatise: 'The treatise this is from',
@@ -147,7 +149,9 @@ const STR = {
     countVol: (n) => `${arPassages(n)} مستخرجةٌ من هذا المجلد، على ترتيب الطبعة`,
     countCat: (n) => `${arPassages(n)} تحت هذه الرسالة، على ترتيب الطبعة`,
     none: 'ليس في الفتاوى المستخرجة ما يوافق هذه الألفاظ.',
-    noneNote: 'فجرِّب ألفاظاً أقل، أو اطلبه بالعربية. والمحرك يبلغ المجلدات كلها، وأما هذا العرض فلا يبلغ إلا ما استُخرج من المسائل والأجوبة.',
+    noneNote: 'فجرِّب ألفاظاً أقل، أو اطلبه بالعربية. وهذا الموضع لا يبلغ إلا ما استُخرج من المسائل والأجوبة، لا المطبوع كله بعدُ.',
+    noneInTreatise: 'لم يُستخرج من هذه الرسالة شيءٌ بعد.',
+    noneInTreatiseNote: 'الرسالة مثبتةٌ في فهرس الطبعة، ولكن لم تُستخرج مسائلها وأجوبتها إلى هذا الموضع بعد.',
     all: 'جميع المجلدات',
     volume: (v) => `المجلد ${toArabic(v)}`,
     treatise: 'الرسالة التي منه',
@@ -959,10 +963,21 @@ function renderList(append) {
 
   if (!list.length) {
     els.more.innerHTML = '';
+    // Nothing found means different things in different modes, and the words
+    // for a failed search are wrong for a volume nobody searched: a reader
+    // walking volume 36 was told that nothing "answers to those words" when
+    // they had typed none. In that mode the note above already says exactly
+    // what is going on, so this says nothing at all.
+    if (state.mode === 'vol') {
+      els.results.innerHTML = '';
+      return;
+    }
+    const heading = state.mode === 'cat' ? 'noneInTreatise' : 'none';
+    const note = state.mode === 'cat' ? 'noneInTreatiseNote' : 'noneNote';
     els.results.innerHTML =
       `<div class="blank" style="padding-top: var(--leading)">
-         <h1 class="en">${STR.en.none}</h1><h1 class="ar" lang="ar">${STR.ar.none}</h1>
-         <p class="en">${STR.en.noneNote}</p><p class="ar" lang="ar">${STR.ar.noneNote}</p>
+         <h1 class="en">${STR.en[heading]}</h1><h1 class="ar" lang="ar">${STR.ar[heading]}</h1>
+         <p class="en">${STR.en[note]}</p><p class="ar" lang="ar">${STR.ar[note]}</p>
        </div>`;
     return;
   }
