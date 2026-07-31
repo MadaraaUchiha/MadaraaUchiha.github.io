@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MAJMŪʿ · the fatāwā of Ibn Taymiyyah, searchable</title>
+<meta name="description" content="Search the thirty-seven volumes of Majmūʿ al-Fatāwā of Shaykh al-Islām Ibn Taymiyyah in Arabic or English. Every passage returned with its volume and page." />
+<meta name="theme-color" content="#f3f2f2" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="ds/classical.css?v=2" />
+<style>
+/* MAJMŪʿ — landing. Every color, font, radius and shadow comes from the bound
+   design system's styles.css; this sheet carries page layout, the 28px reading
+   rhythm, the Arabic face and the bilingual switch only. */
+:root {
+  --leading: 28px;
+  --half: 14px;
+  --edge: clamp(20px, 5vw, 72px);
+  --measure: 58ch;
+  --font-arabic: "Amiri", "Scheherazade New", var(--font-heading), serif;
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; text-wrap: pretty; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--edge); }
+
+/* — bilingual switch: one language paints, the other is removed from the flow.
+   Arabic always sets in the Arabic face, in either mode (the specimen's source
+   text is Arabic even on the English page). — */
+[lang="ar"] { font-family: var(--font-arabic); }
+body[data-lang="en"] .ar { display: none; }
+body[data-lang="ar"] .en { display: none; }
+/* Arabic sets on its own metrics: Amiri's tashkeel needs real leading, and the
+   Latin cap/alphabetic trim mis-measures its boxes, so the branch drops both. */
+body[data-lang="ar"] .display, body[data-lang="ar"] .creed-line,
+body[data-lang="ar"] .close h3, body[data-lang="ar"] .split-title,
+body[data-lang="ar"] .specimen h2, body[data-lang="ar"] .volumes h2 { letter-spacing: 0; text-box: normal; }
+body[data-lang="ar"] .display { line-height: 1.5; }
+body[data-lang="ar"] .creed-line { line-height: 1.45; }
+body[data-lang="ar"] .specimen h2, body[data-lang="ar"] .volumes h2,
+body[data-lang="ar"] .split-title { line-height: 1.5; }
+body[data-lang="ar"] .close h3 { line-height: 1.5; }
+body[data-lang="ar"] .creed-body, body[data-lang="ar"] .hero .sub,
+body[data-lang="ar"] .close .sub, body[data-lang="ar"] .life .note,
+body[data-lang="ar"] .specimen .aside, body[data-lang="ar"] .fatwa-en,
+body[data-lang="ar"] .kicker, body[data-lang="ar"] .stat-label { text-box: normal; }
+body[data-lang="ar"] .creed-body { line-height: 1.85; }
+body[data-lang="ar"] .hero .sub, body[data-lang="ar"] .close .sub,
+body[data-lang="ar"] .life .note, body[data-lang="ar"] .specimen .aside { line-height: 1.85; }
+[dir="rtl"] .display, [dir="rtl"] .creed-line,
+[dir="rtl"] .stat-num, [dir="rtl"] .stat-num.lead-one { margin-left: 0; margin-right: -0.02em; }
+
+/* — masthead: the component's bar, on the page's text axis — */
+.nav { padding-inline: max(var(--edge), calc((100% - 1200px) / 2 + var(--edge))); gap: var(--space-4); }
+.nav a { white-space: nowrap; }
+.nav a[aria-current='location'] { color: var(--color-accent); }
+.nav-brand { display: flex; align-items: baseline; gap: var(--space-3); }
+.nav-brand .mark { font-family: var(--font-arabic); font-size: 22px; line-height: 1;
+  color: var(--color-accent); }
+.nav-brand .name { letter-spacing: 0.06em; }
+.nav-spacer { flex: 1; }
+.langswitch { display: flex; gap: 0; border: 1px solid var(--color-divider); border-radius: var(--radius-md); overflow: hidden; }
+.langswitch button { font-family: var(--font-body); font-size: 12.5px; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 11px;
+  background: transparent; color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  border: 0; cursor: pointer; }
+.langswitch button[lang="ar"] { font-family: var(--font-arabic); text-transform: none; letter-spacing: 0; font-size: 15px; }
+.langswitch button:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); color: var(--color-accent-700); }
+.langswitch button[aria-pressed="true"] { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 14%, transparent); }
+@media (max-width: 780px) { .nav a { display: none; } }
+
+/* — hairline seams — */
+.rule { height: 1px; border: 0; margin: 0; background: var(--color-divider); }
+
+/* — kicker — */
+.kicker { display: block; font-size: 13px; line-height: var(--half);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-700);
+  font-feature-settings: "tnum" 1; margin: 0 0 calc(var(--leading) - var(--half)); }
+body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-size: 15px; }
+
+/* — hero — */
+.hero { padding: calc(3.5 * var(--leading)) 0 calc(3 * var(--leading)); }
+.display {
+  font-family: var(--font-heading); font-weight: 400;
+  font-size: clamp(42px, 5.6vw, 80px);
+  line-height: clamp(45.5px, 6.05vw, 86.5px);
+  letter-spacing: -0.01em; margin: 0; margin-left: -0.042em;
+  text-box: trim-both cap alphabetic;
+}
+.display .line { display: block; }
+.display .gilt { color: var(--color-accent); } /* the page's one filled gold moment */
+.hero .sub { font-size: 17px; line-height: var(--leading); max-width: var(--measure);
+  margin: calc(1.75 * var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
+body[data-lang="ar"] .hero .sub, body[data-lang="ar"] .close .sub,
+body[data-lang="ar"] .creed-body { font-size: 18px; }
+
+/* — the search: the page's one action — */
+.seek { margin-top: calc(1.5 * var(--leading)); max-width: 620px; }
+.seek form { display: flex; gap: var(--space-3); align-items: stretch; }
+.seek .field-wrap { position: relative; flex: 1; display: flex; }
+.seek .input { flex: 1; padding-inline-start: 40px; min-height: 46px; font-size: 16px; }
+.seek .ico { position: absolute; inset-inline-start: 13px; top: 50%; transform: translateY(-50%);
+  color: color-mix(in srgb, var(--color-text) 45%, transparent); pointer-events: none; display: flex; }
+.seek .btn { min-height: 46px; padding-inline: var(--space-6); font-size: 16px; flex: none; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3);
+  margin-top: var(--leading); align-items: center; }
+.chips .lead { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .chips .lead { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.chip { font-family: inherit; font-size: 14.5px; line-height: 1; padding: 7px 12px;
+  background: transparent; border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent); cursor: pointer; }
+.chip[lang="ar"] { font-family: var(--font-arabic); font-size: 17px; }
+.chip:hover { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+.chip:active { border-color: var(--color-accent-600); }
+
+/* — stats — */
+.stats { padding: calc(2.5 * var(--leading)) 0; }
+.stats .grid { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: calc(1.5 * var(--leading)) var(--leading); }
+.stat-num { font-family: var(--font-heading); font-weight: 400;
+  font-size: clamp(36px, 3.6vw, 52px); line-height: calc(2 * var(--leading));
+  font-feature-settings: "tnum" 1; color: var(--color-text);
+  margin: 0; margin-left: -0.042em; text-box: trim-both cap alphabetic; }
+.stat-num.gilt { color: var(--color-accent); }
+.stat-num.lead-one { margin-left: -0.129em; }
+.stat-num[lang="ar"] { font-family: var(--font-arabic); }
+.stat-label { font-size: 13px; line-height: var(--half); letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); margin: var(--half) 0 0; }
+body[data-lang="ar"] .stat-label { letter-spacing: 0; text-transform: none; font-size: 15px; line-height: var(--leading); }
+
+/* — the specimen: one real fatwa, as the engine returns it — */
+.specimen { padding: calc(3 * var(--leading)) 0 calc(2.5 * var(--leading)); }
+.specimen-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--leading); flex-wrap: wrap; }
+.specimen h2 { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0;
+  text-box: trim-both cap alphabetic; }
+.specimen .aside { font-size: 15.5px; line-height: var(--leading); max-width: 42ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); margin: 0; }
+.card.fatwa { margin-top: calc(1.5 * var(--leading)); padding: calc(1.5 * var(--leading)) clamp(20px, 3.4vw, 44px) calc(1.75 * var(--leading)); }
+.fatwa-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4);
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-feature-settings: "tnum" 1;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .fatwa-meta { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.fatwa-meta .cite { color: var(--color-accent-700); }
+.fatwa-block { margin-top: var(--leading); }
+.fatwa-label { display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: var(--half); }
+body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.fatwa-ar { font-family: var(--font-arabic); font-size: 22px; line-height: calc(1.5 * var(--leading));
+  margin: 0; direction: rtl; text-align: right; color: var(--color-text); }
+.fatwa-ar.answer { font-size: 20px; }
+.fatwa-en { font-size: 15.5px; line-height: var(--leading); margin: var(--half) 0 0;
+  color: color-mix(in srgb, var(--color-text) 74%, transparent); max-width: 66ch; }
+.fatwa-sep { height: 1px; border: 0; margin: var(--leading) 0 0; background: var(--color-divider); }
+.ayah { border-bottom: 1px solid var(--color-accent); }
+.ayah-note { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: baseline;
+  margin-top: var(--leading); font-size: 14.5px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 74%, transparent); }
+.ayah-note .tag { flex: none; }
+.ayah-note em { font-style: normal; color: var(--color-text); }
+
+/* — the closing statement: what this is, said plainly and given room — */
+.creed { padding: calc(3.5 * var(--leading)) 0 calc(3.5 * var(--leading)); }
+.creed-line { font-family: var(--font-heading); font-weight: 400;
+  font-size: clamp(34px, 4.4vw, 58px); line-height: calc(2 * var(--leading));
+  letter-spacing: -0.008em; margin: 0; margin-left: -0.042em;
+  text-box: trim-both cap alphabetic; }
+.creed-body { font-size: 17px; line-height: var(--leading); max-width: 54ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  margin: calc(1.5 * var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
+
+/* — the volume lattice: an index page, drawn in hairlines — */
+.volumes { padding: calc(3 * var(--leading)) 0 calc(2.5 * var(--leading)); }
+.volumes h2 { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0;
+  text-box: trim-both cap alphabetic; }
+.vol-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  margin-top: calc(1.5 * var(--leading));
+  border-top: 1px solid var(--color-divider);
+  border-inline-start: 1px solid var(--color-divider); }
+.vol { display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-weight: 400; font-size: 22px; line-height: 1;
+  font-feature-settings: "tnum" 1; padding: var(--space-3) 8px;
+  background: transparent; border: 0; cursor: pointer; color: var(--color-text);
+  text-decoration: none;
+  border-inline-end: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider); }
+.vol[lang="ar"], .vol .ar { font-family: var(--font-arabic); }
+.vol:hover { background: color-mix(in srgb, var(--color-accent) 9%, transparent); color: var(--color-accent-700); }
+.vol:active { background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
+
+/* — the life, held open — */
+.life { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--leading) clamp(24px, 5vw, 96px); align-items: start;
+  padding: calc(3 * var(--leading)) 0 calc(3 * var(--leading)); }
+.split-title { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0;
+  text-box: trim-both cap alphabetic; }
+.life .note { font-size: 15.5px; line-height: var(--leading); max-width: 52ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  margin: calc(var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
+body[data-lang="ar"] .life .note { font-size: 17px; }
+.life-card { padding: calc(1.25 * var(--leading)) clamp(18px, 2.4vw, 28px) calc(1.5 * var(--leading)); }
+.life-list { margin: var(--half) 0 0; padding-inline-start: 1.1em; list-style: none;
+  font-size: 15.5px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent); }
+.life-list li { position: relative; }
+.life-list li + li { margin-top: var(--half); }
+.life-list li::before { content: ""; position: absolute; inset-inline-start: -1.1em; top: 0.75em;
+  width: 10px; height: 1px; background: var(--color-accent); }
+body[data-lang="ar"] .life-list { font-size: 17px; }
+
+/* — close — */
+.close { padding: calc(2.5 * var(--leading)) 0 calc(2 * var(--leading)); }
+.close h3 { font-family: var(--font-heading); font-weight: 400;
+  font-size: 26px; line-height: var(--leading); margin: 0; text-box: trim-both cap alphabetic; }
+.close .sub { font-size: 15.5px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  margin: calc(var(--leading) - 1cap) 0 0; max-width: var(--measure); text-box: trim-both cap alphabetic; }
+footer { padding: calc(2 * var(--leading)) 0; font-size: 13px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+footer .edition { display: block; max-width: 78ch; }
+footer .edition + .edition { margin-top: var(--half); }
+footer [lang="ar"] { font-size: 15px; }
+
+/* — responsive collapse — */
+@media (max-width: 900px) { .life { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .hero { padding-top: calc(2 * var(--leading)); }
+  .vol-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+  .stats .grid { grid-template-columns: repeat(2, 1fr); justify-content: start; }
+  .seek form { flex-wrap: wrap; }
+  .seek .btn { flex: 1; }
+  .fatwa-ar { font-size: 20px; }
+}
+
+/* ── implementation additions ─────────────────────────────────────────────
+   Everything above is the design as handed off. Below: only what a live site
+   needs that a prototype does not — a skip link, the volumes that have no
+   fatwa in the data yet, the figures arriving from stats.json, and the night
+   ground. All of it draws on the design system's own tokens and ramps. */
+
+.skip { position: absolute; inset-inline-start: -9999px; top: var(--space-2); z-index: 20;
+  padding: var(--space-2) var(--space-3); border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-accent-700);
+  font-size: 14px; text-decoration: none; }
+.skip:focus { inset-inline-start: var(--space-4); }
+
+/* a volume the extraction has not reached: still a door, drawn quieter */
+.vol[data-empty] { color: color-mix(in srgb, var(--color-text) 38%, transparent); }
+.vol[data-empty]:hover { color: var(--color-accent-700); }
+
+/* the figures hold their type slot while stats.json is in flight */
+.stat-num[data-pending] { color: color-mix(in srgb, var(--color-text) 22%, transparent); }
+
+/* the night ground: the deep warm near-black the system reserves for colophon
+   pages, with the accent lifted to the ramp step the readme names for dark
+   grounds (400) and the deep steps swapped for light ones so accent text on
+   this ground keeps its contrast. Nothing here is a new colour. */
+[data-theme="night"] {
+  --color-bg: #201f1d;
+  --color-surface: #2d2b2b;
+  --color-text: #f8f4f4;
+  --color-divider: color-mix(in srgb, #f8f4f4 17%, transparent);
+  --color-accent: #e1ad66;
+  --color-accent-600: #facb8d;
+  --color-accent-700: #facb8d;
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 40%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #000 45%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
+}
+[data-theme="night"] .tag-outline { color: var(--color-accent); }
+.nightswitch { flex: none; width: 34px; height: 34px; padding: 0; border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider); color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.nightswitch:hover { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.nightswitch .i-night { display: none; }
+[data-theme="night"] .nightswitch .i-night { display: block; }
+[data-theme="night"] .nightswitch .i-day { display: none; }
+</style>
+</head>
+<body data-lang="en">
+<a class="skip" href="#seek"><span class="en">Skip to the search</span><span class="ar" lang="ar">تخطَّ إلى البحث</span></a>
+<nav class="nav">
+  <a class="nav-brand" href="index.html" style="text-decoration: none; color: inherit;">
+    <span class="mark" aria-hidden="true">﴿</span>
+    <span class="name en">MAJMŪʿ</span>
+    <span class="name ar" lang="ar">المجموع</span>
+  </a>
+  <span class="nav-spacer"></span>
+  <a href="#specimen" aria-current="location"><span class="en">A fatwa, in full</span><span class="ar" lang="ar">فتوى كاملة</span></a>
+  <a href="#volumes"><span class="en">Volumes</span><span class="ar" lang="ar">المجلدات</span></a>
+  <a href="#life"><span class="en">His life</span><span class="ar" lang="ar">سيرته</span></a>
+  <div class="langswitch" role="group" aria-label="Language / اللغة">
+    <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
+    <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>
+  </div>
+  <button type="button" class="btn nightswitch" data-theme-btn aria-label="Night reading / القراءة الليلية">
+    <svg class="i-day" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    <svg class="i-night" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"></path></svg>
+  </button>
+  <button type="button" class="btn btn-primary" data-seek-focus>
+    <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
+  </button>
+</nav>
+<div class="wrap">
+
+  <section class="hero">
+    <h1 class="display">
+      <span class="en">
+        <span class="line">Ibn Taymiyyah answered these</span>
+        <span class="line">seven hundred years ago.</span>
+        <span class="line gilt">We only pass them on.</span>
+      </span>
+      <span class="ar" lang="ar">
+        <span class="line">أجاب شيخ الإسلام عن هذه المسائل</span>
+        <span class="line">قبل سبعة قرون.</span>
+        <span class="line gilt">وإنما نؤدّيها كما كُتبت.</span>
+      </span>
+    </h1>
+    <p class="sub en">Thirty-seven volumes of <em>Majmūʿ al-Fatāwā</em>, in the King Fahd Complex edition, opened to search. Ask in English or in Arabic. The answer comes back in the Shaykh's own words with its volume and page, so you can go and check it in the printed book.</p>
+    <p class="sub ar" lang="ar">سبعة وثلاثون مجلداً من «مجموع الفتاوى»، بطبعة مجمع الملك فهد، مفتوحةٌ للبحث. اسأل بالعربية أو بالإنجليزية، فيأتيك الجواب بلفظ الشيخ نفسه، مقروناً بمجلده وصفحته، لتراجعه في المطبوع.</p>
+
+    <div class="seek" id="seek">
+      <form action="search.html" method="get" role="search" autocomplete="off">
+        <div class="field-wrap">
+          <span class="ico" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </span>
+          <input class="input" type="search" name="q" id="q" spellcheck="false"
+                 placeholder="Ask a question, or name a topic…" aria-label="Search the fatāwā" />
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
+        </button>
+      </form>
+      <div class="chips" aria-label="Suggested topics">
+        <span class="lead en">Try</span>
+        <span class="lead ar" lang="ar">جرِّب</span>
+        <button type="button" class="chip en">Seeking help from the dead</button>
+        <button type="button" class="chip en">Tawassul</button>
+        <button type="button" class="chip en">Divorce pronounced in anger</button>
+        <button type="button" class="chip en">Prayer in congregation</button>
+        <button type="button" class="chip ar" lang="ar">الاستغاثة بغير الله</button>
+        <button type="button" class="chip ar" lang="ar">التوسل</button>
+        <button type="button" class="chip ar" lang="ar">الطلاق في الغضب</button>
+        <button type="button" class="chip ar" lang="ar">صلاة الجماعة</button>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="stats" aria-label="The corpus">
+    <div class="grid">
+      <div>
+        <p class="stat-num en" data-stat="corpusVolumes">37</p><p class="stat-num ar" lang="ar" data-stat="corpusVolumes">٣٧</p>
+        <p class="stat-label en">Volumes, indexed whole</p>
+        <p class="stat-label ar" lang="ar">مجلداً، مفهرسةً كاملة</p>
+      </div>
+      <div>
+        <p class="stat-num en" data-stat="corpusPassages">16,436</p><p class="stat-num ar" lang="ar" data-stat="corpusPassages">١٦٤٣٦</p>
+        <p class="stat-label en">Passages you can reach</p>
+        <p class="stat-label ar" lang="ar">موضعاً يمكن الوصول إليه</p>
+      </div>
+      <div>
+        <p class="stat-num lead-one en" data-stat="translated">1,675</p><p class="stat-num ar" lang="ar" data-stat="translated">١٦٧٥</p>
+        <p class="stat-label en">Questions rendered in English</p>
+        <p class="stat-label ar" lang="ar">مسألةً مترجمة إلى الإنجليزية</p>
+      </div>
+      <div>
+        <p class="stat-num en">0</p><p class="stat-num ar" lang="ar">٠</p>
+        <p class="stat-label en">Words of our own in the answers</p>
+        <p class="stat-label ar" lang="ar">كلمةً من عندنا في الأجوبة</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="specimen" id="specimen">
+    <span class="kicker en">One result, unabridged</span>
+    <span class="kicker ar" lang="ar">نتيجةٌ واحدة، بتمامها</span>
+    <div class="specimen-head">
+      <h2 class="en">This is what comes back.</h2>
+      <h2 class="ar" lang="ar">هذا هو الذي يأتيك.</h2>
+      <p class="aside en">A question put to the Shaykh, and the opening of his answer: Arabic as printed, English beside it, and the Qur'ānic verse in it identified to the āyah.</p>
+      <p class="aside ar" lang="ar">مسألةٌ رُفعت إلى الشيخ، وأول جوابه: العربية كما طُبعت، والإنجليزية إلى جانبها، والآية التي فيه معزوَّةٌ إلى موضعها.</p>
+    </div>
+
+    <article class="card fatwa">
+      <div class="fatwa-meta">
+        <span class="cite en">Majmūʿ al-Fatāwā · vol. 1 · pp. 121–138</span>
+        <span class="cite ar" lang="ar">مجموع الفتاوى · المجلد ١ · ص ١٢١–١٣٨</span>
+        <span class="en">Treatise: a chapter of the section on tawḥīd</span>
+        <span class="ar" lang="ar">الرسالة: فصل</span>
+      </div>
+
+      <div class="fatwa-block">
+        <span class="fatwa-label en">The question</span>
+        <span class="fatwa-label ar" lang="ar">السؤال</span>
+        <p class="fatwa-ar" lang="ar">عن رجلين تناظرا فقال أحدهما: لا بد لنا من واسطة بيننا وبين الله فإنا لا نقدر أن نصل إليه بغير ذلك.</p>
+        <p class="fatwa-en en">Concerning two men who debated, so one of them said: we must [have] an intermediary (wasitah) between us and Allah, for we cannot reach Him without that.</p>
+      </div>
+
+      <hr class="fatwa-sep" />
+
+      <div class="fatwa-block">
+        <span class="fatwa-label en">The answer, as it begins</span>
+        <span class="fatwa-label ar" lang="ar">أول الجواب</span>
+        <p class="fatwa-ar answer" lang="ar">الحمد لله رب العالمين، إن أراد بذلك أنه لا بد من واسطة تبلغنا أمر الله: فهذا حق. فإن الخلق لا يعلمون ما يحبه الله ويرضاه وما أمر به وما نهى عنه … إلا بالرسل الذين أرسلهم الله إلى عباده. قال تعالى: <span class="ayah">﴿الله يصطفي من الملائكة رسلا ومن الناس﴾</span> ومن أنكر هذه الوسائط فهو كافر بإجماع أهل الملل.</p>
+        <p class="fatwa-en en">Praise be to Allah, Lord of the worlds. If he intends by that [the claim] that there must be an intermediary [who] conveys to us the command of Allah: then this is true. For the creation do not know what Allah loves and is pleased with, what He commanded and what He forbade … except by the messengers whom Allah sent to His servants.</p>
+        <div class="ayah-note">
+          <span class="tag tag-outline"><span class="en">Qur'ān</span><span class="ar" lang="ar">قرآن</span></span>
+          <span class="en"><em>al-Ḥajj 22:75</em> · recognised in the text, given its authoritative English, and linked to the sūrah.</span>
+          <span class="ar" lang="ar"><em>الحج ٧٥</em> · عُرفت في النص، وأُثبتت ترجمتها المعتمدة، ووُصلت بسورتها.</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="volumes" id="volumes">
+    <span class="kicker en">Or walk a volume</span>
+    <span class="kicker ar" lang="ar">أو طالِع مجلداً</span>
+    <div class="specimen-head">
+      <h2 class="en">Thirty-seven volumes, open at the first page.</h2>
+      <h2 class="ar" lang="ar">سبعة وثلاثون مجلداً، مفتوحةٌ من أولها.</h2>
+      <p class="aside en">Not every reading begins with a question. Take a volume and go through it in order; each one opens at its table of treatises, as the front matter of the edition sets them out.</p>
+      <p class="aside ar" lang="ar">وليست كل قراءةٍ تبدأ بسؤال. فخُذ مجلداً وامضِ فيه على ترتيبه؛ يُفتح كل مجلدٍ على فهرس رسائله، كما أثبتتها مقدمة الطبعة.</p>
+    </div>
+    <div class="vol-grid" id="volGrid" role="group" aria-label="Volumes 1 to 37"></div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="life" id="life">
+    <div>
+      <span class="kicker en">In preparation</span>
+      <span class="kicker ar" lang="ar">قيد الإعداد</span>
+      <h2 class="split-title en">The life of Shaykh al-Islām</h2>
+      <h2 class="split-title ar" lang="ar">سيرة شيخ الإسلام</h2>
+      <p class="note en">Born at Ḥarrān in 661 AH, died in the citadel of Damascus in 728 AH. The account of his life is being set now: the teachers, the trials, the imprisonments, and where each of these volumes was written. It will open here, beside his words.</p>
+      <p class="note ar" lang="ar">وُلد بحرّان سنة ٦٦١هـ، وتوفي في قلعة دمشق سنة ٧٢٨هـ. وسيرته تُهيَّأ الآن: شيوخه، ومحنه، وحبساته، وأين كُتب كل مجلدٍ من هذه المجلدات. وستُفتح هنا إلى جانب كلامه.</p>
+    </div>
+    <div class="card life-card">
+      <span class="fatwa-label en">Coming to this page</span>
+      <span class="fatwa-label ar" lang="ar">ممّا سيأتي في هذه الصفحة</span>
+      <ul class="life-list en">
+        <li>A plain chronology, year by year</li>
+        <li>The teachers he sat with, and the students who carried him</li>
+        <li>Which volume was written in which prison, and why</li>
+      </ul>
+      <ul class="life-list ar" lang="ar">
+        <li>تاريخٌ مجرَّد، سنةً سنة</li>
+        <li>شيوخه الذين جلس إليهم، وطلبته الذين حملوا عنه</li>
+        <li>أي مجلدٍ كُتب في أي حبس، ولماذا</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="creed">
+    <p class="creed-line en">Not one ruling here is ours.</p>
+    <p class="creed-line ar" lang="ar">ليس في هذا الموضع فتوى من عندنا.</p>
+    <p class="creed-body en">The answers are the Shaykh's, printed with their page numbers. We carry them to you and step aside.</p>
+    <p class="creed-body ar" lang="ar">الأجوبة أجوبة الشيخ، مطبوعةً بأرقام صفحاتها. ننقلها إليك ثم نتأخر عنها.</p>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="close" id="edition">
+    <h3 class="en">Begin with a question.</h3>
+    <h3 class="ar" lang="ar">ابدأ بمسألة.</h3>
+    <p class="sub en">Type it as you would ask it aloud. Nothing to sign and nothing to install: the whole book is open on the other side of the box.</p>
+    <p class="sub ar" lang="ar">اكتبها كما تسألها بلسانك. لا تسجيلَ ولا تثبيت، فالكتاب كله مفتوحٌ من وراء هذا السطر.</p>
+    <div class="seek">
+      <form action="search.html" method="get" role="search" autocomplete="off">
+        <div class="field-wrap">
+          <span class="ico" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </span>
+          <input class="input" type="search" name="q" spellcheck="false"
+                 placeholder="Ask a question, or name a topic…" aria-label="Search the fatāwā" />
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <footer>
+    <span class="edition en">Source: <em>Majmūʿ Fatāwā Shaykh al-Islām Aḥmad Ibn Taymiyyah</em>, compiled and arranged by ʿAbd al-Raḥmān b. Qāsim. King Fahd Complex for the Printing of the Noble Qur'ān, 1416 AH / 1995 CE. The work is in the public domain; the transcription is used under its open licence.</span>
+    <span class="edition ar" lang="ar">المصدر: مجموع فتاوى شيخ الإسلام أحمد بن تيمية، جمع وترتيب عبد الرحمن بن قاسم. مطبوع مجمع الملك فهد لطباعة المصحف الشريف (١٤١٦هـ / ١٩٩٥م). والكتاب في الملك العام، والنسخة المحرَّرة مستعملةٌ بموجب رخصتها المفتوحة.</span>
+    <span class="edition en">A research and retrieval tool. It surfaces what Ibn Taymiyyah wrote, with the source; it issues no rulings of its own.</span>
+    <span class="edition ar" lang="ar">أداة بحثٍ واستخراج. تُظهر ما كتبه ابن تيمية بعزوه، ولا تُفتي من نفسها.</span>
+  </footer>
+</div>
+<script>
+(() => {
+  const body = document.body;
+  const root = document.documentElement;
+  const PLACEHOLDER = {
+    en: 'Ask a question, or name a topic…',
+    ar: 'اسأل عن مسألة، أو اذكر باباً…'
+  };
+  const setLang = (lang, persist) => {
+    body.dataset.lang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    for (const b of document.querySelectorAll('[data-lang-btn]')) {
+      b.setAttribute('aria-pressed', String(b.dataset.langBtn === lang));
+    }
+    for (const i of document.querySelectorAll('input[name="q"]')) {
+      i.placeholder = PLACEHOLDER[lang];
+      i.lang = lang;
+      i.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    }
+    // Only a click is a preference: writing on load would make "never chose"
+    // indistinguishable from "chose English", and the search page reads this
+    // same key to decide whether an Arabic question opens the Arabic page.
+    if (persist) { try { localStorage.setItem('majmu:lang', lang); } catch (e) {} }
+  };
+  for (const b of document.querySelectorAll('[data-lang-btn]')) {
+    b.addEventListener('click', () => setLang(b.dataset.langBtn, true));
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('majmu:lang'); } catch (e) {}
+  setLang(saved === 'ar' ? 'ar' : 'en');
+
+  // — night ground, shared with the search page through the same key —
+  const setTheme = (theme, persist) => {
+    root.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')
+      .setAttribute('content', theme === 'night' ? '#201f1d' : '#f3f2f2');
+    if (persist) { try { localStorage.setItem('majmu:theme', theme); } catch (e) {} }
+  };
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('majmu:theme'); } catch (e) {}
+  setTheme(savedTheme === 'night' ? 'night' : 'day');
+  for (const b of document.querySelectorAll('[data-theme-btn]')) {
+    b.addEventListener('click', () =>
+      setTheme(root.dataset.theme === 'night' ? 'day' : 'night', true));
+  }
+
+  const firstField = document.querySelector('#seek input[name="q"]');
+  for (const b of document.querySelectorAll('[data-seek-focus]')) {
+    b.addEventListener('click', () => { firstField.focus({ preventScroll: false }); });
+  }
+  for (const c of document.querySelectorAll('.chip')) {
+    c.addEventListener('click', () => {
+      firstField.value = c.textContent.trim();
+      firstField.dir = c.lang === 'ar' ? 'rtl' : 'ltr';
+      firstField.focus();
+    });
+  }
+
+  // — the lattice: thirty-seven doors, built from the edition, annotated with
+  //   what the extraction has actually reached (stats.json fills the counts) —
+  const VOLUMES = 37;
+  const toArabic = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+  const grid = document.getElementById('volGrid');
+  const tiles = [];
+  const frag = document.createDocumentFragment();
+  for (let v = 1; v <= VOLUMES; v++) {
+    const a = document.createElement('a');
+    a.className = 'vol';
+    a.href = 'search.html?vol=' + v;
+    a.innerHTML = `<span class="en">${v}</span><span class="ar" lang="ar">${toArabic(v)}</span>`;
+    tiles.push(a);
+    frag.appendChild(a);
+  }
+  grid.appendChild(frag);
+
+  // — the figures: read from the data so they stay true as translation lands.
+  //   The numbers already in the markup are the served fallback. —
+  const group = (n, lang) => lang === 'ar'
+    ? toArabic(n) : Number(n).toLocaleString('en');
+  fetch('data/stats.json')
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((s) => {
+      for (const el of document.querySelectorAll('[data-stat]')) {
+        const value = s[el.dataset.stat];
+        if (typeof value !== 'number') continue;
+        el.textContent = group(value, el.lang === 'ar' ? 'ar' : 'en');
+        // "1,675" leads with a one, which needs the deeper optical inset; any
+        // other figure does not.
+        el.classList.toggle('lead-one',
+          el.lang !== 'ar' && String(value)[0] === '1');
+      }
+      const vols = s.volumes || {};
+      for (let v = 1; v <= VOLUMES; v++) {
+        const n = vols[String(v)] || 0;
+        const tile = tiles[v - 1];
+        if (!n) tile.dataset.empty = '';
+        tile.title = n
+          ? `${Number(n).toLocaleString('en')} fatwas · ${toArabic(n)} فتوى`
+          : 'Extraction has not reached this volume yet · لم يبلغه الاستخراج بعد';
+      }
+    })
+    .catch(() => { /* the served figures stand */ });
+})();
+</script>
+</body>
+</html>

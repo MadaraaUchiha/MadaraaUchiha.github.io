@@ -1,0 +1,76 @@
+# Build the site and publish it to GitHub Pages.
+#
+# The repository holds code, not corpus: fatwas.json is a Release asset, and
+# citations.json, stats.json and the 1,675 pre-rendered pages are built here on
+# every deploy. That keeps the repository small enough to clone in seconds and
+# means the published site is always rebuilt from the scripts in this commit.
+#
+# Before this can run:
+#   1. Settings -> Pages -> Source: "GitHub Actions"
+#   2. Create a release tagged `corpus` with fatwas.json attached as an asset:
+#        gh release create corpus web/data/fatwas.json --title "Corpus"
+#      To publish a new corpus later:
+#        gh release upload corpus web/data/fatwas.json --clobber
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p web/data
+          gh release download corpus --pattern fatwas.json --dir web/data
+          ls -la web/data
+
+      - name: Build citations and stats
+        run: python scripts/build_web_data.py
+
+      - name: Pre-render the fatwa pages and the sitemap
+        run: python scripts/prerender.py
+
+      - name: Check nothing is missing
+        run: |
+          test -f web/index.html
+          test -f web/search.html
+          test -f web/sitemap.xml
+          test -f web/data/citations.json
+          pages=$(find web/f -name '*.html' | wc -l)
+          echo "pre-rendered pages: $pages"
+          test "$pages" -gt 1000
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

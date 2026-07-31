@@ -1,0 +1,377 @@
+/* MAJMŪʿ — results. Same tokens, same rhythm as the landing; the masthead
+   gains the search field and becomes the application bar. */
+:root {
+  --leading: 28px;
+  --half: 14px;
+  --edge: clamp(20px, 5vw, 72px);
+  --font-arabic: "Amiri", "Scheherazade New", var(--font-heading), serif;
+  --readsize: 0px;
+}
+body { margin: 0; text-wrap: pretty; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--edge); }
+[lang="ar"] { font-family: var(--font-arabic); }
+body[data-lang="en"] .ar { display: none; }
+body[data-lang="ar"] .en { display: none; }
+.rule { height: 1px; border: 0; margin: 0; background: var(--color-divider); }
+
+/* — the application bar — */
+.nav { position: sticky; top: 0; z-index: 10; background: var(--color-bg);
+  padding-inline: max(var(--edge), calc((100% - 1200px) / 2 + var(--edge)));
+  gap: var(--space-4); }
+.nav-brand { display: flex; align-items: baseline; gap: var(--space-3); text-decoration: none; }
+.nav-brand .mark { font-family: var(--font-arabic); font-size: 22px; line-height: 1; color: var(--color-accent); }
+.nav-brand .name { letter-spacing: 0.06em; }
+.bar-seek { flex: 1; max-width: 560px; display: flex; gap: var(--space-3); }
+.bar-seek .field-wrap { position: relative; flex: 1; display: flex; }
+.bar-seek .input { flex: 1; padding-inline-start: 38px; min-height: 38px; font-size: 15px; }
+.bar-seek .ico { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
+  color: color-mix(in srgb, var(--color-text) 45%, transparent); pointer-events: none; display: flex; }
+.bar-seek .btn { min-height: 38px; padding-inline: var(--space-4); flex: none; white-space: nowrap; }
+.langswitch { display: flex; border: 1px solid var(--color-divider); border-radius: var(--radius-md); overflow: hidden; }
+.langswitch button { font-family: var(--font-body); font-size: 12.5px; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 11px; background: transparent;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent); border: 0; cursor: pointer; }
+.langswitch button[lang="ar"] { font-family: var(--font-arabic); text-transform: none; letter-spacing: 0; font-size: 15px; }
+.langswitch button:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); color: var(--color-accent-700); }
+.langswitch button[aria-pressed="true"] { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 14%, transparent); }
+@media (max-width: 720px) { .nav-brand .name { display: none; } }
+
+/* — the count line and the filters — */
+.head { padding: calc(1.75 * var(--leading)) 0 0; }
+.head h1 { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0; }
+.head h1 .q { color: var(--color-accent-700); }
+.head h1 .q[lang="ar"] { font-family: var(--font-arabic); }
+body[data-lang="ar"] .head h1 { letter-spacing: 0; line-height: 1.5; }
+.head .count { font-size: 14.5px; line-height: var(--leading); font-feature-settings: "tnum" 1;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); margin: var(--half) 0 0; }
+.filters { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center;
+  margin: var(--leading) 0 0; }
+.filters .lead { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .filters .lead, body[data-lang="ar"] .head .count { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.pill { font-family: inherit; font-size: 14px; line-height: 1; padding: 7px 12px; background: transparent;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent); cursor: pointer;
+  font-feature-settings: "tnum" 1; }
+.pill[lang="ar"] { font-family: var(--font-arabic); font-size: 16px; }
+.pill:hover { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+.pill[aria-pressed="true"] { border-color: var(--color-accent); color: var(--color-accent-700); }
+
+.kicker { display: block; font-size: 13px; line-height: var(--half); letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--color-accent-700); font-feature-settings: "tnum" 1;
+  margin: 0 0 var(--half); }
+body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.fatwa-label { display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.volnote { padding: var(--leading) 0 0; }
+body[data-mode="vol"] .match { display: none; }
+.volnote .card { padding: calc(1.25 * var(--leading)) clamp(18px, 2.4vw, 28px) calc(1.25 * var(--leading)); }
+.volnote-body { font-size: 15.5px; line-height: var(--leading); max-width: 66ch; margin: var(--half) 0 0;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); font-feature-settings: "tnum" 1; }
+body[data-lang="ar"] .volnote-body { font-size: 17px; }
+
+/* — the results: one hairline-parted column of passages — */
+.results { padding: var(--leading) 0 calc(2 * var(--leading)); }
+.result { padding: calc(1.5 * var(--leading)) 0; border-top: 1px solid var(--color-divider); }
+.result:first-child { border-top: 0; }
+.result-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4);
+  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; font-feature-settings: "tnum" 1;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .result-meta { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.result-meta .cite { color: var(--color-accent-700); }
+.result-meta .spacer { flex: 1; }
+.result-meta .match { display: inline-flex; align-items: center; gap: var(--space-2); }
+.match-bar { display: block; width: 54px; height: 3px; background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.match-bar i { display: block; height: 3px; background: var(--color-accent); }
+.q-ar { font-family: var(--font-arabic); font-size: 21px; line-height: calc(1.5 * var(--leading));
+  direction: rtl; text-align: right; margin: var(--leading) 0 0; color: var(--color-text); }
+.q-en { font-size: 15.5px; line-height: var(--leading); margin: var(--half) 0 0; max-width: 68ch;
+  color: color-mix(in srgb, var(--color-text) 74%, transparent); }
+.a-ar { font-family: var(--font-arabic); font-size: 19px; line-height: calc(1.5 * var(--leading));
+  direction: rtl; text-align: right; margin: var(--leading) 0 0;
+  color: color-mix(in srgb, var(--color-text) 88%, transparent); }
+.a-label { display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-top: var(--leading); }
+body[data-lang="ar"] .a-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+/* ── quotations ───────────────────────────────────────────────────────────
+   Two kinds, told apart on sight in either language. Scripture is ruled in
+   gold and named by sūrah and āyah; a narration the build could not identify
+   as Qur'an is ruled in a broken hairline and says only what it is. Both keep
+   the colour of the text they sit in — the rule underneath does the work, so
+   the Shaykh's words are never recoloured. */
+.ayah { border-bottom: 1px solid var(--color-accent); }
+a.ayah { color: inherit; text-decoration: none; }
+a.ayah:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+
+a.narration { color: inherit; text-decoration: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-text) 42%, transparent); }
+a.narration:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+
+/* the reference, riding just after the closing mark: this is where it ends,
+   and this is what it was */
+.qref { font-family: var(--font-body); font-size: 10.5px; line-height: 0;
+  letter-spacing: 0.04em; vertical-align: super; white-space: nowrap;
+  margin-inline-start: 3px; font-feature-settings: "tnum" 1;
+  color: var(--color-accent-700); unicode-bidi: isolate; }
+a.narration .qref { color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  font-style: italic; letter-spacing: 0; }
+.read-ar .qref, .q-ar .qref, .a-ar .qref { font-size: 12px; }
+.ayahs .quiet { color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+.render { direction: ltr; text-align: left; font-family: var(--font-body); margin-top: var(--half); font-size: 15.5px; line-height: var(--leading); max-width: 68ch;
+  color: color-mix(in srgb, var(--color-text) 74%, transparent); }
+.render[hidden] { display: none; }
+.ayahs { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: baseline;
+  margin-top: var(--leading); font-size: 14px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent); }
+/* The accent at 14px is 3:1 on this ground — the system's own guidance reserves
+   it for icons, large text and chrome, and sends paragraph-size accent text to
+   the deep step. At accent-700 these read 5.97:1. */
+.ayahs a { text-decoration: none; unicode-bidi: isolate; color: var(--color-accent-700);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent); }
+.ayahs a:hover { border-bottom-color: var(--color-accent); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--leading); }
+.actions .btn { min-height: 34px; }
+footer { padding: calc(2 * var(--leading)) 0; font-size: 13px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+footer span { display: block; max-width: 78ch; }
+footer [lang="ar"] { font-size: 15px; }
+@media (max-width: 720px) {
+  .nav { flex-wrap: wrap; }
+  .bar-seek { order: 3; max-width: none; flex-basis: 100%; }
+  .q-ar { font-size: 19px; }
+  .a-ar { font-size: 18px; }
+}
+
+/* ── implementation additions ─────────────────────────────────────────────
+   Everything above is the design as handed off. Below: the states a live
+   search has that a fixed prototype does not — loading, no query yet, nothing
+   found, the query struck through the passage, the whole answer opened for
+   reading, and the night ground. Tokens and ramps only; no new colours. */
+
+.skip { position: absolute; inset-inline-start: -9999px; top: var(--space-2); z-index: 20;
+  padding: var(--space-2) var(--space-3); border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-accent-700);
+  font-size: 14px; text-decoration: none; }
+.skip:focus { inset-inline-start: var(--space-4); }
+
+.nightswitch { flex: none; width: 34px; height: 34px; padding: 0; border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider); color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+.nightswitch:hover { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.nightswitch .i-night { display: none; }
+[data-theme="night"] .nightswitch .i-night { display: block; }
+[data-theme="night"] .nightswitch .i-day { display: none; }
+
+/* the book being opened: a hairline that fills under the bar, nothing more.
+   In normal flow, not pinned — the bar above it wraps to two rows on a phone,
+   and a fixed offset would leave this floating in the wrong place. */
+.loadbar { height: 1px; background: color-mix(in srgb, var(--color-text) 10%, transparent); }
+.loadbar i { display: block; height: 1px; width: 0; background: var(--color-accent);
+  transition: width 140ms linear; }
+.loadbar[hidden] { display: none; }
+.loadnote { padding: calc(1.75 * var(--leading)) 0 0; font-size: 14.5px; line-height: var(--leading);
+  font-feature-settings: "tnum" 1; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .loadnote { font-size: 16px; }
+
+/* The page shows one language at a time — the switch in the bar is what
+   changes it — so the English answer sets as the passage itself, at the same
+   weight the Arabic carries, not as a muted aside beneath it. */
+.a-en { direction: ltr; text-align: left; font-family: var(--font-body);
+  font-size: 15.5px; line-height: var(--leading); max-width: 68ch;
+  margin: var(--half) 0 0; color: color-mix(in srgb, var(--color-text) 88%, transparent); }
+.read-en.answer { color: color-mix(in srgb, var(--color-text) 88%, transparent); }
+
+/* not yet translated: said plainly, marked with the accent as a rule, not a box */
+.pending { font-size: 14.5px; line-height: var(--leading); max-width: 66ch;
+  margin: var(--leading) 0 0; padding-inline-start: var(--space-3);
+  border-inline-start: 1px solid var(--color-accent);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .pending { font-size: 16px; }
+
+/* the query, struck through the passage where it landed */
+mark { background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent); }
+
+/* arriving with nothing asked, and asking for something that is not there */
+.blank { padding: calc(2 * var(--leading)) 0 calc(2.5 * var(--leading)); }
+.blank h1 { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0; }
+body[data-lang="ar"] .blank h1 { letter-spacing: 0; line-height: 1.5; }
+.blank p { font-size: 15.5px; line-height: var(--leading); max-width: 58ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); margin: var(--half) 0 0; }
+body[data-lang="ar"] .blank p { font-size: 17px; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3);
+  margin-top: var(--leading); align-items: center; }
+.chips .lead { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+body[data-lang="ar"] .chips .lead { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.chip { font-family: inherit; font-size: 14.5px; line-height: 1; padding: 7px 12px;
+  background: transparent; border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--color-text) 82%, transparent); cursor: pointer; }
+.chip[lang="ar"] { font-family: var(--font-arabic); font-size: 17px; }
+.chip:hover { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+
+/* ── the margin ────────────────────────────────────────────────────────────
+   A passage reads at a measure, not at the width of the window; the space
+   that leaves at the side is the margin of the page, and the margin is where
+   an edition puts its apparatus. So each result is a text column with its
+   citation, its match, the verses it quotes and its actions set beside it,
+   and nothing has to be scrolled past to reach the next passage. Below 900px
+   there is no margin to speak of, and it folds back under the text. */
+.result { display: grid; align-items: start; justify-content: space-between;
+  grid-template-columns: minmax(0, 68ch) minmax(200px, 270px);
+  gap: 0 clamp(24px, 3.5vw, 56px); }
+.result-rail { display: flex; flex-direction: column; gap: var(--leading);
+  padding-inline-start: clamp(16px, 2vw, 26px);
+  border-inline-start: 1px solid var(--color-divider); }
+.result-rail .result-meta { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.result-rail .match { gap: var(--space-2); }
+.result-rail .ayahs { flex-direction: column; align-items: flex-start;
+  gap: var(--space-2); margin-top: 0; }
+.result-rail .actions { flex-direction: column; align-items: stretch;
+  gap: var(--space-2); margin-top: 0; }
+.result-rail .actions .btn { justify-content: flex-start; }
+.result-main > .nearby-block:first-child { margin-top: 0; }
+
+.reading { display: grid; align-items: start; justify-content: space-between;
+  grid-template-columns: minmax(0, 70ch) minmax(200px, 270px);
+  gap: 0 clamp(24px, 3.5vw, 56px); }
+.reading-bar, .reading-head { grid-column: 1 / -1; }
+.reading-rail { margin-top: calc(1.5 * var(--leading));
+  display: flex; flex-direction: column; gap: var(--leading);
+  padding-inline-start: clamp(16px, 2vw, 26px);
+  border-inline-start: 1px solid var(--color-divider); }
+.reading-rail .ayahs { flex-direction: column; align-items: flex-start;
+  gap: var(--space-2); margin-top: 0; }
+.reading-rail .rail-block { display: flex; flex-direction: column; gap: var(--space-2); }
+
+/* The margin travels with the reader: it holds its place beside the text and
+   keeps its own counsel when it is taller than the screen. A sticky column
+   taller than the viewport would pin at the top and strand its lower half
+   until the very end of the page — so the rail is bounded to what the screen
+   can show and scrolls within itself, handing the wheel back to the page when
+   it reaches its end. */
+.result-rail, .reading-rail {
+  position: sticky; top: calc(var(--leading) * 2.5);
+  max-height: calc(100vh - var(--leading) * 3.5);
+  overflow-y: auto; padding-inline-end: var(--space-2);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-text) 24%, transparent) transparent;
+}
+.result-rail::-webkit-scrollbar, .reading-rail::-webkit-scrollbar { width: 3px; }
+.result-rail::-webkit-scrollbar-thumb, .reading-rail::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-text) 24%, transparent); }
+
+/* In a column this narrow a citation cannot sit beside the line it names —
+   it stands above it, and the passage keeps its measure. */
+.result-rail .nearby, .reading-rail .nearby { flex-direction: column;
+  align-items: flex-start; gap: 1px; padding: var(--space-2) 0; }
+.result-rail .nearby-cite, .reading-rail .nearby-cite { min-width: 0; }
+.result-rail .nearby-q, .reading-rail .nearby-q { font-size: 15px;
+  line-height: calc(0.86 * var(--leading)); }
+.read-ar, .read-en { max-width: 100%; }
+/* paragraphs of one passage sit together; the space between them is a breath,
+   not a new section */
+.read-ar + .read-ar, .read-en + .read-en { margin-top: var(--half); }
+
+@media (max-width: 900px) {
+  .result, .reading { grid-template-columns: 1fr; }
+  .result-rail, .reading-rail { position: static; border-inline-start: 0;
+    padding-inline-start: 0; padding-inline-end: 0; margin-top: var(--leading);
+    padding-top: var(--half); border-top: 1px solid var(--color-divider);
+    max-height: none; overflow: visible; }
+  .result-rail .nearby, .reading-rail .nearby { padding: var(--space-2) 0; }
+  .result-rail .result-meta { flex-direction: row; flex-wrap: wrap; align-items: center;
+    gap: var(--space-2) var(--space-4); }
+  .result-rail .ayahs, .reading-rail .ayahs { flex-direction: row; flex-wrap: wrap;
+    align-items: baseline; max-height: none; }
+  .result-rail .actions { flex-direction: row; flex-wrap: wrap; }
+  .result-rail .actions .btn { justify-content: center; }
+}
+
+/* the treatise, named in the meta row and openable: type, with a rule under it
+   on hover — not a button drawn as a box */
+.linklike { font-family: var(--font-arabic); font-size: 15px; line-height: 1;
+  padding: 0; background: transparent; border: 0; cursor: pointer; color: inherit;
+  border-bottom: 1px solid transparent; }
+body[data-lang="en"] .linklike { font-size: 14px; }
+.linklike:hover { color: var(--color-accent-700); border-bottom-color: var(--color-accent); }
+
+/* neighbouring passages: an indented hairline list, like a cross-reference */
+.nearby-block { margin-top: var(--leading); padding-top: var(--half);
+  border-top: 1px solid var(--color-divider); }
+.nearby { display: flex; align-items: baseline; gap: var(--space-3);
+  padding: var(--space-2) 0; text-decoration: none; color: inherit;
+  border-bottom: 1px solid var(--color-divider); }
+.nearby:last-child { border-bottom: 0; }
+.nearby:hover { color: var(--color-accent-700); }
+.nearby-cite { flex: none; font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-feature-settings: "tnum" 1; color: var(--color-accent-700); min-width: 13ch; }
+.nearby-q { font-family: var(--font-arabic); font-size: 16px; line-height: var(--leading);
+  color: color-mix(in srgb, var(--color-text) 80%, transparent); }
+.nearby:hover .nearby-q { color: inherit; }
+@media (max-width: 560px) { .nearby { flex-direction: column; gap: 2px; } }
+
+/* more of the same column */
+.more { padding: 0 0 calc(2 * var(--leading)); }
+.more .btn { min-height: 38px; padding-inline: var(--space-6); }
+
+/* — the whole answer, opened for reading — */
+.reading { padding: calc(1.5 * var(--leading)) 0 calc(2 * var(--leading)); }
+.reading[hidden] { display: none; }
+.reading-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);
+  padding-bottom: var(--leading); }
+.reading-bar .spacer { flex: 1; }
+.reading-bar .btn { min-height: 34px; }
+.sizer { display: inline-flex; border: 1px solid var(--color-divider); border-radius: var(--radius-md); overflow: hidden; }
+.sizer button { font-family: var(--font-arabic); font-size: 15px; line-height: 1; padding: 8px 12px;
+  background: transparent; border: 0; cursor: pointer;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.sizer button + button { border-inline-start: 1px solid var(--color-divider); }
+.sizer button:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); color: var(--color-accent-700); }
+.reading-head { border-top: 1px solid var(--color-divider); padding-top: calc(1.25 * var(--leading)); }
+.reading h1 { font-family: var(--font-heading); font-weight: 400; font-size: 30px;
+  line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: var(--half) 0 0; }
+.reading h1[lang="ar"] { font-family: var(--font-arabic); letter-spacing: 0; line-height: 1.5; }
+.reading-body { margin-top: calc(1.5 * var(--leading)); }
+.read-ar { font-family: var(--font-arabic);
+  font-size: calc(21px + var(--readsize)); line-height: calc(1.62 * var(--leading));
+  direction: rtl; text-align: right; margin: var(--half) 0 0; color: var(--color-text); }
+.read-ar.answer { font-size: calc(20px + var(--readsize)); }
+.read-en { font-size: calc(15.5px + var(--readsize)); line-height: calc(1.12 * var(--leading));
+  margin: var(--half) 0 0; max-width: 68ch;
+  color: color-mix(in srgb, var(--color-text) 76%, transparent); }
+.read-block + .read-block { margin-top: calc(1.5 * var(--leading));
+  border-top: 1px solid var(--color-divider); padding-top: calc(1.25 * var(--leading)); }
+.colophon { margin-top: calc(2 * var(--leading)); padding-top: var(--leading);
+  border-top: 1px solid var(--color-divider); font-size: 14px; line-height: var(--leading);
+  font-feature-settings: "tnum" 1; color: color-mix(in srgb, var(--color-text) 66%, transparent); }
+.colophon .mark { font-family: var(--font-arabic); color: var(--color-accent); font-size: 17px; }
+
+/* the copy confirmation: a line of type, not a coloured box */
+.toast { position: fixed; inset-inline-start: 50%; bottom: var(--space-6); transform: translateX(-50%);
+  padding: var(--space-2) var(--space-4); background: var(--color-bg);
+  border: 1px solid var(--color-accent); border-radius: var(--radius-md);
+  color: var(--color-accent-700); font-size: 14px; box-shadow: var(--shadow-sm);
+  opacity: 0; pointer-events: none; transition: opacity 160ms ease; z-index: 30; }
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+[data-theme="night"] {
+  --color-bg: #201f1d;
+  --color-surface: #2d2b2b;
+  --color-text: #f8f4f4;
+  --color-divider: color-mix(in srgb, #f8f4f4 17%, transparent);
+  --color-accent: #e1ad66;
+  --color-accent-600: #facb8d;
+  --color-accent-700: #facb8d;
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 40%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #000 45%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
+}
+[data-theme="night"] .tag-outline { color: var(--color-accent); }

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The brand mark: the ornate opening bracket, in the system's accent on
+       its own ground. Same glyph the masthead carries. -->
+  <rect width="32" height="32" fill="#f3f2f2"/>
+  <text x="16" y="23" font-family="Amiri, Scheherazade New, serif" font-size="24"
+        text-anchor="middle" fill="#b68235">&#xFD3F;</text>
+</svg>

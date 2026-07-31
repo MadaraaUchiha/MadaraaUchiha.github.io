@@ -1,0 +1,10 @@
+# MAJMŪʿ — the fatāwā of Ibn Taymiyyah, searchable.
+# The pages are meant to be found and read. The corpus files behind them are
+# data, not pages: crawling them costs 30 MB and indexes nothing readable.
+
+User-agent: *
+Allow: /
+Disallow: /data/
+
+# Set the domain here to match prerender.py's SITE_URL before publishing.
+Sitemap: https://majmu.example/sitemap.xml

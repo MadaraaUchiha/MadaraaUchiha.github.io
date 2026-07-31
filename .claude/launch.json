@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fatwa-web",
+      "runtimeExecutable": "C:\\Users\\hasib\\Projects\\islamic-knowledge-engine\\.venv\\Scripts\\python.exe",
+      "runtimeArgs": ["-m", "http.server", "8777", "--directory", "C:\\Users\\hasib\\Projects\\islamic-knowledge-engine\\web"],
+      "port": 8777
+    }
+  ]
+}

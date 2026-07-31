@@ -1,0 +1,34 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Model cache (multi-GB; re-downloaded on demand)
+cache/
+
+# Generated artifacts (re-buildable from raw text)
+data/index/
+data/processed/
+# Raw source text is large; keep it out of git (re-fetchable from OpenITI).
+# The Qur'an files are the exception: the citation build needs them, they are
+# small, and pinning them keeps the build reproducible.
+data/raw/*
+!data/raw/quran.json
+!data/raw/quran_en.json
+
+# ── The website ──────────────────────────────────────────────────────────
+# Built, not authored, and large enough to make the repository unclonable if
+# committed: fatwas.json is 30 MB and a fresh copy would be stored on every
+# rebuild; the pre-rendered pages are 1,675 files and ~56 MB. They are
+# published as GitHub Release assets and rebuilt by the deploy workflow.
+web/data/fatwas.json
+web/data/citations.json
+web/data/stats.json
+web/f/
+web/sitemap.xml
+
+# Superseded single-page app, kept locally for reference
+_legacy_web/

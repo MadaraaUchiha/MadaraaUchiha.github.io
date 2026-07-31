@@ -1,0 +1,15 @@
+[theme]
+base = "light"
+primaryColor = "#8a6a2e"
+backgroundColor = "#faf7f1"
+secondaryBackgroundColor = "#f3ede1"
+textColor = "#26211a"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+# Don't crawl site-packages (transformers' lazy vision imports spew harmless
+# 'No module named torchvision' tracebacks). Disables hot-reload on save.
+fileWatcherType = "none"

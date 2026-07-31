@@ -1,0 +1,28 @@
+# Core ML / embeddings (torch is installed separately with the CUDA index URL)
+sentence-transformers>=3.0.0
+transformers>=4.41.0
+numpy>=1.26
+
+# Local Arabic->English translation (NLLB) — tokenizer needs sentencepiece
+sentencepiece
+sacremoses
+
+# Free LLM translation via OpenAI-compatible APIs (Gemini / Groq / OpenRouter)
+openai>=1.40
+
+# Lexical search
+bm25s>=0.2.0
+scipy
+
+# LLM provider (generation + scholarly translation)
+anthropic>=0.40.0
+
+# Data / parsing / utils
+pyyaml
+requests
+regex
+tqdm
+python-dotenv
+
+# UI
+streamlit>=1.38
