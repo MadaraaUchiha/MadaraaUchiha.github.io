@@ -288,6 +288,9 @@ def scan_english(text: str, table: RefTable):
 
 
 def main() -> int:
+    # Everything this script writes lands here, and on a fresh checkout it does
+    # not exist: the corpus arrives in data/corpus/, not in web/data/.
+    WEB_DATA.mkdir(parents=True, exist_ok=True)
     quran = get_quran()
     data = json.loads(SRC.read_text(encoding="utf-8"))
 
@@ -350,7 +353,6 @@ def main() -> int:
         encoding="utf-8",
     )
     # The corpus the site serves: the published one with the corrections in it.
-    WEB_DATA.mkdir(parents=True, exist_ok=True)
     SERVED.write_text(
         json.dumps(data, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
