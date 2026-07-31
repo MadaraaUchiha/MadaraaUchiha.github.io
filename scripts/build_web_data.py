@@ -37,12 +37,26 @@ import re
 import sys
 from pathlib import Path
 
+# Errors quote the passage they are about, and the passage is Arabic. The
+# default Windows console encoding cannot print it and would turn a useful
+# message into a traceback about cp1252.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.corrections import Corrections, CorrectionError, ayah_reference  # noqa: E402
 from src.quran import get_quran  # noqa: E402
 
-WEB_DATA = Path(__file__).resolve().parents[1] / "web" / "data"
-SRC = WEB_DATA / "fatwas.json"
+ROOT = Path(__file__).resolve().parents[1]
+WEB_DATA = ROOT / "web" / "data"
+# The corpus as published, never written to: corrections are applied on the way
+# out, so re-running the build can never bake them into the input and leave the
+# correction files describing text that is no longer there.
+SRC = ROOT / "data" / "corpus" / "fatwas.json"
+CORRECTIONS = ROOT / "corrections"
+SERVED = WEB_DATA / "fatwas.json"
 OUT = WEB_DATA / "citations.json"
 STATS = WEB_DATA / "stats.json"
 
@@ -123,11 +137,40 @@ class RefTable:
         return self._by_ref[m.ref]
 
 
-def scan_arabic(text: str, quran, table: RefTable):
+class Asserted:
+    """An ayah named by hand in corrections/, shaped like a matcher result."""
+
+    def __init__(self, spec: str, quran):
+        r = ayah_reference(quran, spec)
+        self.surah = r["surah"]
+        self.surah_name_ar = r["surah_name"]
+        self.surah_translit = r["translit"]
+        self.ayah_start, self.ayah_end = r["start"], r["end"]
+        self.english = r["english"]
+        self.url = r["url"]
+        self.found = True
+
+    @property
+    def ref(self) -> str:
+        a = (str(self.ayah_start) if self.ayah_start == self.ayah_end
+             else f"{self.ayah_start}-{self.ayah_end}")
+        return f"{self.surah}:{a}"
+
+
+def scan_arabic(text: str, quran, table: RefTable, override=None):
     """Every { } in the printed Arabic, placed and identified."""
     spans, unknown = [], 0
     for m in BRACES.finditer(text or ""):
         inner = m.group(1).strip()
+        # A correction, where one exists, is the last word on what this is.
+        verdict = override(inner) if override else None
+        if verdict == "narration":
+            unknown += 1
+            spans.append([m.start(), m.end(), NARRATION, BRACED])
+            continue
+        if verdict:
+            spans.append([m.start(), m.end(), table.index(Asserted(verdict, quran)), BRACED])
+            continue
         found = [x for x in quran.identify(m.group(0)) if x.found]
         if found:
             spans.append([m.start(), m.end(), table.index(found[0]), BRACED])
@@ -247,20 +290,38 @@ def scan_english(text: str, table: RefTable):
 def main() -> int:
     quran = get_quran()
     data = json.loads(SRC.read_text(encoding="utf-8"))
-    out: dict[str, dict] = {}
 
+    # Human corrections come first: everything downstream -- the citation
+    # spans, the pre-rendered pages, the corpus the search loads -- is computed
+    # from the corrected text, so a correction cannot be half-applied.
+    try:
+        corrections = Corrections.load(CORRECTIONS)
+        log = corrections.apply_to(data["fatwas"], quran)
+    except CorrectionError as exc:
+        print(f"\ncorrection error:\n  {exc}\n")
+        return 1
+    if log:
+        print(f"applied {corrections.applied} corrections:")
+        for line in log[:20]:
+            print(line)
+        if len(log) > 20:
+            print(f"  ... and {len(log) - 20} more")
+        print()
+
+    out: dict[str, dict] = {}
     ayat = narrations = en_marked = en_unmarked = touched = 0
 
     for f in data["fatwas"]:
         table = RefTable()
         blocks: dict[str, dict] = {}
         unknown_total = 0
+        override = (lambda q, _fid=f["id"]: corrections.override_for(_fid, q))
 
         for key, ar_field, en_field in (("q", "qa", "qe"), ("a", "aa", "ae")):
             ar_text = f.get(ar_field) or ""
             if "{" not in ar_text:
                 continue
-            ar_spans, unknown = scan_arabic(ar_text, quran, table)
+            ar_spans, unknown = scan_arabic(ar_text, quran, table, override)
             en_spans, _ = scan_english(f.get(en_field) or "", table)
             if not ar_spans and not en_spans:
                 continue
@@ -288,6 +349,12 @@ def main() -> int:
         json.dumps(out, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
+    # The corpus the site serves: the published one with the corrections in it.
+    WEB_DATA.mkdir(parents=True, exist_ok=True)
+    SERVED.write_text(
+        json.dumps(data, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
 
     per_volume: dict[int, int] = {}
     for f in data["fatwas"]:
@@ -309,6 +376,7 @@ def main() -> int:
           f"{narrations} narrations marked for lookup")
     print(f"  English: {en_marked} of {total_en} verses placed in the translation "
           f"({en_marked / total_en:.1%}); the rest stay in the margin index")
+    print(f"wrote {SERVED} ({SERVED.stat().st_size / 1024 / 1024:.1f} MB, corrections applied)")
     print(f"wrote {OUT} ({OUT.stat().st_size / 1024:.0f} KB)")
     print(f"wrote {STATS} ({STATS.stat().st_size} B) -- "
           f"{len(data['fatwas'])} fatwas across {len(per_volume)} volumes")

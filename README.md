@@ -195,11 +195,25 @@ reaches the Arabic. Any glossary word that turns out to be much commoner than
 the word actually typed is dropped for that query, and a glossary hit always
 counts for less than the reader's own word.
 
-Regenerate the two sidecar files after re-extracting or re-translating:
+Rebuild the site's data and pages after re-extracting or re-translating:
 
 ```powershell
-.venv\Scripts\python scripts\build_web_data.py
+.venv\Scripts\python scripts\build_web_data.py   # corrections + citations + stats
+.venv\Scripts\python scripts\prerender.py        # 1,675 pages + sitemap + robots.txt
 ```
+
+### Corrections
+
+The English is machine translation and the citations are matched automatically,
+so both are sometimes wrong. Corrections live in `corrections/*.json` and are
+applied **over** the machine's output on every build, which is what makes them
+survive a rebuild of the corpus — see [corrections/README.md](corrections/README.md).
+
+The corpus itself is never written to: `data/corpus/fatwas.json` is the
+published input, and `web/data/fatwas.json` is that input with the corrections
+in it. A correction that no longer applies fails the build rather than being
+skipped, so the live site keeps its last good state instead of quietly losing
+someone's fix.
 
 Serve `web/` as static files. In production, send long cache headers for
 `data/*.json` — `fatwas.json` is ~30 MB and is otherwise refetched per visit.

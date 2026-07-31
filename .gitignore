@@ -24,6 +24,7 @@ data/raw/*
 # committed: fatwas.json is 30 MB and a fresh copy would be stored on every
 # rebuild; the pre-rendered pages are 1,675 files and ~56 MB. They are
 # published as GitHub Release assets and rebuilt by the deploy workflow.
+data/corpus/
 web/data/fatwas.json
 web/data/citations.json
 web/data/stats.json
