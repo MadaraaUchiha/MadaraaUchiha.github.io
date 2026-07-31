@@ -1074,9 +1074,13 @@ function renderHead() {
       : 'مفتوحٌ من أول صفحةٍ فيه، على ترتيب الطبعة.';
     if (!state.hits.length) {
       els.volNote.hidden = false;
-      const vs = els.volNote.querySelectorAll('.v');
-      vs[0].textContent = state.vol;
-      vs[1].textContent = toArabic(state.vol);
+      // 36 and 37 are the edition's indexes; anything else is text not yet
+      // extracted. Two different facts, two different notes.
+      const indexVolumes = (state.stats && state.stats.indexVolumes) || [36, 37];
+      els.volNote.dataset.kind = indexVolumes.includes(state.vol) ? 'index' : 'pending';
+      for (const v of els.volNote.querySelectorAll('.v')) {
+        v.textContent = v.lang === 'ar' ? toArabic(state.vol) : state.vol;
+      }
     }
     return;
   }

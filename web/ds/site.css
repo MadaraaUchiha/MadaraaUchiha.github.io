@@ -67,6 +67,10 @@ body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-siz
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
 .volnote { padding: var(--leading) 0 0; }
+/* One of the two notes, never both: an index volume and an unextracted volume
+   are empty for different reasons and must not be told in the same words. */
+#volNote[data-kind="index"] [data-note="unextracted"],
+#volNote:not([data-kind="index"]) [data-note="index"] { display: none; }
 body[data-mode="vol"] .match { display: none; }
 .volnote .card { padding: calc(1.25 * var(--leading)) clamp(18px, 2.4vw, 28px) calc(1.25 * var(--leading)); }
 .volnote-body { font-size: 15.5px; line-height: var(--leading); max-width: 66ch; margin: var(--half) 0 0;

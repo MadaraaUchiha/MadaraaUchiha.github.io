@@ -323,8 +323,8 @@ footer [lang="ar"] { font-size: 15px; }
         <span class="line gilt">وإنما نؤدّيها كما كُتبت.</span>
       </span>
     </h1>
-    <p class="sub en">Thirty-seven volumes of <em>Majmūʿ al-Fatāwā</em>, in the King Fahd Complex edition, opened to search. Ask in English or in Arabic. The answer comes back in the Shaykh's own words with its volume and page, so you can go and check it in the printed book.</p>
-    <p class="sub ar" lang="ar">سبعة وثلاثون مجلداً من «مجموع الفتاوى»، بطبعة مجمع الملك فهد، مفتوحةٌ للبحث. اسأل بالعربية أو بالإنجليزية، فيأتيك الجواب بلفظ الشيخ نفسه، مقروناً بمجلده وصفحته، لتراجعه في المطبوع.</p>
+    <p class="sub en">The thirty-five volumes of text in <em>Majmūʿ al-Fatāwā</em>, in the King Fahd Complex edition, opened to search. Ask in English or in Arabic. The answer comes back in the Shaykh's own words with its volume and page, so you can go and check it in the printed book.</p>
+    <p class="sub ar" lang="ar">خمسة وثلاثون مجلداً هي متن «مجموع الفتاوى»، بطبعة مجمع الملك فهد، مفتوحةٌ للبحث. اسأل بالعربية أو بالإنجليزية، فيأتيك الجواب بلفظ الشيخ نفسه، مقروناً بمجلده وصفحته، لتراجعه في المطبوع.</p>
 
     <div class="seek" id="seek">
       <form action="search.html" method="get" role="search" autocomplete="off">
@@ -359,19 +359,19 @@ footer [lang="ar"] { font-size: 15px; }
   <section class="stats" aria-label="The corpus">
     <div class="grid">
       <div>
-        <p class="stat-num en" data-stat="corpusVolumes">37</p><p class="stat-num ar" lang="ar" data-stat="corpusVolumes">٣٧</p>
-        <p class="stat-label en">Volumes, indexed whole</p>
-        <p class="stat-label ar" lang="ar">مجلداً، مفهرسةً كاملة</p>
+        <p class="stat-num en" data-stat="corpusVolumes">35</p><p class="stat-num ar" lang="ar" data-stat="corpusVolumes">٣٥</p>
+        <p class="stat-label en">Volumes of text, indexed whole</p>
+        <p class="stat-label ar" lang="ar">مجلداً من المتن، مفهرسةً كاملة</p>
       </div>
       <div>
         <p class="stat-num en" data-stat="corpusPassages">16,436</p><p class="stat-num ar" lang="ar" data-stat="corpusPassages">١٦٤٣٦</p>
-        <p class="stat-label en">Passages you can reach</p>
-        <p class="stat-label ar" lang="ar">موضعاً يمكن الوصول إليه</p>
+        <p class="stat-label en">Passages indexed</p>
+        <p class="stat-label ar" lang="ar">موضعاً مفهرساً</p>
       </div>
       <div>
         <p class="stat-num lead-one en" data-stat="translated">1,675</p><p class="stat-num ar" lang="ar" data-stat="translated">١٦٧٥</p>
-        <p class="stat-label en">Questions rendered in English</p>
-        <p class="stat-label ar" lang="ar">مسألةً مترجمة إلى الإنجليزية</p>
+        <p class="stat-label en">Questions and answers you can read here</p>
+        <p class="stat-label ar" lang="ar">مسألةً وجواباً تُقرأ هنا</p>
       </div>
       <div>
         <p class="stat-num en">0</p><p class="stat-num ar" lang="ar">٠</p>
@@ -430,12 +430,12 @@ footer [lang="ar"] { font-size: 15px; }
     <span class="kicker en">Or walk a volume</span>
     <span class="kicker ar" lang="ar">أو طالِع مجلداً</span>
     <div class="specimen-head">
-      <h2 class="en">Thirty-seven volumes, open at the first page.</h2>
-      <h2 class="ar" lang="ar">سبعة وثلاثون مجلداً، مفتوحةٌ من أولها.</h2>
-      <p class="aside en">Not every reading begins with a question. Take a volume and go through it in order; each one opens at its table of treatises, as the front matter of the edition sets them out.</p>
-      <p class="aside ar" lang="ar">وليست كل قراءةٍ تبدأ بسؤال. فخُذ مجلداً وامضِ فيه على ترتيبه؛ يُفتح كل مجلدٍ على فهرس رسائله، كما أثبتتها مقدمة الطبعة.</p>
+      <h2 class="en">Thirty-five volumes, open at the first page.</h2>
+      <h2 class="ar" lang="ar">خمسة وثلاثون مجلداً، مفتوحةٌ من أولها.</h2>
+      <p class="aside en">Not every reading begins with a question. Take a volume and go through it in order. These thirty-five are the whole of the text; volumes 36 and 37 of the edition are its indexes, and hold no fatāwā.</p>
+      <p class="aside ar" lang="ar">وليست كل قراءةٍ تبدأ بسؤال. فخُذ مجلداً وامضِ فيه على ترتيبه. وهذه الخمسة والثلاثون هي المتن كله؛ وأما المجلدان السادس والثلاثون والسابع والثلاثون من الطبعة ففهارسها، ليس فيهما فتاوى.</p>
     </div>
-    <div class="vol-grid" id="volGrid" role="group" aria-label="Volumes 1 to 37"></div>
+    <div class="vol-grid" id="volGrid" role="group" aria-label="Volumes 1 to 35"></div>
   </section>
 
   <hr class="rule" />
@@ -565,28 +565,40 @@ footer [lang="ar"] { font-size: 15px; }
     });
   }
 
-  // — the lattice: thirty-seven doors, built from the edition, annotated with
-  //   what the extraction has actually reached (stats.json fills the counts) —
-  const VOLUMES = 37;
+  // — the lattice: one door per volume of text. Thirty-five, not the
+  //   thirty-seven of the spine: 36 and 37 are the edition's indexes and hold
+  //   no fatāwā, and a tile leading to an empty volume is a promise broken. —
+  const VOLUMES = 35;
   const toArabic = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
   const grid = document.getElementById('volGrid');
-  const tiles = [];
-  const frag = document.createDocumentFragment();
-  for (let v = 1; v <= VOLUMES; v++) {
-    const a = document.createElement('a');
-    a.className = 'vol';
-    a.href = 'search.html?vol=' + v;
-    a.innerHTML = `<span class="en">${v}</span><span class="ar" lang="ar">${toArabic(v)}</span>`;
-    tiles.push(a);
-    frag.appendChild(a);
-  }
-  grid.appendChild(frag);
+  const drawLattice = (volumes) => {
+    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    const tiles = [];
+    for (const v of volumes) {
+      const a = document.createElement('a');
+      a.className = 'vol';
+      a.href = 'search.html?vol=' + v;
+      a.innerHTML = `<span class="en">${v}</span><span class="ar" lang="ar">${toArabic(v)}</span>`;
+      tiles.push(a);
+      frag.appendChild(a);
+    }
+    grid.appendChild(frag);
+    return tiles;
+  };
+  // Drawn once from the served count so the page is never blank, then redrawn
+  // from what the data actually holds. Hard-coding the number is how this page
+  // came to offer volumes 36 and 37, which are the edition's indexes and hold
+  // no fatāwā: a door with nothing behind it.
+  let tiles = drawLattice(Array.from({ length: VOLUMES }, (_, i) => i + 1));
 
   // — the figures: read from the data so they stay true as translation lands.
   //   The numbers already in the markup are the served fallback. —
   const group = (n, lang) => lang === 'ar'
     ? toArabic(n) : Number(n).toLocaleString('en');
-  fetch('data/stats.json')
+  // Versioned: without it a browser keeps serving the previous build's figures,
+  // and the page goes on printing a number the data no longer says.
+  fetch('data/stats.json?v=2')
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
     .then((s) => {
       for (const el of document.querySelectorAll('[data-stat]')) {
@@ -598,14 +610,21 @@ footer [lang="ar"] { font-size: 15px; }
         el.classList.toggle('lead-one',
           el.lang !== 'ar' && String(value)[0] === '1');
       }
+      // The volumes the corpus actually holds, in order — so a volume that is
+      // added later appears on its own, and one that holds nothing is never
+      // offered.
       const vols = s.volumes || {};
-      for (let v = 1; v <= VOLUMES; v++) {
-        const n = vols[String(v)] || 0;
-        const tile = tiles[v - 1];
-        if (!n) tile.dataset.empty = '';
-        tile.title = n
-          ? `${Number(n).toLocaleString('en')} fatwas · ${toArabic(n)} فتوى`
-          : 'Extraction has not reached this volume yet · لم يبلغه الاستخراج بعد';
+      const present = Object.keys(vols).map(Number).filter((v) => vols[v] > 0)
+        .sort((a, b) => a - b);
+      if (present.length) {
+        tiles = drawLattice(present);
+        present.forEach((v, i) => {
+          const n = vols[v];
+          tiles[i].title =
+            `${Number(n).toLocaleString('en')} fatwas · ${toArabic(n)} فتوى`;
+        });
+        grid.setAttribute('aria-label',
+          `Volumes ${present[0]} to ${present[present.length - 1]}`);
       }
     })
     .catch(() => { /* the served figures stand */ });

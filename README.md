@@ -17,7 +17,11 @@ on-demand scholar-grade translation.
 
 ## What works today
 
-- **Corpus**: all **37 volumes** of _Majmu' al-Fatawa_ (16,436 passages),
+- **Corpus**: the **35 volumes of text** in _Majmu' al-Fatawa_ (16,436 passages),
+  which is the whole of the work — the King Fahd printing is 37 volumes, but 36
+  and 37 are its indexes and contain no fatawa. The source has no pages for
+  them, the retrieval index has no passages from them, and the edition's own
+  index of treatises never once refers to them.
   sourced as clean machine-readable text from the [OpenITI corpus](https://openiti.org)
   (no OCR needed — see "Design decisions"). Embedding the whole book takes ~3
   minutes on an RTX 3060 Ti.

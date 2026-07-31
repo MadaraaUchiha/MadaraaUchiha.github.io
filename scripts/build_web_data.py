@@ -60,11 +60,15 @@ SERVED = WEB_DATA / "fatwas.json"
 OUT = WEB_DATA / "citations.json"
 STATS = WEB_DATA / "stats.json"
 
-# The corpus behind the engine, from the retrieval index (see README): the whole
-# printed work, indexed. The extracted question-and-answer fatwas that this
-# static site serves are a subset of it, counted from the data below.
-CORPUS_VOLUMES = 37
+# What the retrieval index actually holds. The King Fahd edition is 37 volumes,
+# but volumes 36 and 37 are its indexes, not fatawa: the OpenITI transcription
+# carries volumes 1-35, which is the whole of the text, plus the edition's own
+# index of treatises as front matter. Every page tag in the source, every
+# passage in data/index, and every extracted fatwa stops at 35 -- so the site
+# must say 35, not 37, or it is promising two volumes that contain no answers.
+CORPUS_VOLUMES = 35
 CORPUS_PASSAGES = 16436
+INDEX_VOLUMES = [36, 37]
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACES = re.compile(r"\{([^{}]+)\}")
@@ -367,6 +371,7 @@ def main() -> int:
         "translated": meta.get("translated", sum(1 for f in data["fatwas"] if f.get("ae"))),
         "corpusVolumes": CORPUS_VOLUMES,
         "corpusPassages": CORPUS_PASSAGES,
+        "indexVolumes": INDEX_VOLUMES,
         "volumes": {str(v): n for v, n in sorted(per_volume.items())},
         "ayat": ayat,
         "edition": meta.get("edition", ""),
