@@ -71,6 +71,8 @@ STATS = WEB_DATA / "stats.json"
 # render every result it ranks before the rest of the corpus has arrived.
 CORE_AR = 1000
 CORE_EN = 1400
+# How much of a verse's authoritative English the tooltip carries.
+TOOLTIP_CHARS = 130
 
 # What the retrieval index actually holds. The King Fahd edition is 37 volumes,
 # but volumes 36 and 37 are its indexes, not fatawa: the OpenITI transcription
@@ -363,6 +365,16 @@ def main() -> int:
             blocks["refs"] = table.refs
             out[f["id"]] = blocks
             touched += 1
+
+    # The authoritative English of every verse is two thirds of this file, and
+    # it is only ever read in a tooltip. The build needs it whole -- it is what
+    # the English side is matched against -- but the page does not, so it ships
+    # as a preview and quran.com carries the rest. 724 KB -> 257 KB gzipped.
+    for record in out.values():
+        for ref in record.get("refs", []):
+            text = ref.get("t") or ""
+            if len(text) > TOOLTIP_CHARS:
+                ref["t"] = text[:TOOLTIP_CHARS].rstrip() + "…"
 
     OUT.write_text(
         json.dumps(out, ensure_ascii=False, separators=(",", ":")),

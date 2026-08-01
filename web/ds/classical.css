@@ -13,7 +13,18 @@
    ───────────────────────────────────────────────────────────────────────── */
 
 /* Classical — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap');
+
+/* ONE DELIBERATE EDIT to the vendored file, recorded here so a re-vendor does
+   not silently undo it: the original line was
+
+     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond...');
+
+   An @import inside a stylesheet is the slowest way to load a font — the
+   browser cannot discover it until this file has been fetched and parsed, and
+   only then goes off to a third-party host. The same faces are now served from
+   this origin and declared in ds/fonts.css, which the pages link directly.
+   If you re-vendor this file from the design project, delete that @import
+   again. */
 
 :root {
   --color-bg: #f3f2f2;

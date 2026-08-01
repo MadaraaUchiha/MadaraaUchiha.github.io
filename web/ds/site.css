@@ -66,6 +66,17 @@ body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-siz
 .fatwa-label { display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+/* Moving between the results and a passage is one continuous act of reading, so
+   the browser cross-fades the two documents instead of blanking the screen.
+   Costs nothing where it is unsupported, and respects a reduced-motion setting
+   through the media query below. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+
 /* An answer can run to forty thousand characters and fifty paragraphs. Laying
    out the part below the fold costs time the reader spends looking at nothing,
    so it is skipped until it is scrolled to. contain-intrinsic-size keeps a

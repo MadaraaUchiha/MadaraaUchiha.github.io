@@ -38,8 +38,8 @@ OUT = WEB / "f"
 # custom domain without anyone remembering to edit a constant. Locally it falls
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
-CSS_V = "?v=2"
-SITE_CSS_V = "?v=1"
+CSS_V = "?v=3"
+SITE_CSS_V = "?v=2"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -337,9 +337,9 @@ def page(f, cites, neighbours) -> str:
 <meta property="og:url" content="{url}" />
 <meta property="og:site_name" content="MAJMŪʿ" />
 <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="../fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../ds/fonts.css?v=1" />
 <script type="speculationrules">
 {{"prerender":[{{"where":{{"href_matches":"/f/*"}},"eagerness":"moderate"}}],
   "prefetch":[{{"where":{{"href_matches":"/search.html*"}},"eagerness":"moderate"}}]}}
