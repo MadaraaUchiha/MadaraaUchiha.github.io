@@ -129,6 +129,23 @@
 <div class="toast" id="toast" role="status"></div>
 <!-- Versioned so a deploy is not shadowed by a cached copy of the old script.
      Bump ?v= whenever search.js or the design system changes. -->
-<script src="search.js?v=17"></script>
+<!-- Prepare a passage while the reader is still deciding to open it. Hovering a
+     link for a moment is a good signal and a cheap bet: the page is fetched and
+     rendered in the background, so the click lands on something already there.
+     "moderate" waits for that hover rather than firing at everything on screen,
+     which on a page of ten results would be ten needless fetches. -->
+<script type="speculationrules">
+{
+  "prerender": [{
+    "where": { "href_matches": "/f/*" },
+    "eagerness": "moderate"
+  }],
+  "prefetch": [{
+    "where": { "href_matches": "/search.html*" },
+    "eagerness": "moderate"
+  }]
+}
+</script>
+<script src="search.js?v=18"></script>
 </body>
 </html>

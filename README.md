@@ -129,17 +129,39 @@ searches them in the browser. Bilingual throughout (English / العربية, LT
 RTL), with a night ground.
 
 ```
-web/
-  index.html        the landing page
-  search.html       the search application (shell + page CSS)
-  search.js         search, filters, reading view, neighbours
-  ds/classical.css  the Classical design system, vendored from the design
-                    handoff — do not hand-edit, re-vendor instead
-  data/fatwas.json      the extracted questions and answers (~30 MB)
-  data/citations.json   Qur'an citations, precomputed  ┐ both written by
-  data/stats.json       the counts the landing prints  ┘ build_web_data.py
-  _legacy/          the previous single-page app, kept until the new site sticks
+web/                        everything published
+  index.html                the landing page
+  search.html               the search application (shell + page CSS)
+  search.js                 search, filters, reading view, neighbours
+  f/itq_*.html              one pre-rendered page per fatwa (built, not committed)
+  sitemap.xml, robots.txt   built, not committed
+  ds/classical.css          the Classical design system, vendored from the
+                            design handoff — re-vendor, never hand-edit
+  ds/site.css               this site's own layout on top of it
+  data/search-core.json     what the search page loads first  ┐
+  data/search-rest.json     the tails of the answers          │ written by
+  data/citations.json       quotation spans, precomputed      │ build_web_data.py
+  data/stats.json           the counts the landing prints     ┘
+
+data/corpus/fatwas.json     the published corpus, from the Release. Input only
+data/build/fatwas.json      corpus + corrections, for the pre-renderer. Not
+                            published: nothing on the site fetches it
+corrections/*.json          human corrections, applied last (see src/corrections.py)
 ```
+
+### Why the search payload is split
+
+The whole corpus is 8.3 MB gzipped, and waiting on it before a reader can type
+was the worst thing about this site. A result card never shows more than the
+question and the opening of an answer, and every full answer now has a page of
+its own — so `search-core.json` (1.4 MB gzipped) carries everything the search
+page can *display*, and `search-rest.json` (6.9 MB) carries the rest of the
+answers behind it. Search works off the first file; when the second lands, the
+passages grow to full length and the current query is quietly re-run, so a term
+buried deep in a long answer is found a moment later rather than never.
+
+First paint therefore costs **2.1 MB** instead of **9.0 MB**, with no loss of
+results once the page has settled.
 
 Every visual token (colour, type, spacing, radius, shadow) comes from
 `ds/classical.css`; the pages add only layout, the 28px reading rhythm, the

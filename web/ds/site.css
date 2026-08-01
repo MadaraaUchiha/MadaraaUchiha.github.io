@@ -66,6 +66,16 @@ body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-siz
 .fatwa-label { display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+/* An answer can run to forty thousand characters and fifty paragraphs. Laying
+   out the part below the fold costs time the reader spends looking at nothing,
+   so it is skipped until it is scrolled to. contain-intrinsic-size keeps a
+   reserved height for each paragraph, which stops the scrollbar jumping as
+   they are rendered, and find-in-page still reaches inside. */
+.read-ar, .read-en {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 220px;
+}
+
 .volnote { padding: var(--leading) 0 0; }
 /* One of the two notes, never both: an index volume and an unextracted volume
    are empty for different reasons and must not be told in the same words. */

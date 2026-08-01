@@ -25,7 +25,9 @@ data/raw/*
 # rebuild; the pre-rendered pages are 1,675 files and ~56 MB. They are
 # published as GitHub Release assets and rebuilt by the deploy workflow.
 data/corpus/
-web/data/fatwas.json
+web/data/search-core.json
+web/data/search-rest.json
+data/build/
 web/data/citations.json
 web/data/stats.json
 web/f/

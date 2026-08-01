@@ -56,6 +56,7 @@ const state = {
   cites: {},
   meta: null,
   ready: false,
+  whole: false,             // true once the tails of the answers have arrived
   mode: 'blank',            // blank | query | vol | cat
   query: '',
   vol: null,
@@ -386,7 +387,7 @@ async function load() {
   showLoading(t().loading, 0);
   try {
     const [fatwas, cites] = await Promise.all([
-      fetchWithProgress(`data/fatwas.json?v=${DATA_VERSION}`),
+      fetchWithProgress(`data/search-core.json?v=${DATA_VERSION}`),
       fetch(`data/citations.json?v=${DATA_VERSION}`)
         .then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]);
@@ -395,18 +396,64 @@ async function load() {
     state.cites = cites;
     for (const f of state.data) {
       state.byId.set(f.id, f);
-      f._hi = normalizeAr((f.topic || '') + ' ' + (f.cat || ''));
-      f._q = normalizeAr(f.qa || '') + ' ' + (f.qe || '').toLowerCase();
-      f._a = normalizeAr(f.aa || '') + ' ' + (f.ae || '').toLowerCase();
+      indexFatwa(f);
     }
     state.ready = true;
     hideLoading();
     apply();
+    loadRest();                 // the tails of the answers, behind the page
   } catch (e) {
     console.error(e);
     hideLoading();
     els.loadnote.hidden = false;
     els.loadnote.textContent = t().failed;
+  }
+}
+
+/** The normalised forms searching works on. Rebuilt when an answer grows. */
+function indexFatwa(f) {
+  f._hi = normalizeAr((f.topic || '') + ' ' + (f.cat || ''));
+  f._q = normalizeAr(f.qa || '') + ' ' + (f.qe || '').toLowerCase();
+  f._a = normalizeAr(f.aa || '') + ' ' + (f.ae || '').toLowerCase();
+}
+
+/** The rest of the answers, fetched once the page is already usable.
+    Nothing waits on this: search works the moment the first file lands, and
+    when this one arrives the passages grow to their full length and the
+    question on screen is quietly asked again, so a term buried on the tenth
+    page of an answer is found a second later rather than not at all. */
+async function loadRest() {
+  try {
+    const res = await fetch(`data/search-rest.json?v=${DATA_VERSION}`);
+    if (!res.ok) return;
+    const rest = await res.json();
+    let grown = 0;
+    for (const id in rest) {
+      const f = state.byId.get(id);
+      if (!f) continue;
+      const tail = rest[id];
+      if (tail.aa) f.aa += tail.aa;
+      if (tail.ae) f.ae += tail.ae;
+      delete f.more;
+      indexFatwa(f);
+      grown++;
+    }
+    state.whole = true;
+    state.bags = null;                       // neighbours were built on stubs
+    if (!grown || !state.ready) return;
+    if (state.readingId) {
+      // An answer opened before its tail arrived was showing its opening only.
+      renderReading(state.readingId);
+    } else if (state.mode === 'query') {
+      const shown = state.shown;             // keep the reader where they are
+      compute();
+      renderHead();
+      renderList(false);
+      while (state.shown < shown && els.more.querySelector('.btn')) renderList(true);
+    }
+  } catch (e) {
+    // The page keeps working on the opening of each answer; that is the point
+    // of splitting them. Say nothing and leave the reader alone.
   }
 }
 
@@ -1253,41 +1300,6 @@ function paragraphRanges(text, target = 620) {
   return out;
 }
 
-function paragraphs(text, target = 620) {
-  const balanced = (s) => (s.match(/\{/g) || []).length === (s.match(/\}/g) || []).length;
-  // Sentence ends first. Where the text runs on without them -- long stretches
-  // joined by commas are ordinary in this prose -- fall back to a clause break
-  // so no paragraph runs away.
-  // Sentences are matched rather than split on a lookbehind: a lookbehind in a
-  // regex *literal* is a parse-time error on Safari before 16.4, which would
-  // take this whole file down with it rather than just the paragraphing.
-  const sentences = (text || '').match(/[^.!?؟؛]+[.!?؟؛]*\s*/g) || [text || ''];
-  const parts = [];
-  for (const sentence of sentences) {
-    if (sentence.length <= target * 2) { parts.push(sentence); continue; }
-    let rest = sentence;
-    while (rest.length > target * 2) {
-      let cut = rest.lastIndexOf('،', target);
-      if (cut < target * 0.4) cut = rest.lastIndexOf(',', target);
-      if (cut < target * 0.4) cut = rest.lastIndexOf(' ', target);
-      if (cut < target * 0.4) break;
-      const head = rest.slice(0, cut + 1);
-      if (!balanced(head)) break;         // never cut through a quotation
-      parts.push(head.trim());
-      rest = rest.slice(cut + 1);
-    }
-    if (rest.trim()) parts.push(rest.trim());
-  }
-
-  const out = [];
-  let buf = '';
-  for (const part of parts) {
-    buf += (buf ? ' ' : '') + part;
-    if (buf.length >= target && balanced(buf)) { out.push(buf); buf = ''; }
-  }
-  if (buf.trim()) out.push(buf);
-  return out.length ? out : [text || ''];
-}
 
 /** One block of the opened answer, in the page's language only, broken into
     paragraphs, with every quotation in it marked where it actually falls. */

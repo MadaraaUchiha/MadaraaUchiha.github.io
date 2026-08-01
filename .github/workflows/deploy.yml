@@ -63,17 +63,22 @@ jobs:
           SITE_URL: ${{ steps.pages.outputs.base_url }}
         run: python scripts/prerender.py
 
-      - name: Check nothing is missing
+      - name: Check nothing is missing, and nothing is published that should not be
         run: |
           test -f web/index.html
           test -f web/search.html
           test -f web/sitemap.xml
           test -f web/robots.txt
           test -f web/data/citations.json
-          test -f web/data/fatwas.json
+          test -f web/data/search-core.json
+          test -f web/data/search-rest.json
+          # The whole corpus is a build artefact. If it ever lands in web/ it
+          # adds 29 MB to the site that no page asks for.
+          test ! -f web/data/fatwas.json
           pages=$(find web/f -name '*.html' | wc -l)
           echo "pre-rendered pages: $pages"
           test "$pages" -gt 1000
+          echo "published site: $(du -sh web | cut -f1)"
 
       - uses: actions/upload-pages-artifact@v3
         with:

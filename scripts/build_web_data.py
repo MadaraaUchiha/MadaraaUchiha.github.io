@@ -56,9 +56,21 @@ WEB_DATA = ROOT / "web" / "data"
 # correction files describing text that is no longer there.
 SRC = ROOT / "data" / "corpus" / "fatwas.json"
 CORRECTIONS = ROOT / "corrections"
-SERVED = WEB_DATA / "fatwas.json"
+# The whole corrected corpus. A build artefact, not a page asset: the search
+# page reads the two files below instead, and every full answer already has a
+# pre-rendered page, so publishing this too would put 29 MB on the site that
+# nothing fetches. It lives outside web/ so it cannot be deployed by accident.
+SERVED = ROOT / "data" / "build" / "fatwas.json"
+CORE = WEB_DATA / "search-core.json"
+REST = WEB_DATA / "search-rest.json"
 OUT = WEB_DATA / "citations.json"
 STATS = WEB_DATA / "stats.json"
+
+# How much of each answer the first payload carries. Comfortably more than a
+# result card shows (460 characters of Arabic, 700 of English), so the page can
+# render every result it ranks before the rest of the corpus has arrived.
+CORE_AR = 1000
+CORE_EN = 1400
 
 # What the retrieval index actually holds. The King Fahd edition is 37 volumes,
 # but volumes 36 and 37 are its indexes, not fatawa: the OpenITI transcription
@@ -356,11 +368,36 @@ def main() -> int:
         json.dumps(out, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
-    # The corpus the site serves: the published one with the corrections in it.
+    # The whole corrected corpus, for the pre-renderer to read. Not published.
+    SERVED.parent.mkdir(parents=True, exist_ok=True)
     SERVED.write_text(
         json.dumps(data, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
+
+    # ...and the same corpus split in two, because a reader should not wait on
+    # 8 MB to type a word. A result card never shows more than the question and
+    # the opening of the answer, and the whole answer now has a page of its own,
+    # so the first file carries everything the search page can display and the
+    # second carries the tails of the answers. Search works off the first; the
+    # second arrives behind it and the query is quietly re-run, so a term buried
+    # deep in a long answer is still found -- a moment later, not never.
+    core, rest = [], {}
+    for f in data["fatwas"]:
+        aa, ae = f.get("aa") or "", f.get("ae") or ""
+        head = {k: f.get(k) for k in ("id", "v", "ps", "pe", "cat", "topic", "qa", "qe")}
+        head["aa"] = aa[:CORE_AR]
+        head["ae"] = ae[:CORE_EN]
+        if len(aa) > CORE_AR or len(ae) > CORE_EN:
+            head["more"] = 1
+            rest[f["id"]] = {"aa": aa[CORE_AR:], "ae": ae[CORE_EN:]}
+        core.append(head)
+
+    CORE.write_text(json.dumps({"meta": data.get("meta", {}), "fatwas": core},
+                               ensure_ascii=False, separators=(",", ":")),
+                    encoding="utf-8")
+    REST.write_text(json.dumps(rest, ensure_ascii=False, separators=(",", ":")),
+                    encoding="utf-8")
 
     per_volume: dict[int, int] = {}
     for f in data["fatwas"]:
@@ -384,6 +421,10 @@ def main() -> int:
     print(f"  English: {en_marked} of {total_en} verses placed in the translation "
           f"({en_marked / total_en:.1%}); the rest stay in the margin index")
     print(f"wrote {SERVED} ({SERVED.stat().st_size / 1024 / 1024:.1f} MB, corrections applied)")
+    print(f"wrote {CORE} ({CORE.stat().st_size / 1024 / 1024:.1f} MB) "
+          f"-- what the search page loads first")
+    print(f"wrote {REST} ({REST.stat().st_size / 1024 / 1024:.1f} MB) "
+          f"-- the tails of the answers, fetched behind it")
     print(f"wrote {OUT} ({OUT.stat().st_size / 1024:.0f} KB)")
     print(f"wrote {STATS} ({STATS.stat().st_size} B) -- "
           f"{len(data['fatwas'])} fatwas across {len(per_volume)} volumes")

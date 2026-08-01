@@ -48,7 +48,6 @@ import re
 from pathlib import Path
 
 CORRECTABLE = {"qe", "ae", "qa", "aa", "topic", "cat"}
-ARABIC_FIELDS = {"qa", "aa"}
 AYAH_RE = re.compile(r"^\d{1,3}:\d{1,3}(-\d{1,3})?$")
 
 

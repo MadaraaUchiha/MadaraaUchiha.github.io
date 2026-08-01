@@ -340,6 +340,10 @@ def page(f, cites, neighbours) -> str:
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+<script type="speculationrules">
+{{"prerender":[{{"where":{{"href_matches":"/f/*"}},"eagerness":"moderate"}}],
+  "prefetch":[{{"where":{{"href_matches":"/search.html*"}},"eagerness":"moderate"}}]}}
+</script>
 <link rel="stylesheet" href="../ds/classical.css{CSS_V}" />
 <link rel="stylesheet" href="../ds/site.css{SITE_CSS_V}" />
 <script type="application/ld+json">{jsonld}</script>
@@ -384,7 +388,9 @@ def page(f, cites, neighbours) -> str:
 
 
 def main() -> int:
-    data = json.loads((DATA / "fatwas.json").read_text(encoding="utf-8"))
+    # The whole corrected corpus, from the build directory rather than web/ --
+    # the pages need every word, but the site never serves the file itself.
+    data = json.loads((ROOT / "data" / "build" / "fatwas.json").read_text(encoding="utf-8"))
     cites = json.loads((DATA / "citations.json").read_text(encoding="utf-8"))
     fatwas = data["fatwas"]
 
