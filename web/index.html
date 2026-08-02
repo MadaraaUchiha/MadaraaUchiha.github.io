@@ -138,12 +138,26 @@ body[data-lang="ar"] .chips .lead { letter-spacing: 0; text-transform: none; fon
 
 /* — stats — */
 .stats { padding: calc(2.5 * var(--leading)) 0; }
-.stats .grid { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: calc(1.5 * var(--leading)) var(--leading); }
+/* Four equal columns, not four columns sized to their own labels and pushed
+   apart by what is left over: the figures then start at a regular interval
+   instead of drifting with the length of the words under them. */
+.stats .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: calc(1.5 * var(--leading)) var(--leading); }
 .stat-num { font-family: var(--font-heading); font-weight: 400;
   font-size: clamp(36px, 3.6vw, 52px); line-height: calc(2 * var(--leading));
-  font-feature-settings: "tnum" 1; color: var(--color-text);
+  /* lnum, and not only tnum. Cormorant Garamond's default figures are
+     old-style: the 1 sits at x-height, the 6 climbs and the 4 and 3 hang below
+     the baseline, which reads as a set of numerals that cannot agree on a size
+     -- and this box is trimmed to the cap height, which those figures never
+     reach. Lining figures are what a row of counts wants. tnum stays: it keeps
+     the width steady while the figure counts up. */
+  font-feature-settings: "lnum" 1, "tnum" 1; color: var(--color-text);
   margin: 0; margin-left: -0.042em; text-box: trim-both cap alphabetic; }
 .stat-num.gilt { color: var(--color-accent); }
+/* A tabular 1 is centred in a slot as wide as an 8, so it hangs back from the
+   margin the others sit on; this pulls it out to meet them. The figures are
+   still tabular, so the value the design arrived at for this face at this size
+   still holds -- left alone rather than re-guessed. */
 .stat-num.lead-one { margin-left: -0.129em; }
 .stat-num[lang="ar"] { font-family: var(--font-arabic); }
 .stat-label { font-size: 13px; line-height: var(--half); letter-spacing: 0.08em; text-transform: uppercase;
@@ -203,25 +217,22 @@ body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; fon
 .vol:active { background: color-mix(in srgb, var(--color-accent) 16%, transparent); }
 
 /* — the life, held open — */
-.life { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  gap: var(--leading) clamp(24px, 5vw, 96px); align-items: start;
-  padding: calc(3 * var(--leading)) 0 calc(3 * var(--leading)); }
+.life { padding: calc(3 * var(--leading)) 0 calc(3 * var(--leading)); }
 .split-title { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
   line-height: calc(1.5 * var(--leading)); letter-spacing: -0.008em; margin: 0;
   text-box: trim-both cap alphabetic; }
-.life .note { font-size: 15.5px; line-height: var(--leading); max-width: 52ch;
+.life .note { font-size: 15.5px; line-height: var(--leading); max-width: 62ch;
   color: color-mix(in srgb, var(--color-text) 78%, transparent);
   margin: calc(var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
 body[data-lang="ar"] .life .note { font-size: 17px; }
-.life-card { padding: calc(1.25 * var(--leading)) clamp(18px, 2.4vw, 28px) calc(1.5 * var(--leading)); }
-.life-list { margin: var(--half) 0 0; padding-inline-start: 1.1em; list-style: none;
-  font-size: 15.5px; line-height: var(--leading);
-  color: color-mix(in srgb, var(--color-text) 82%, transparent); }
-.life-list li { position: relative; }
-.life-list li + li { margin-top: var(--half); }
-.life-list li::before { content: ""; position: absolute; inset-inline-start: -1.1em; top: 0.75em;
-  width: 10px; height: 1px; background: var(--color-accent); }
-body[data-lang="ar"] .life-list { font-size: 17px; }
+.life .note.go { margin-top: var(--leading); }
+.life .note.go a { text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent); }
+.life .note.go a:hover { border-bottom-color: var(--color-accent); }
+
+/* the honorific after his name, set in the Arabic face and held back from the
+   name by a word space, so it reads as said rather than as part of the title */
+.honorific { font-family: var(--font-arabic); font-size: 0.62em;
+  color: var(--color-accent-700); white-space: nowrap; margin-inline-start: 0.3em; }
 
 /* — close — */
 footer { padding: calc(2.5 * var(--leading)) 0 calc(3 * var(--leading)); font-size: 13px; line-height: var(--leading);
@@ -231,7 +242,6 @@ footer .edition + .edition { margin-top: var(--half); }
 footer [lang="ar"] { font-size: 15px; }
 
 /* — responsive collapse — */
-@media (max-width: 900px) { .life { grid-template-columns: 1fr; } }
 @media (max-width: 720px) {
   .hero { padding-top: calc(2 * var(--leading)); }
   .vol-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
@@ -514,33 +524,18 @@ footer [lang="ar"] { font-size: 15px; }
 
   <hr class="rule" />
 
+  <!-- An invitation, not a contents page: what is on the life page belongs on
+       the life page, and saying it twice only spends the reader's attention
+       before they get there. -->
   <section class="life" id="life">
-    <div>
-      <span class="kicker en">Now open</span>
-      <span class="kicker ar" lang="ar">مفتوحةٌ الآن</span>
-      <h2 class="split-title en">The life of Shaykh al-Islām</h2>
-      <h2 class="split-title ar" lang="ar">سيرة شيخ الإسلام</h2>
-      <p class="note en">Born at Ḥarrān in 661 AH, died in the citadel of Damascus in 728 AH. His life is open now: the flight from the Mongols, the two hundred teachers, the nine tribunals, the six imprisonments, and which book was written behind which wall. Thirty-three stations, with an atlas of every road he was made to walk.</p>
-      <p class="note ar" lang="ar">وُلد بحرّان سنة ٦٦١هـ، وتوفي في قلعة دمشق سنة ٧٢٨هـ. وسيرته مفتوحةٌ الآن: شيوخه، ومحنه، وحبساته، وأين كُتب كلُّ كتابٍ من كتبه. ثلاثةٌ وثلاثون موقفاً، ومعها أطلسُ الطرق التي سِيق فيها.</p>
-      <p class="note en"><a href="life.html">Walk the road, station by station →</a></p>
-      <p class="note ar" lang="ar"><a href="life.html">طالِع الطريق، موقفاً بعد موقف ←</a></p>
-    </div>
-    <div class="card life-card">
-      <span class="fatwa-label en">On that page</span>
-      <span class="fatwa-label ar" lang="ar">في تلك الصفحة</span>
-      <ul class="life-list en">
-        <li>A road of thirty-three stations, 655 to 731 AH</li>
-        <li>The teachers he sat with, and the students who carried him</li>
-        <li>Which book was written in which prison, and why</li>
-        <li>A shelf of thirty-two of his books, and a map of eleven roads</li>
-      </ul>
-      <ul class="life-list ar" lang="ar">
-        <li>طريقٌ من ثلاثةٍ وثلاثين موقفاً، من ٦٥٥ إلى ٧٣١هـ</li>
-        <li>شيوخه الذين جلس إليهم، وطلبته الذين حملوا عنه</li>
-        <li>أي كتابٍ كُتب في أي حبس، ولماذا</li>
-        <li>رفٌّ من اثنين وثلاثين من كتبه، وخريطةُ إحدى عشرة طريقاً</li>
-      </ul>
-    </div>
+    <span class="kicker en">Now open</span>
+    <span class="kicker ar" lang="ar">مفتوحةٌ الآن</span>
+    <h2 class="split-title en">The life of Shaykh al-Islām Ibn Taymiyyah <span class="honorific" lang="ar">رحمه الله</span></h2>
+    <h2 class="split-title ar" lang="ar">سيرة شيخ الإسلام ابن تيمية <span class="honorific">رحمه الله</span></h2>
+    <p class="note en">He was six when his family ran from the Mongols with its library on a cart, and he never saw Ḥarrān again. He died in the citadel of Damascus, five months after a judge had his paper and his pens taken away. Between those two days: nine summonses to trial, six prisons, and a funeral for which the city shut its shops.</p>
+    <p class="note ar" lang="ar">كان في السادسة يوم فرّ أهله من التتار يجرّون كتبهم، فما رأى حرّان بعدها. ومات في قلعة دمشق، بعد خمسة أشهر من منع القاضي عنه الورق والقلم. وبين اليومين تسعُ استدعاءات إلى المحاكمة، وستُّ حبسات، وجنازةٌ أغلقت لها المدينة أسواقها.</p>
+    <p class="note go en"><a href="life.html">Walk the road with him →</a></p>
+    <p class="note go ar" lang="ar"><a href="life.html">امضِ معه في الطريق ←</a></p>
   </section>
 
   <hr class="rule" />

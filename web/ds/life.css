@@ -223,6 +223,11 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 .arabic { font-family: var(--font-arabic); direction: rtl; }
 .arabic--rt { text-align: right; }
 
+/* the honorific after his name, set in the Arabic face and held back from the
+   name by a word space, so it reads as said rather than as part of the title */
+.honorific { font-family: var(--font-arabic); font-size: 0.62em;
+  color: var(--goldtext); white-space: nowrap; margin-inline-start: 0.3em; }
+
 /* the big Cormorant-light pull quote, sized per station through --fs */
 .pull {
   margin: 0; font-family: var(--font-heading); font-weight: 300;
