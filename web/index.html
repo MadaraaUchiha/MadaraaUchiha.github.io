@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>MAJMŪʿ · the fatāwā of Ibn Taymiyyah, searchable</title>
 <meta name="description" content="Search the thirty-five volumes of Majmūʿ al-Fatāwā of Shaykh al-Islām Ibn Taymiyyah in Arabic or English. Every passage returned with its volume and page." />
-<meta name="theme-color" content="#f3f2f2" />
+<meta name="theme-color" content="#14120e" />
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <!-- Fonts are served from this origin: no third-party DNS, TLS or round trip
-     on the path to the first word. The two Latin faces that draw first are
-     preloaded; the Arabic and the extended ranges load as they are needed. -->
+     on the path to the first word. The three faces that draw first are
+     preloaded -- the Arabic among them here, because the ground behind the
+     search is set in it. -->
 <link rel="preload" href="fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="fonts/cormorant-garamond-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="ds/fonts.css?v=1" />
 <link rel="stylesheet" href="ds/classical.css?v=3" />
 <style>
@@ -24,7 +26,26 @@
   --edge: clamp(20px, 5vw, 72px);
   --measure: 58ch;
   --font-arabic: "Amiri", "Scheherazade New", var(--font-heading), serif;
+
+  /* — the ground, taken from the life page —
+     The deep warm near-black his story is told on, with the same two golds:
+     #b68235 for anything ruled or filled, and the ramp's 400 step for accent
+     text, which is the step the design system's readme names for a dark
+     ground. The reading pages stay on paper: a page of Arabic is easier there,
+     and this is the one page that is a door rather than a book. */
+  --color-bg: #14120e;
+  --color-surface: #211d16;
+  --color-text: #eae7e7;
+  --color-divider: color-mix(in srgb, #eae7e7 16%, transparent);
+  --color-accent: #b68235;
+  --color-accent-600: #facb8d;
+  --color-accent-700: #e1ad66;
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 40%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #000 45%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
 }
+/* 11px accent text on this ground needs the light gold, not the filled one */
+.tag-outline { color: var(--color-accent-700); border-color: var(--color-accent); }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; text-wrap: pretty; }
@@ -38,22 +59,17 @@ body[data-lang="en"] .ar { display: none; }
 body[data-lang="ar"] .en { display: none; }
 /* Arabic sets on its own metrics: Amiri's tashkeel needs real leading, and the
    Latin cap/alphabetic trim mis-measures its boxes, so the branch drops both. */
-body[data-lang="ar"] .display, body[data-lang="ar"] .creed-line,
-body[data-lang="ar"] .close h3, body[data-lang="ar"] .split-title,
+body[data-lang="ar"] .display, body[data-lang="ar"] .split-title,
 body[data-lang="ar"] .specimen h2, body[data-lang="ar"] .volumes h2 { letter-spacing: 0; text-box: normal; }
 body[data-lang="ar"] .display { line-height: 1.5; }
-body[data-lang="ar"] .creed-line { line-height: 1.45; }
 body[data-lang="ar"] .specimen h2, body[data-lang="ar"] .volumes h2,
 body[data-lang="ar"] .split-title { line-height: 1.5; }
-body[data-lang="ar"] .close h3 { line-height: 1.5; }
-body[data-lang="ar"] .creed-body, body[data-lang="ar"] .hero .sub,
-body[data-lang="ar"] .close .sub, body[data-lang="ar"] .life .note,
+body[data-lang="ar"] .hero .sub, body[data-lang="ar"] .life .note,
 body[data-lang="ar"] .specimen .aside, body[data-lang="ar"] .fatwa-en,
 body[data-lang="ar"] .kicker, body[data-lang="ar"] .stat-label { text-box: normal; }
-body[data-lang="ar"] .creed-body { line-height: 1.85; }
-body[data-lang="ar"] .hero .sub, body[data-lang="ar"] .close .sub,
+body[data-lang="ar"] .hero .sub,
 body[data-lang="ar"] .life .note, body[data-lang="ar"] .specimen .aside { line-height: 1.85; }
-[dir="rtl"] .display, [dir="rtl"] .creed-line,
+[dir="rtl"] .display,
 [dir="rtl"] .stat-num, [dir="rtl"] .stat-num.lead-one { margin-left: 0; margin-right: -0.02em; }
 
 /* — masthead: the component's bar, on the page's text axis — */
@@ -97,8 +113,7 @@ body[data-lang="ar"] .kicker { letter-spacing: 0; text-transform: none; font-siz
 .display .gilt { color: var(--color-accent); } /* the page's one filled gold moment */
 .hero .sub { font-size: 17px; line-height: var(--leading); max-width: var(--measure);
   margin: calc(1.75 * var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
-body[data-lang="ar"] .hero .sub, body[data-lang="ar"] .close .sub,
-body[data-lang="ar"] .creed-body { font-size: 18px; }
+body[data-lang="ar"] .hero .sub { font-size: 18px; }
 
 /* — the search: the page's one action — */
 .seek { margin-top: calc(1.5 * var(--leading)); max-width: 620px; }
@@ -167,16 +182,6 @@ body[data-lang="ar"] .fatwa-label { letter-spacing: 0; text-transform: none; fon
 .ayah-note .tag { flex: none; }
 .ayah-note em { font-style: normal; color: var(--color-text); }
 
-/* — the closing statement: what this is, said plainly and given room — */
-.creed { padding: calc(3.5 * var(--leading)) 0 calc(3.5 * var(--leading)); }
-.creed-line { font-family: var(--font-heading); font-weight: 400;
-  font-size: clamp(34px, 4.4vw, 58px); line-height: calc(2 * var(--leading));
-  letter-spacing: -0.008em; margin: 0; margin-left: -0.042em;
-  text-box: trim-both cap alphabetic; }
-.creed-body { font-size: 17px; line-height: var(--leading); max-width: 54ch;
-  color: color-mix(in srgb, var(--color-text) 78%, transparent);
-  margin: calc(1.5 * var(--leading) - 1cap) 0 0; text-box: trim-both cap alphabetic; }
-
 /* — the volume lattice: an index page, drawn in hairlines — */
 .volumes { padding: calc(3 * var(--leading)) 0 calc(2.5 * var(--leading)); }
 .volumes h2 { font-family: var(--font-heading); font-weight: 400; font-size: 34px;
@@ -219,13 +224,7 @@ body[data-lang="ar"] .life .note { font-size: 17px; }
 body[data-lang="ar"] .life-list { font-size: 17px; }
 
 /* — close — */
-.close { padding: calc(2.5 * var(--leading)) 0 calc(2 * var(--leading)); }
-.close h3 { font-family: var(--font-heading); font-weight: 400;
-  font-size: 26px; line-height: var(--leading); margin: 0; text-box: trim-both cap alphabetic; }
-.close .sub { font-size: 15.5px; line-height: var(--leading);
-  color: color-mix(in srgb, var(--color-text) 78%, transparent);
-  margin: calc(var(--leading) - 1cap) 0 0; max-width: var(--measure); text-box: trim-both cap alphabetic; }
-footer { padding: calc(2 * var(--leading)) 0; font-size: 13px; line-height: var(--leading);
+footer { padding: calc(2.5 * var(--leading)) 0 calc(3 * var(--leading)); font-size: 13px; line-height: var(--leading);
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 footer .edition { display: block; max-width: 78ch; }
 footer .edition + .edition { margin-top: var(--half); }
@@ -261,30 +260,91 @@ footer [lang="ar"] { font-size: 15px; }
 /* the figures hold their type slot while stats.json is in flight */
 .stat-num[data-pending] { color: color-mix(in srgb, var(--color-text) 22%, transparent); }
 
-/* the night ground: the deep warm near-black the system reserves for colophon
-   pages, with the accent lifted to the ramp step the readme names for dark
-   grounds (400) and the deep steps swapped for light ones so accent text on
-   this ground keeps its contrast. Nothing here is a new colour. */
-[data-theme="night"] {
-  --color-bg: #201f1d;
-  --color-surface: #2d2b2b;
-  --color-text: #f8f4f4;
-  --color-divider: color-mix(in srgb, #f8f4f4 17%, transparent);
-  --color-accent: #e1ad66;
-  --color-accent-600: #facb8d;
-  --color-accent-700: #facb8d;
-  --shadow-sm: 0 1px 2px color-mix(in srgb, #000 40%, transparent);
-  --shadow-md: 0 3px 10px color-mix(in srgb, #000 45%, transparent);
-  --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
+/* ── the beacon: the page opens on one question and the room to ask it ─────
+   A full screen, the search in the middle of it, and behind that his own
+   sentences drifting up out of the dark. The masthead is the only thing above
+   the fold besides. */
+
+.beacon {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: calc(100vh - var(--navh, 66px));
+  min-height: calc(100svh - var(--navh, 66px));
+  padding: clamp(14px, 2.6vh, 56px) var(--edge) clamp(46px, 7vh, 98px);
+  display: grid; place-items: center; text-align: center;
 }
-[data-theme="night"] .tag-outline { color: var(--color-accent); }
-.nightswitch { flex: none; width: 34px; height: 34px; padding: 0; border-radius: var(--radius-md);
-  border: 1px solid var(--color-divider); color: color-mix(in srgb, var(--color-text) 70%, transparent); }
-.nightswitch:hover { border-color: var(--color-accent); color: var(--color-accent-700);
-  background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
-.nightswitch .i-night { display: none; }
-[data-theme="night"] .nightswitch .i-night { display: block; }
-[data-theme="night"] .nightswitch .i-day { display: none; }
+.beacon-core { position: relative; z-index: 2; width: 100%; max-width: 940px;
+  display: flex; flex-direction: column; align-items: center; }
+/* the ground is beautiful and the search has to stay legible over it: a pool
+   of the page's own colour, no new tone, fading out well before any edge */
+.beacon-core::before {
+  content: ""; position: absolute; inset: -14% -10%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    color-mix(in srgb, var(--color-bg) 94%, transparent) 0%,
+    color-mix(in srgb, var(--color-bg) 78%, transparent) 42%,
+    transparent 76%);
+}
+/* The whole composition is sized on the shorter of the two axes, so it is one
+   screen on a laptop as well as on a monitor and the cue at the foot is never
+   pushed under the fold. The life page's overture does the same. */
+.beacon-mark { font-family: var(--font-arabic);
+  font-size: clamp(22px, min(4.4vw, 5.2vh), 52px);
+  line-height: 1; color: var(--color-accent); opacity: .5;
+  animation: breathe 7s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: .32 } 50% { opacity: .7 } }
+
+.beacon .display { margin-left: 0; margin-top: clamp(8px, 2vh, 35px);
+  font-size: clamp(28px, min(6.2vw, 7.2vh), 88px); line-height: 1.1; }
+.beacon .sub { margin-inline: auto; max-width: 68ch;
+  margin-top: clamp(14px, 2.8vh, 42px);
+  font-size: clamp(14px, 1.75vh, 16px); line-height: 1.7;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent); }
+.beacon .seek { margin-inline: auto; width: 100%; max-width: 660px;
+  margin-top: clamp(16px, 3.2vh, 46px); }
+.beacon .chips { justify-content: center; margin-top: clamp(12px, 2.2vh, 28px); }
+
+/* — his sentences, rising — */
+.rising { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.rising.is-out .rise { animation-play-state: paused; }
+.rise {
+  position: absolute; top: 0; right: var(--x, 10%);
+  white-space: nowrap; font-family: var(--font-arabic);
+  color: var(--color-text); opacity: 0;
+  will-change: transform, opacity;
+  animation: rise var(--dur, 48s) linear var(--delay, 0s) infinite;
+}
+/* the two marks the reading pages use, so scripture is legible as scripture
+   even at a tenth of an opacity */
+.rise .ayah { color: var(--color-accent-700); border-bottom-color: var(--color-accent-700); }
+.narr { border-bottom: 1px dashed color-mix(in srgb, var(--color-text) 45%, transparent); }
+@keyframes rise {
+  0%   { transform: translate3d(0, 94vh, 0); opacity: 0; }
+  10%  { opacity: var(--op, .1); }
+  86%  { opacity: var(--op, .1); }
+  100% { transform: translate3d(var(--drift, 0px), -26vh, 0); opacity: 0; }
+}
+
+.cue { position: absolute; z-index: 2; left: 50%; bottom: var(--leading);
+  display: grid; place-items: center; width: 40px; height: 40px;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  text-decoration: none; animation: nudge 2.8s ease-in-out infinite; }
+.cue:hover { color: var(--color-accent-700); }
+@keyframes nudge {
+  0%, 100% { transform: translate(-50%, 0) }
+  50%      { transform: translate(-50%, 7px) }
+}
+
+@media (max-width: 720px) {
+  .beacon { padding-bottom: calc(4 * var(--leading)); }
+  .beacon .display { font-size: clamp(32px, 8.4vw, 46px); line-height: 1.1; }
+}
+
+/* Asked to stop, it stops. The sentences are still there, at rest down the
+   ground, and the page still shows what it is made of. */
+@media (prefers-reduced-motion: reduce) {
+  .beacon-mark, .cue { animation: none; }
+  .rise { animation: none; transform: none; }
+  .rise--still { opacity: var(--op, .1); }
+}
 </style>
 </head>
 <body data-lang="en">
@@ -298,22 +358,26 @@ footer [lang="ar"] { font-size: 15px; }
   <span class="nav-spacer"></span>
   <a href="#specimen" aria-current="location"><span class="en">A fatwa, in full</span><span class="ar" lang="ar">فتوى كاملة</span></a>
   <a href="#volumes"><span class="en">Volumes</span><span class="ar" lang="ar">المجلدات</span></a>
-  <a href="#life"><span class="en">His life</span><span class="ar" lang="ar">سيرته</span></a>
+  <a href="life.html"><span class="en">His life</span><span class="ar" lang="ar">سيرته</span></a>
   <div class="langswitch" role="group" aria-label="Language / اللغة">
     <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
     <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>
   </div>
-  <button type="button" class="btn nightswitch" data-theme-btn aria-label="Night reading / القراءة الليلية">
-    <svg class="i-day" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
-    <svg class="i-night" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"></path></svg>
-  </button>
   <button type="button" class="btn btn-primary" data-seek-focus>
     <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
   </button>
 </nav>
-<div class="wrap">
 
-  <section class="hero">
+<header class="hero beacon">
+  <!-- Sentences of Majmūʿ al-Fatāwā, drifting up. Cut whole out of the corpus
+       by scripts/build_web_data.py and marked as the reading pages mark them:
+       a Qur'ānic quotation ruled in gold, words quoted but not identified on a
+       broken rule. Decoration would have been easier and would have meant
+       nothing. -->
+  <div class="rising" data-rising aria-hidden="true"></div>
+
+  <div class="beacon-core">
+    <span class="beacon-mark" aria-hidden="true">﴿</span>
     <h1 class="display">
       <span class="en">
         <span class="line">Ibn Taymiyyah answered these</span>
@@ -326,9 +390,6 @@ footer [lang="ar"] { font-size: 15px; }
         <span class="line gilt">وإنما نؤدّيها كما كُتبت.</span>
       </span>
     </h1>
-    <p class="sub en">The thirty-five volumes of text in <em>Majmūʿ al-Fatāwā</em>, in the King Fahd Complex edition, opened to search. Ask in English or in Arabic. The answer comes back in the Shaykh's own words with its volume and page, so you can go and check it in the printed book.</p>
-    <p class="sub ar" lang="ar">خمسة وثلاثون مجلداً هي متن «مجموع الفتاوى»، بطبعة مجمع الملك فهد، مفتوحةٌ للبحث. اسأل بالعربية أو بالإنجليزية، فيأتيك الجواب بلفظ الشيخ نفسه، مقروناً بمجلده وصفحته، لتراجعه في المطبوع.</p>
-
     <div class="seek" id="seek">
       <form action="search.html" method="get" role="search" autocomplete="off">
         <div class="field-wrap">
@@ -355,11 +416,21 @@ footer [lang="ar"] { font-size: 15px; }
         <button type="button" class="chip ar" lang="ar">صلاة الجماعة</button>
       </div>
     </div>
-  </section>
 
-  <hr class="rule" />
+    <!-- Under the box, not over it: the headline says why, the box is the
+         thing to do, and this says what you get back. -->
+    <p class="sub en">The thirty-five volumes of text in <em>Majmūʿ al-Fatāwā</em>, in the King Fahd Complex edition, opened to search. Ask in English or in Arabic. The answer comes back in the Shaykh's own words with its volume and page, so you can go and check it in the printed book.</p>
+    <p class="sub ar" lang="ar">خمسة وثلاثون مجلداً هي متن «مجموع الفتاوى»، بطبعة مجمع الملك فهد، مفتوحةٌ للبحث. اسأل بالعربية أو بالإنجليزية، فيأتيك الجواب بلفظ الشيخ نفسه، مقروناً بمجلده وصفحته، لتراجعه في المطبوع.</p>
+  </div>
 
-  <section class="stats" aria-label="The corpus">
+  <a class="cue" href="#corpus" aria-label="Read on / تابع القراءة">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+  </a>
+</header>
+
+<div class="wrap">
+
+  <section class="stats" id="corpus" aria-label="The corpus">
     <div class="grid">
       <div>
         <p class="stat-num en" data-stat="corpusVolumes">35</p><p class="stat-num ar" lang="ar" data-stat="corpusVolumes">٣٥</p>
@@ -445,193 +516,44 @@ footer [lang="ar"] { font-size: 15px; }
 
   <section class="life" id="life">
     <div>
-      <span class="kicker en">In preparation</span>
-      <span class="kicker ar" lang="ar">قيد الإعداد</span>
+      <span class="kicker en">Now open</span>
+      <span class="kicker ar" lang="ar">مفتوحةٌ الآن</span>
       <h2 class="split-title en">The life of Shaykh al-Islām</h2>
       <h2 class="split-title ar" lang="ar">سيرة شيخ الإسلام</h2>
-      <p class="note en">Born at Ḥarrān in 661 AH, died in the citadel of Damascus in 728 AH. The account of his life is being set now: the teachers, the trials, the imprisonments, and where each of these volumes was written. It will open here, beside his words.</p>
-      <p class="note ar" lang="ar">وُلد بحرّان سنة ٦٦١هـ، وتوفي في قلعة دمشق سنة ٧٢٨هـ. وسيرته تُهيَّأ الآن: شيوخه، ومحنه، وحبساته، وأين كُتب كل مجلدٍ من هذه المجلدات. وستُفتح هنا إلى جانب كلامه.</p>
+      <p class="note en">Born at Ḥarrān in 661 AH, died in the citadel of Damascus in 728 AH. His life is open now: the flight from the Mongols, the two hundred teachers, the nine tribunals, the six imprisonments, and which book was written behind which wall. Thirty-three stations, with an atlas of every road he was made to walk.</p>
+      <p class="note ar" lang="ar">وُلد بحرّان سنة ٦٦١هـ، وتوفي في قلعة دمشق سنة ٧٢٨هـ. وسيرته مفتوحةٌ الآن: شيوخه، ومحنه، وحبساته، وأين كُتب كلُّ كتابٍ من كتبه. ثلاثةٌ وثلاثون موقفاً، ومعها أطلسُ الطرق التي سِيق فيها.</p>
+      <p class="note en"><a href="life.html">Walk the road, station by station →</a></p>
+      <p class="note ar" lang="ar"><a href="life.html">طالِع الطريق، موقفاً بعد موقف ←</a></p>
     </div>
     <div class="card life-card">
-      <span class="fatwa-label en">Coming to this page</span>
-      <span class="fatwa-label ar" lang="ar">ممّا سيأتي في هذه الصفحة</span>
+      <span class="fatwa-label en">On that page</span>
+      <span class="fatwa-label ar" lang="ar">في تلك الصفحة</span>
       <ul class="life-list en">
-        <li>A plain chronology, year by year</li>
+        <li>A road of thirty-three stations, 655 to 731 AH</li>
         <li>The teachers he sat with, and the students who carried him</li>
-        <li>Which volume was written in which prison, and why</li>
+        <li>Which book was written in which prison, and why</li>
+        <li>A shelf of thirty-two of his books, and a map of eleven roads</li>
       </ul>
       <ul class="life-list ar" lang="ar">
-        <li>تاريخٌ مجرَّد، سنةً سنة</li>
+        <li>طريقٌ من ثلاثةٍ وثلاثين موقفاً، من ٦٥٥ إلى ٧٣١هـ</li>
         <li>شيوخه الذين جلس إليهم، وطلبته الذين حملوا عنه</li>
-        <li>أي مجلدٍ كُتب في أي حبس، ولماذا</li>
+        <li>أي كتابٍ كُتب في أي حبس، ولماذا</li>
+        <li>رفٌّ من اثنين وثلاثين من كتبه، وخريطةُ إحدى عشرة طريقاً</li>
       </ul>
     </div>
   </section>
 
   <hr class="rule" />
 
-  <section class="creed">
-    <p class="creed-line en">Not one ruling here is ours.</p>
-    <p class="creed-line ar" lang="ar">ليس في هذا الموضع فتوى من عندنا.</p>
-    <p class="creed-body en">The answers are the Shaykh's, printed with their page numbers. We carry them to you and step aside.</p>
-    <p class="creed-body ar" lang="ar">الأجوبة أجوبة الشيخ، مطبوعةً بأرقام صفحاتها. ننقلها إليك ثم نتأخر عنها.</p>
-  </section>
-
-  <hr class="rule" />
-
-  <section class="close" id="edition">
-    <h3 class="en">Begin with a question.</h3>
-    <h3 class="ar" lang="ar">ابدأ بمسألة.</h3>
-    <p class="sub en">Type it as you would ask it aloud. Nothing to sign and nothing to install: the whole book is open on the other side of the box.</p>
-    <p class="sub ar" lang="ar">اكتبها كما تسألها بلسانك. لا تسجيلَ ولا تثبيت، فالكتاب كله مفتوحٌ من وراء هذا السطر.</p>
-    <div class="seek">
-      <form action="search.html" method="get" role="search" autocomplete="off">
-        <div class="field-wrap">
-          <span class="ico" aria-hidden="true">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          </span>
-          <input class="input" type="search" name="q" spellcheck="false"
-                 placeholder="Ask a question, or name a topic…" aria-label="Search the fatāwā" />
-        </div>
-        <button type="submit" class="btn btn-primary">
-          <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <hr class="rule" />
-
+  <!-- The page used to close on two more sections: "Not one ruling here is
+       ours", and a second search box under "Begin with a question". Both said
+       again what the hero, the stats and the footer already say, so the page
+       now ends on the life and its source. -->
   <footer>
     <span class="edition en">Source: <em>Majmūʿ Fatāwā Shaykh al-Islām Aḥmad Ibn Taymiyyah</em>, compiled and arranged by ʿAbd al-Raḥmān b. Qāsim. King Fahd Complex for the Printing of the Noble Qur'ān, 1416 AH / 1995 CE. The work is in the public domain; the transcription is used under its open licence.</span>
     <span class="edition ar" lang="ar">المصدر: مجموع فتاوى شيخ الإسلام أحمد بن تيمية، جمع وترتيب عبد الرحمن بن قاسم. مطبوع مجمع الملك فهد لطباعة المصحف الشريف (١٤١٦هـ / ١٩٩٥م). والكتاب في الملك العام، والنسخة المحرَّرة مستعملةٌ بموجب رخصتها المفتوحة.</span>
-    <span class="edition en">A research and retrieval tool. It surfaces what Ibn Taymiyyah wrote, with the source; it issues no rulings of its own.</span>
-    <span class="edition ar" lang="ar">أداة بحثٍ واستخراج. تُظهر ما كتبه ابن تيمية بعزوه، ولا تُفتي من نفسها.</span>
   </footer>
 </div>
-<script>
-(() => {
-  const body = document.body;
-  const root = document.documentElement;
-  const PLACEHOLDER = {
-    en: 'Ask a question, or name a topic…',
-    ar: 'اسأل عن مسألة، أو اذكر باباً…'
-  };
-  const setLang = (lang, persist) => {
-    body.dataset.lang = lang;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    for (const b of document.querySelectorAll('[data-lang-btn]')) {
-      b.setAttribute('aria-pressed', String(b.dataset.langBtn === lang));
-    }
-    for (const i of document.querySelectorAll('input[name="q"]')) {
-      i.placeholder = PLACEHOLDER[lang];
-      i.lang = lang;
-      i.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    }
-    // Only a click is a preference: writing on load would make "never chose"
-    // indistinguishable from "chose English", and the search page reads this
-    // same key to decide whether an Arabic question opens the Arabic page.
-    if (persist) { try { localStorage.setItem('majmu:lang', lang); } catch (e) {} }
-  };
-  for (const b of document.querySelectorAll('[data-lang-btn]')) {
-    b.addEventListener('click', () => setLang(b.dataset.langBtn, true));
-  }
-  let saved = null;
-  try { saved = localStorage.getItem('majmu:lang'); } catch (e) {}
-  setLang(saved === 'ar' ? 'ar' : 'en');
-
-  // — night ground, shared with the search page through the same key —
-  const setTheme = (theme, persist) => {
-    root.dataset.theme = theme;
-    document.querySelector('meta[name="theme-color"]')
-      .setAttribute('content', theme === 'night' ? '#201f1d' : '#f3f2f2');
-    if (persist) { try { localStorage.setItem('majmu:theme', theme); } catch (e) {} }
-  };
-  let savedTheme = null;
-  try { savedTheme = localStorage.getItem('majmu:theme'); } catch (e) {}
-  setTheme(savedTheme === 'night' ? 'night' : 'day');
-  for (const b of document.querySelectorAll('[data-theme-btn]')) {
-    b.addEventListener('click', () =>
-      setTheme(root.dataset.theme === 'night' ? 'day' : 'night', true));
-  }
-
-  const firstField = document.querySelector('#seek input[name="q"]');
-  for (const b of document.querySelectorAll('[data-seek-focus]')) {
-    b.addEventListener('click', () => { firstField.focus({ preventScroll: false }); });
-  }
-  for (const c of document.querySelectorAll('.chip')) {
-    c.addEventListener('click', () => {
-      firstField.value = c.textContent.trim();
-      firstField.dir = c.lang === 'ar' ? 'rtl' : 'ltr';
-      firstField.focus();
-    });
-  }
-
-  // — the lattice: one door per volume of text. Thirty-five, not the
-  //   thirty-seven of the spine: 36 and 37 are the edition's indexes and hold
-  //   no fatāwā, and a tile leading to an empty volume is a promise broken. —
-  const VOLUMES = 35;
-  const toArabic = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
-  const grid = document.getElementById('volGrid');
-  const drawLattice = (volumes) => {
-    grid.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    const tiles = [];
-    for (const v of volumes) {
-      const a = document.createElement('a');
-      a.className = 'vol';
-      a.href = 'search.html?vol=' + v;
-      a.innerHTML = `<span class="en">${v}</span><span class="ar" lang="ar">${toArabic(v)}</span>`;
-      tiles.push(a);
-      frag.appendChild(a);
-    }
-    grid.appendChild(frag);
-    return tiles;
-  };
-  // Drawn once from the served count so the page is never blank, then redrawn
-  // from what the data actually holds. Hard-coding the number is how this page
-  // came to offer volumes 36 and 37, which are the edition's indexes and hold
-  // no fatāwā: a door with nothing behind it.
-  let tiles = drawLattice(Array.from({ length: VOLUMES }, (_, i) => i + 1));
-
-  // — the figures: read from the data so they stay true as translation lands.
-  //   The numbers already in the markup are the served fallback. —
-  const group = (n, lang) => lang === 'ar'
-    ? toArabic(n) : Number(n).toLocaleString('en');
-  // Versioned: without it a browser keeps serving the previous build's figures,
-  // and the page goes on printing a number the data no longer says.
-  fetch('data/stats.json?v=2')
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((s) => {
-      for (const el of document.querySelectorAll('[data-stat]')) {
-        const value = s[el.dataset.stat];
-        if (typeof value !== 'number') continue;
-        el.textContent = group(value, el.lang === 'ar' ? 'ar' : 'en');
-        // "1,675" leads with a one, which needs the deeper optical inset; any
-        // other figure does not.
-        el.classList.toggle('lead-one',
-          el.lang !== 'ar' && String(value)[0] === '1');
-      }
-      // The volumes the corpus actually holds, in order — so a volume that is
-      // added later appears on its own, and one that holds nothing is never
-      // offered.
-      const vols = s.volumes || {};
-      const present = Object.keys(vols).map(Number).filter((v) => vols[v] > 0)
-        .sort((a, b) => a - b);
-      if (present.length) {
-        tiles = drawLattice(present);
-        present.forEach((v, i) => {
-          const n = vols[v];
-          tiles[i].title =
-            `${Number(n).toLocaleString('en')} fatwas · ${toArabic(n)} فتوى`;
-        });
-        grid.setAttribute('aria-label',
-          `Volumes ${present[0]} to ${present[present.length - 1]}`);
-      }
-    })
-    .catch(() => { /* the served figures stand */ });
-})();
-</script>
+<script src="home.js?v=1"></script>
 </body>
 </html>
