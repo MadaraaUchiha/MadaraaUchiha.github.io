@@ -60,6 +60,12 @@ on-demand scholar-grade translation.
   (rough "gist") if no key is set, so the app always works offline.
 - **Find similar passages** (`Retriever.similar`): jump from any result to its
   closest neighbours anywhere in the 37 volumes, by meaning.
+- **The life** (`web/life.html`): the road from Ḥarrān in 661 AH to the citadel
+  of Damascus in 728, in thirty-three stations, with an atlas of the eleven
+  journeys, the chain of his teachers and students, a shelf of thirty-two of his
+  books marked by which were written in prison, and a chart of the sultans over
+  him. Built from the Claude Design handoff; sources are named on the last
+  station.
 - **UI**: a static bilingual site in `web/` (the "Classical" design system), a
   Streamlit reader (`app.py`), and a CLI.
 
@@ -124,24 +130,31 @@ then re-run `src.parse` and `src.index`. Set it to `None` for the whole book.
 
 ## The static site (`web/`)
 
-A two-page site that needs no backend: it loads the extracted fatāwā as JSON and
-searches them in the browser. Bilingual throughout (English / العربية, LTR and
-RTL), with a night ground.
+A site that needs no backend: it loads the extracted fatāwā as JSON and searches
+them in the browser. The landing page and the search are bilingual throughout
+(English / العربية, LTR and RTL), with a night ground.
 
 ```
 web/                        everything published
   index.html                the landing page
+  home.js                   the rising ground, the lattice, the figures
   search.html               the search application (shell + page CSS)
   search.js                 search, filters, reading view, neighbours
+  life.html                 the life, in thirty-three stations
+  life.js                   the road: stations, thread, map, five lenses
   f/itq_*.html              one pre-rendered page per fatwa (built, not committed)
   sitemap.xml, robots.txt   built, not committed
   ds/classical.css          the Classical design system, vendored from the
                             design handoff — re-vendor, never hand-edit
   ds/site.css               this site's own layout on top of it
+  ds/life.css               the life page's own layout, grounds and lenses
+  vendor/                   d3-geo, d3-array, topojson-client and the Natural
+                            Earth 110m outline, vendored by fetch_map.py
   data/search-core.json     what the search page loads first  ┐
   data/search-rest.json     the tails of the answers          │ written by
   data/citations.json       quotation spans, precomputed      │ build_web_data.py
-  data/stats.json           the counts the landing prints     ┘
+  data/stats.json           the counts the landing prints     │
+  data/home-lines.json      200 sentences for the ground      ┘
 
 data/corpus/fatwas.json     the published corpus, from the Release. Input only
 data/build/fatwas.json      corpus + corrections, for the pre-renderer. Not
@@ -227,6 +240,72 @@ Rebuild the site's data and pages after re-extracting or re-translating:
 .venv\Scripts\python scripts\build_web_data.py   # corrections + citations + stats
 .venv\Scripts\python scripts\prerender.py        # 1,675 pages + sitemap + robots.txt
 ```
+
+### The landing page (`web/index.html`)
+
+One screen: the search in the middle of it, and behind that his own sentences
+drifting up out of the dark.
+
+The ground is the deep warm near-black the life page is told on — `#14120e`,
+with the same two golds, `#b68235` for anything ruled or filled and `#e1ad66`
+for accent text, which is the step the design system's readme names for a dark
+ground. It stops here. The search page and the fatwa pages stay on paper, where
+a page of Arabic is easier to read, and keep their night toggle; this is the one
+page that is a door rather than a book, so it has one deliberate look and no
+switch.
+
+The drifting sentences are **not decoration**. `build_web_data.py` cuts 200
+whole sentences out of the corpus — evenly across all thirty-five volumes, two
+in five carrying a quotation — and marks each one exactly as the reading pages
+do: a Qur'ānic quotation in `﴿ ﴾` ruled in gold, words quoted but not identified
+in `« »` on a broken rule. So the ground shows what the site is made of, and
+what it can and cannot vouch for, before you have typed anything. Eighteen of
+them are inlined in `home.js` so the air is never empty while the file is in
+flight; every one of those eighteen is verbatim corpus text.
+
+The figures under the fold count up to what `stats.json` says when you first
+reach them — but they are facts, not an effect, so they land on a timer whether
+or not the observer that drives the animation ever fires.
+
+`stats.json` and `home-lines.json` are fetched with `cache: 'no-cache'`. Every
+build rewrites them, and a hand-kept `?v=` cannot track that: miss one bump and
+a returning reader is shown a number the data no longer says, out of their own
+cache. Revalidating costs a 304.
+
+### The life (`web/life.html`)
+
+Thirty-three stations from the fall of Baghdad in 656 AH to the state of his
+grave today, walked with the arrow keys, the knots on the thread at the foot of
+the page, or by dragging the thread itself. Each station names a ground — one of
+six — and the whole page crossfades to it, so the ash of the Mongol years and
+the near-black of the cells are felt rather than captioned. Behind the prose a
+Mercator map flies to that station's place and draws the road he took to it,
+solid for the journeys he chose and broken for the ones he was sent on. The
+hatched bars above the thread are the years he spent behind a wall.
+
+Five lenses open over the road, from the masthead or from `Esc` to leave:
+
+| | |
+|---|---|
+| **Atlas** | all eleven journeys at once, each with the year, the kind and what forced it. "Walk the road" plays them in order |
+| **Isnād** | who he received from and who received from him, with the chain drawn between them |
+| **Library** | thirty-two titles as spines on a shelf, the gold ones written in prison; the *Majmūʿ al-fatāwā* spine links to the search |
+| **His World** | the Mamlūk sultans and the Īlkhāns laid against his own sixty-five years, and what else was happening |
+| **Stations** | the whole road as an index |
+
+The libraries are vendored, not fetched: `scripts/fetch_map.py` pins d3-geo,
+d3-array, topojson-client and the Natural Earth 110m outline into `web/vendor/`
+(165 KB total), so the page makes no third-party request and draws its coastline
+on a cold cache. The design asked for d3 in full, which is 280 KB for four
+functions; only `d3-geo` is taken.
+
+Five figure frames are still empty — the design leaves them for photographs of
+Ḥarrān, the Umayyad Mosque, the two citadels and Alexandria. Each frame names
+the photograph that belongs in it rather than showing a blank plate.
+
+The page honours `prefers-reduced-motion`: the grounds stop crossfading, the map
+stops flying, the roads appear drawn, and the funeral's count arrives at its
+figure rather than counting up to it. Every station still reads.
 
 ### Corrections
 
