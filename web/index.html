@@ -229,10 +229,16 @@ body[data-lang="ar"] .life .note { font-size: 17px; }
 .life .note.go a { text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent); }
 .life .note.go a:hover { border-bottom-color: var(--color-accent); }
 
-/* the honorific after his name, set in the Arabic face and held back from the
-   name by a word space, so it reads as said rather than as part of the title */
+/* The honorific after his name, set in the Arabic face and held back from the
+   name by a word space, so it reads as said rather than as part of the title.
+   Isolated: it is a right-to-left run inside a left-to-right line, and without
+   this the bidi algorithm can drag the words around it out of order. */
 .honorific { font-family: var(--font-arabic); font-size: 0.62em;
-  color: var(--color-accent-700); white-space: nowrap; margin-inline-start: 0.3em; }
+  color: var(--color-accent-700); white-space: nowrap;
+  margin-inline-start: 0.3em; unicode-bidi: isolate; }
+/* smaller against the display, where 0.62em would out-shout the name it honours.
+   The Arabic headline says it in its own words, so it needs none of this. */
+.display .honorific { font-size: 0.42em; }
 
 /* — close — */
 footer { padding: calc(2.5 * var(--leading)) 0 calc(3 * var(--leading)); font-size: 13px; line-height: var(--leading);
@@ -390,13 +396,13 @@ footer [lang="ar"] { font-size: 15px; }
     <span class="beacon-mark" aria-hidden="true">﴿</span>
     <h1 class="display">
       <span class="en">
-        <span class="line">Ibn Taymiyyah answered these</span>
+        <span class="line">Ibn Taymiyyah <span class="honorific" lang="ar">رحمه الله</span> answered these</span>
         <span class="line">seven hundred years ago.</span>
         <span class="line gilt">We only pass them on.</span>
       </span>
       <span class="ar" lang="ar">
-        <span class="line">أجاب شيخ الإسلام عن هذه المسائل</span>
-        <span class="line">قبل سبعة قرون.</span>
+        <span class="line">أجاب شيخ الإسلام ابن تيمية رحمه الله</span>
+        <span class="line">عن هذه المسائل قبل سبعة قرون.</span>
         <span class="line gilt">وإنما نؤدّيها كما كُتبت.</span>
       </span>
     </h1>
