@@ -65,6 +65,7 @@ CORE = WEB_DATA / "search-core.json"
 REST = WEB_DATA / "search-rest.json"
 OUT = WEB_DATA / "citations.json"
 STATS = WEB_DATA / "stats.json"
+LINES = WEB_DATA / "home-lines.json"
 
 # How much of each answer the first payload carries. Comfortably more than a
 # result card shows (460 characters of Arabic, 700 of English), so the page can
@@ -87,6 +88,20 @@ INDEX_VOLUMES = [36, 37]
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACES = re.compile(r"\{([^{}]+)\}")
 EN_WORD = re.compile(r"[a-z0-9]+")
+
+# The landing page drifts real sentences of the text behind its search box.
+# Whole sentences only, short enough to read as one line in passing, taken
+# evenly across the volumes, and carrying their own quotation marking so a
+# Qur'anic verse is ruled in gold as it goes past. Nothing here is written for
+# the page: it is the corpus, sampled.
+HOME_LINES = 200
+LINE_MIN, LINE_MAX = 45, 130
+# Arabic sentences end on a full stop, a question mark or an exclamation; the
+# transcription uses the Arabic question mark as often as the Latin one.
+SENTENCE = re.compile(r"[^.؟?!\n]+[.؟?!]?")
+# A line worth drifting is prose. These are the marks of something else: a
+# page tag, a heading number, a fragment of the edition's own apparatus.
+AR_LETTER = re.compile(r"[ء-ي]")
 
 RUN = 6                 # consecutive words that must match verbatim, and once
 GAP_BUDGET = 3          # words the translation may render differently while
@@ -199,6 +214,111 @@ def scan_arabic(text: str, quran, table: RefTable, override=None):
             # would have them rendered raw on the page.
             spans.append([m.start(), m.end(), NARRATION, BRACED])
     return spans, unknown
+
+
+def line_segments(text: str, spans):
+    """A sentence cut into [run, kind] pairs: 0 prose, 1 Qur'an, 2 a narration.
+
+    The edition marks every quotation with braces. Those are its markup, not its
+    prose, so they are replaced here with the ornate parentheses the rest of the
+    site sets scripture in, and the guillemets it sets an unidentified narration
+    in -- the same distinction the reading pages draw, drawn once at build time
+    so the page has no offsets to do arithmetic on.
+    """
+    runs, at = [], 0
+    for start, end, ref, _kind in spans:
+        if start > at:
+            runs.append([text[at:start], 0])
+        inner = text[start:end].strip()
+        if inner.startswith("{") and inner.endswith("}"):
+            inner = inner[1:-1].strip()
+        runs.append(["﴿" + inner + "﴾", 1] if ref != NARRATION
+                    else ["«" + inner + "»", 2])
+        at = end
+    if at < len(text):
+        runs.append([text[at:], 0])
+
+    runs = [[re.sub(r"\s+", " ", r[0]), r[1]] for r in runs]
+    # A run of nothing but space between two quotations is the space between
+    # them and has to stay; the same run at either end is padding and goes.
+    while runs and not runs[0][0].strip():
+        runs.pop(0)
+    while runs and not runs[-1][0].strip():
+        runs.pop()
+    runs = [[r[0] if r[0].strip() else " ", r[1]] for r in runs]
+    # the transcription sometimes leaves a space before the closing full stop
+    if runs and runs[-1][1] == 0:
+        runs[-1][0] = re.sub(r"\s+([.؟?!])$", r"\1", runs[-1][0])
+    return runs
+
+
+def home_lines(fatwas, citations):
+    """Sentences of the text for the landing page's ground, evenly by volume.
+
+    Preference goes to sentences that carry a quotation, because those are the
+    ones that show what this site is for -- but not every one of them, or the
+    ground would read as an anthology of verses rather than as his prose.
+    """
+    by_volume: dict[int, list] = {}
+    for f in fatwas:
+        text = f.get("aa") or ""
+        if not text:
+            continue
+        spans = ((citations.get(f["id"]) or {}).get("a") or {}).get("ar") or []
+        # At most two lines from any one fatwa, and never two of a kind: the
+        # first sentence that carries scripture, and the first that is plain
+        # prose. Taking only the first sentence of each would collect nothing
+        # but the doxology every answer opens on.
+        best = {}
+        for m in SENTENCE.finditer(text):
+            if len(best) == 2:
+                break
+            s, e = m.start(), m.end()
+            body = m.group(0).strip()
+            if not (LINE_MIN <= len(body) <= LINE_MAX):
+                continue
+            # a whole sentence, not a heading or a line of the edition's own
+            # front matter: those come without a stop at the end of them
+            if body[-1] not in ".؟?!":
+                continue
+            # letters, overwhelmingly: a run of digits is the apparatus, not prose
+            if len(AR_LETTER.findall(body)) < len(body) * 0.55:
+                continue
+            # a quotation the sentence split cut in half would be rendered with
+            # one of its braces showing
+            if any(sp[0] < e and sp[1] > s and (sp[0] < s or sp[1] > e) for sp in spans):
+                continue
+            offset = s + (len(m.group(0)) - len(m.group(0).lstrip()))
+            inside = [[sp[0] - offset, sp[1] - offset, sp[2], sp[3]]
+                      for sp in spans if sp[0] >= s and sp[1] <= e]
+            runs = line_segments(body, inside)
+            # every brace in the line has to have been consumed by a span, or
+            # the edition's markup shows through on the page
+            if any("{" in r[0] or "}" in r[0] for r in runs):
+                continue
+            has_q = 1 if any(r[1] == 1 for r in runs) else 0
+            if has_q in best:
+                continue
+            best[has_q] = {"v": f["v"], "s": runs, "q": has_q}
+        for line in best.values():
+            by_volume.setdefault(f["v"], []).append(line)
+
+    # round-robin the volumes, so the ground is the whole work and not whichever
+    # volume happens to have the most quotable openings
+    picked, order = [], sorted(by_volume)
+    for i in range(max((len(v) for v in by_volume.values()), default=0)):
+        for v in order:
+            if i < len(by_volume[v]):
+                picked.append(by_volume[v][i])
+        if len(picked) >= HOME_LINES * 3:
+            break
+    with_verse = [l for l in picked if l["q"]]
+    plain = [l for l in picked if not l["q"]]
+    # three lines of his prose to two carrying scripture
+    want_q = min(len(with_verse), HOME_LINES * 2 // 5)
+    out = with_verse[:want_q] + plain[:HOME_LINES - want_q]
+    out.sort(key=lambda l: l["v"])
+    return out
 
 
 def scan_english(text: str, table: RefTable):
@@ -426,6 +546,13 @@ def main() -> int:
         "edition": meta.get("edition", ""),
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
+    # The sentences that drift behind the landing page's search. Small enough to
+    # fetch after first paint; the page ships a handful inline so the ground is
+    # never empty while this is in flight, or if it never arrives.
+    lines = home_lines(data["fatwas"], out)
+    LINES.write_text(json.dumps({"lines": lines}, ensure_ascii=False,
+                                separators=(",", ":")), encoding="utf-8")
+
     total_en = en_marked + en_unmarked
     print(f"{touched} fatwas carry quotations")
     print(f"  Arabic: {ayat} ayah quotations placed, "
@@ -440,6 +567,9 @@ def main() -> int:
     print(f"wrote {OUT} ({OUT.stat().st_size / 1024:.0f} KB)")
     print(f"wrote {STATS} ({STATS.stat().st_size} B) -- "
           f"{len(data['fatwas'])} fatwas across {len(per_volume)} volumes")
+    print(f"wrote {LINES} ({LINES.stat().st_size / 1024:.0f} KB) -- "
+          f"{len(lines)} sentences from {len({l['v'] for l in lines})} volumes, "
+          f"{sum(l['q'] for l in lines)} carrying scripture")
     return 0
 
 

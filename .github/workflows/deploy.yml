@@ -67,11 +67,23 @@ jobs:
         run: |
           test -f web/index.html
           test -f web/search.html
+          test -f web/life.html
           test -f web/sitemap.xml
           test -f web/robots.txt
+          # life.html draws its coastline from these; a missing one costs the
+          # page its map without costing it a single word, so it fails here
+          # rather than quietly shipping.
+          test -f web/vendor/d3-array.min.js
+          test -f web/vendor/d3-geo.min.js
+          test -f web/vendor/topojson-client.min.js
+          test -f web/vendor/world-110m.json
           test -f web/data/citations.json
           test -f web/data/search-core.json
           test -f web/data/search-rest.json
+          # the sentences that drift behind the landing page's search. The page
+          # ships a handful inline and survives without this, but if the build
+          # stopped producing it we would rather know than quietly show ten.
+          test -f web/data/home-lines.json
           # The whole corpus is a build artefact. If it ever lands in web/ it
           # adds 29 MB to the site that no page asks for.
           test ! -f web/data/fatwas.json

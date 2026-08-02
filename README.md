@@ -37,7 +37,6 @@ ed. Ibn Qasim, 1416/1995).
   ignoring the alefs the two disagree about in *both* directions (`مَلَـٰٓئِكَة`
   wants one written, `أُو۟لَٰٓئِكَ` does not). Together these took identification
   from 14,531 to 19,552 āyāt across the corpus, **+35%**.
----
 
 ## Source & licensing
 

@@ -418,7 +418,7 @@ def main() -> int:
         total_bytes += len(out.encode("utf-8"))
 
     today = date.today().isoformat()
-    urls = [f"{SITE_URL}/", f"{SITE_URL}/search.html"]
+    urls = [f"{SITE_URL}/", f"{SITE_URL}/search.html", f"{SITE_URL}/life.html"]
     urls += [f"{SITE_URL}/f/{f['id']}.html" for f in fatwas]
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
@@ -435,10 +435,12 @@ def main() -> int:
         "# MAJMŪʿ — the fatāwā of Ibn Taymiyyah, searchable.\n"
         "# The pages are meant to be found and read. The corpus files behind\n"
         "# them are data, not pages: crawling them costs 30 MB and indexes\n"
-        "# nothing readable.\n\n"
+        "# nothing readable. /vendor/ is the same: two map libraries and a\n"
+        "# world outline that life.html draws its coastline from.\n\n"
         "User-agent: *\n"
         "Allow: /\n"
-        "Disallow: /data/\n\n"
+        "Disallow: /data/\n"
+        "Disallow: /vendor/\n\n"
         f"Sitemap: {SITE_URL}/sitemap.xml\n",
         encoding="utf-8")
 

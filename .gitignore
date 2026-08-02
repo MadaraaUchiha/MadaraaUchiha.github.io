@@ -30,6 +30,7 @@ web/data/search-rest.json
 data/build/
 web/data/citations.json
 web/data/stats.json
+web/data/home-lines.json
 web/f/
 web/sitemap.xml
 
