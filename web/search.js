@@ -8,7 +8,7 @@
    citations.json, so what the page labels as Qur'an really is Qur'an.
 
    State lives in the URL: ?q= a question, ?vol= a volume read in order,
-   ?cat= a treatise, #f/<id> a single answer opened for reading.
+   ?cat= a section of the edition, #f/<id> a single answer opened for reading.
    ========================================================================= */
 'use strict';
 
@@ -103,19 +103,19 @@ const STR = {
     title: (q) => `${q} · MAJMŪʿ`,
     placeholder: 'Ask a question, or name a topic…',
     on: 'Passages on',
-    inTreatise: 'In the treatise',
+    inSection: 'In the section',
     // The browser searches the words, not the embeddings — the engine's
     // semantic half runs server-side. Say so rather than imply otherwise.
     count: (n, v, shown) => `Ranked by the words they use · ${n.toLocaleString('en')} passage${n === 1 ? '' : 's'} in ${v} volume${v === 1 ? '' : 's'} · showing the closest ${shown.toLocaleString('en')}`,
     countVol: (n) => `${n.toLocaleString('en')} question${n === 1 ? '' : 's'} extracted from this volume, in the order the edition prints them`,
-    countCat: (n) => `${n.toLocaleString('en')} passage${n === 1 ? '' : 's'} under this treatise, in the order the edition prints them`,
+    countCat: (n) => `${n.toLocaleString('en')} passage${n === 1 ? '' : 's'} in this section, in the order the edition prints them`,
     none: 'Nothing in the extracted fatāwā answers to those words.',
     noneNote: 'Try fewer words, or the Arabic of the term. This site reaches the questions and answers extracted so far — not yet the whole of the printed work.',
-    noneInTreatise: 'Nothing is extracted from this treatise yet.',
-    noneInTreatiseNote: 'The treatise is named in the edition’s front matter, but none of its questions and answers have been extracted into this site yet.',
+    noneInSection: 'Nothing is extracted from this section yet.',
+    noneInSectionNote: 'The section is named in the edition’s front matter, but none of its questions and answers have been extracted into this site yet.',
     all: 'All volumes',
     volume: (v) => `Volume ${v}`,
-    treatise: 'The treatise this is from',
+    section: 'The section this is from',
     quran: 'Quoting the Qur’ān',
     answerLabel: 'The answer, as it begins',
     read: 'Read the whole answer',
@@ -145,17 +145,17 @@ const STR = {
     title: (q) => `${q} · المجموع`,
     placeholder: 'اسأل عن مسألة، أو اذكر باباً…',
     on: 'مواضع في',
-    inTreatise: 'من رسالة',
+    inSection: 'من قسم',
     count: (n, v, shown) => `مرتَّبة بالألفاظ · ${arPassages(n)} في ${arVolumes(v)} · وهذه أقربها ${toArabic(shown)}`,
     countVol: (n) => `${arPassages(n)} مستخرجةٌ من هذا المجلد، على ترتيب الطبعة`,
-    countCat: (n) => `${arPassages(n)} تحت هذه الرسالة، على ترتيب الطبعة`,
+    countCat: (n) => `${arPassages(n)} في هذا القسم، على ترتيب الطبعة`,
     none: 'ليس في الفتاوى المستخرجة ما يوافق هذه الألفاظ.',
     noneNote: 'فجرِّب ألفاظاً أقل، أو اطلبه بالعربية. وهذا الموضع لا يبلغ إلا ما استُخرج من المسائل والأجوبة، لا المطبوع كله بعدُ.',
-    noneInTreatise: 'لم يُستخرج من هذه الرسالة شيءٌ بعد.',
-    noneInTreatiseNote: 'الرسالة مثبتةٌ في فهرس الطبعة، ولكن لم تُستخرج مسائلها وأجوبتها إلى هذا الموضع بعد.',
+    noneInSection: 'لم يُستخرج من هذا القسم شيءٌ بعد.',
+    noneInSectionNote: 'القسم مثبتٌ في فهرس الطبعة، ولكن لم تُستخرج مسائله وأجوبته إلى هذا الموضع بعد.',
     all: 'جميع المجلدات',
     volume: (v) => `المجلد ${toArabic(v)}`,
-    treatise: 'الرسالة التي منه',
+    section: 'القسم الذي منه',
     quran: 'ما فيه قرآن',
     answerLabel: 'أول الجواب',
     read: 'اقرأ الجواب كاملاً',
@@ -854,7 +854,7 @@ function similar(f, limit = 6) {
     for (const [w, iw] of weight) if (bag.has(w)) score += iw;
     if (score <= 0) continue;
     score /= Math.sqrt(bag.size);
-    if (g.cat && g.cat === f.cat) score *= 1.35;   // the same treatise in the edition's own arrangement
+    if (g.cat && g.cat === f.cat) score *= 1.35;   // the same section in the edition's own arrangement
     scored.push({ f: g, score });
   }
   scored.sort((a, b) => b.score - a.score || a.f.v - b.f.v || a.f.ps - b.f.ps);
@@ -940,12 +940,17 @@ function citation(f) {
          `<span class="cite ar" lang="ar">${STR.ar.citeVol(f.v, f.ps, f.pe)}</span>`;
 }
 
-/** The treatise a passage sits in. Openable only when the edition's front
-    matter actually named one; a bare heading is set as type, not as a link. */
-function treatiseLabel(f) {
+/** The section of the edition a passage sits in -- a kitab, a bab, a sura,
+    sometimes a risala. Called a section and not a treatise because 482 of them
+    are أبواب, 41 are كتب, and only a handful are actually rasa'il -- the label
+    was claiming a kind of text the field mostly does not hold, so a reader met
+    "Treatise: سورة التوبة", which a sura is not. Openable only when the
+    edition's front matter actually named one; a bare heading is set as type,
+    not as a link. */
+function sectionLabel(f) {
   const name = f.cat || f.topic || '';
   if (!name) return '';
-  const lead = `<span class="en">Treatise: </span><span class="ar" lang="ar">الرسالة: </span>`;
+  const lead = `<span class="en">Section: </span><span class="ar" lang="ar">القسم: </span>`;
   return lead + (f.cat
     ? `<button type="button" class="linklike" data-cat="${escapeHtml(f.cat)}" lang="ar" dir="rtl">${escapeHtml(f.cat)}</button>`
     : `<span class="linklike" lang="ar" dir="rtl" style="cursor: default">${escapeHtml(name)}</span>`);
@@ -1006,7 +1011,7 @@ function resultNode(hit, re) {
   art.innerHTML =
     `<div class="result-main">${body}</div>
      <aside class="result-rail">
-       <div class="result-meta">${citation(f)}${treatiseLabel(f)}${matchHtml}</div>
+       <div class="result-meta">${citation(f)}${sectionLabel(f)}${matchHtml}</div>
        ${ayahChips(f, used, false)}
        <div class="actions">
          <button type="button" class="btn btn-primary" data-read>
@@ -1062,8 +1067,8 @@ function renderList(append) {
       els.results.innerHTML = '';
       return;
     }
-    const heading = state.mode === 'cat' ? 'noneInTreatise' : 'none';
-    const note = state.mode === 'cat' ? 'noneInTreatiseNote' : 'noneNote';
+    const heading = state.mode === 'cat' ? 'noneInSection' : 'none';
+    const note = state.mode === 'cat' ? 'noneInSectionNote' : 'noneNote';
     els.results.innerHTML =
       `<div class="blank" style="padding-top: var(--leading)">
          <h1 class="en">${STR.en[heading]}</h1><h1 class="ar" lang="ar">${STR.ar[heading]}</h1>
@@ -1124,7 +1129,7 @@ function renderFilters() {
   for (const h of state.hits) if (h.f.cat) byCat.set(h.f.cat, (byCat.get(h.f.cat) || 0) + 1);
   const topCat = [...byCat.entries()].sort((a, b) => b[1] - a[1])[0];
   if (topCat && topCat[1] > 1) {
-    add(STR.en.treatise, STR.ar.treatise,
+    add(STR.en.section, STR.ar.section,
       !!n && n.type === 'cat' && n.value === topCat[0],
       () => { state.narrow = { type: 'cat', value: topCat[0] }; renderFilters(); renderList(false); });
     pills[pills.length - 1].title = topCat[0];
@@ -1190,8 +1195,8 @@ function renderHead() {
     els.countEn.textContent = list.length ? STR.en.count(list.length, vols, shown) : '';
     els.countAr.textContent = list.length ? STR.ar.count(list.length, vols, shown) : '';
   } else if (state.mode === 'cat') {
-    els.qLeadEn.textContent = STR.en.inTreatise;
-    els.qLeadAr.textContent = STR.ar.inTreatise;
+    els.qLeadEn.textContent = STR.en.inSection;
+    els.qLeadAr.textContent = STR.ar.inSection;
     els.qEcho.textContent = state.cat;
     els.qEchoAr.textContent = state.cat;
     els.qEcho.lang = 'ar';
@@ -1241,7 +1246,7 @@ function renderReading(id) {
          <span class="en">${STR.en.copyLink}</span><span class="ar" lang="ar">${STR.ar.copyLink}</span></button>
      </div>
      <div class="reading-head">
-       <div class="result-meta">${citation(f)}${treatiseLabel(f)}</div>
+       <div class="result-meta">${citation(f)}${sectionLabel(f)}</div>
        <h1 lang="ar" dir="rtl">${escapeHtml(f.topic || f.cat || 'فتوى')}</h1>
      </div>
      <div class="reading-body">

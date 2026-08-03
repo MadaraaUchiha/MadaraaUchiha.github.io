@@ -353,10 +353,15 @@ def page(f, cites, neighbours) -> str:
                  + "".join(nearby) + "</div>")
 
     cat = f.get("cat") or ""
-    treatise = ""
+    # The section of the edition this sits in -- a kitab, a bab, a sura,
+    # sometimes a risala. "Treatise" was wrong for nearly all of it: 482 of
+    # these are أبواب and 41 are كتب against a handful of actual rasa'il, so
+    # the label claimed a kind of text the field mostly does not hold and a
+    # reader was shown "Treatise: سورة التوبة", which a sura is not.
+    section = ""
     if cat:
-        treatise = (f'<span class="en">Treatise: </span>'
-                    f'<span class="ar" lang="ar">الرسالة: </span>'
+        section = (f'<span class="en">Section: </span>'
+                    f'<span class="ar" lang="ar">القسم: </span>'
                     f'<a class="linklike" lang="ar" dir="rtl"'
                     f' href="../search.html?cat={quote(cat)}">{e(cat)}</a>')
 
@@ -415,7 +420,7 @@ def page(f, cites, neighbours) -> str:
       <div class="result-meta">
         <span class="cite en">{e(cite_en(f))}</span>
         <span class="cite ar" lang="ar">{e(cite_ar(f))}</span>
-        {treatise}
+        {section}
       </div>
       <h1 lang="ar" dir="rtl">{e(heading)}</h1>
     </div>
