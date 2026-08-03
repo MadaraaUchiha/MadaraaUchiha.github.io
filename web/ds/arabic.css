@@ -1,0 +1,47 @@
+/* The Arabic face.
+ *
+ * KFGQPC Uthman Taha Naskh, from the King Fahd Glorious Qur'an Printing
+ * Complex -- the house that set the edition this corpus is transcribed from,
+ * so its Arabic is set in the type it was printed in.
+ *
+ * The files are NOT in this repository. The Complex publishes them itself and
+ * its terms are its own to give, so they are fetched by
+ * scripts/fetch_arabic_font.py rather than redistributed here. Until they are
+ * present these rules simply fail to load and every page falls through to
+ * Amiri, which is the next family in --font-arabic and is vendored. Nothing
+ * breaks; the Arabic is just set in Amiri.
+ *
+ * woff2 first for the two thirds it saves, then the ttf the Complex ships.
+ */
+@font-face {
+  font-family: "KFGQPC Uthman Taha Naskh";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/kfgqpc-uthman-taha-naskh.woff2") format("woff2"),
+       url("../fonts/kfgqpc-uthman-taha-naskh.ttf") format("truetype");
+}
+@font-face {
+  font-family: "KFGQPC Uthman Taha Naskh";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/kfgqpc-uthman-taha-naskh-bold.woff2") format("woff2"),
+       url("../fonts/kfgqpc-uthman-taha-naskh-bold.ttf") format("truetype");
+}
+
+/* The Complex's Mushaf face, for setting scripture in the type of the Mushaf
+ * itself. Declared but not wired into --font-arabic: it is drawn for the
+ * Uthmani orthography with full tashkeel, and this corpus prints its Qur'anic
+ * quotations in imla'i without it. To set the quotations in it, add
+ *   .ayah { font-family: "KFGQPC Uthmanic Script HAFS", var(--font-arabic); }
+ * once the file is in place.
+ */
+@font-face {
+  font-family: "KFGQPC Uthmanic Script HAFS";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/kfgqpc-uthmanic-script-hafs.woff2") format("woff2"),
+       url("../fonts/kfgqpc-uthmanic-script-hafs.ttf") format("truetype");
+}

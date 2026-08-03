@@ -313,8 +313,8 @@ function spansOf(id, block, lang) {
     Qur'an is set apart differently and links to a *search*, not a citation:
     without a hadith corpus this page can point you to where to look it up,
     and must not pretend to more. */
-function quotation(inner, refIdx, refs, re, lang, quotedBefore, quotedAfter) {
-  const body = hi(inner, re);
+function quotation(inner, refIdx, refs, re, lang, quotedBefore, quotedAfter, bodyHtml) {
+  const body = bodyHtml || hi(inner, re);
   if (refIdx >= 0 && refs[refIdx]) {
     const r = refs[refIdx];
     const label = lang === 'ar' ? r.ar : r.en;
@@ -338,9 +338,44 @@ function quotation(inner, refIdx, refs, re, lang, quotedBefore, quotedAfter) {
   const title = lang === 'ar'
     ? 'ليست من القرآن. اطلبها في sunnah.com — بحثٌ لا عزو.'
     : 'Not Qur’ān. Searches sunnah.com for these words — a search, not a citation.';
+  const lookup = `<a class="narration-ref" href="https://sunnah.com/search?q=${encodeURIComponent(words)}"` +
+    ` target="_blank" rel="noopener" title="${escapeHtml(title)}">${label}</a>`;
+  // A quotation that carries a verse inside it holds a link of its own, and an
+  // anchor cannot be nested in an anchor. Where that is so, the quotation is a
+  // span and the lookup moves to its label, which is the part that was a link
+  // in spirit anyway.
+  if (bodyHtml) {
+    return `<span class="narration">${nOpen}${body}${nClose}` +
+      `<sup class="qref">${lookup}</sup></span>`;
+  }
   return `<a class="narration" href="https://sunnah.com/search?q=${encodeURIComponent(words)}"` +
     ` target="_blank" rel="noopener" title="${escapeHtml(title)}">${nOpen}${body}${nClose}` +
     `<sup class="qref">${label}</sup></a>`;
+}
+
+/** The body of a quotation that was not identified as scripture entire, with
+    the run inside it that *is* scripture ruled in gold and named. The braces
+    are the edition's markup and come off here, as they do for any quotation. */
+function markRuns(text, s, e, kind, runs, refs, re, lang) {
+  let bs = s, be = e;
+  if (kind === BRACED) {
+    while (bs < be && /[\s{]/.test(text[bs])) bs++;
+    while (be > bs && /[\s}]/.test(text[be - 1])) be--;
+  }
+  const out = [];
+  let last = bs;
+  for (const [rs, rEnd, rIdx] of runs) {
+    const r = refs[rIdx];
+    if (!r || rs < last || rEnd > be) continue;
+    out.push(hi(text.slice(last, rs), re));
+    const label = lang === 'ar' ? r.ar : r.en;
+    out.push(`<a class="ayah" href="${r.u}" target="_blank" rel="noopener"` +
+      ` title="${escapeHtml(r.en + ' — ' + r.t)}">${hi(text.slice(rs, rEnd), re)}` +
+      `<sup class="qref">${escapeHtml(label)}</sup></a>`);
+    last = rEnd;
+  }
+  out.push(hi(text.slice(last, be), re));
+  return out.join('');
 }
 
 /** Text with its quotations marked. `offset` lets a paragraph or an excerpt be
@@ -351,7 +386,7 @@ function renderQuoted(text, spans, refs, re, lang, offset, used, limit) {
   const stop = limit === undefined ? text.length : limit;
   const out = [];
   let last = 0;
-  for (const [s0, e0, refIdx, kind] of spans) {
+  for (const [s0, e0, refIdx, kind, runs] of spans) {
     const s = s0 - base;
     const e = e0 - base;
     if (s < last || s < 0 || e > stop) continue;          // outside this slice
@@ -360,9 +395,17 @@ function renderQuoted(text, spans, refs, re, lang, offset, used, limit) {
     const inner = kind === BRACED ? raw.replace(/^\s*\{|\}\s*$/g, '').trim() : raw;
     const before = text.slice(Math.max(0, s - 2), s).trim().slice(-1);
     const after = text.slice(e, e + 2).trim().slice(0, 1);
+    // the runs arrive in whole-passage coordinates, like the span itself, and
+    // this call may be working on one slice of it
+    const local = (runs || []).map(([a, b, i]) => [a - base, b - base, i]);
+    const marked = (refIdx < 0 && local.length)
+      ? markRuns(text, s, e, kind, local, refs, re, lang) : null;
     out.push(quotation(inner, refIdx, refs, re, lang,
-      QUOTE_MARK.test(before), QUOTE_MARK.test(after)));
-    if (used) used.add(refIdx);
+      QUOTE_MARK.test(before), QUOTE_MARK.test(after), marked));
+    if (used) {
+      used.add(refIdx);
+      if (runs) for (const r of runs) used.add(r[2]);
+    }
     last = e;
   }
   out.push(hi(text.slice(last), re));

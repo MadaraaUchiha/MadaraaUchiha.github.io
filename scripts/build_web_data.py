@@ -47,7 +47,7 @@ if hasattr(sys.stdout, "reconfigure"):
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.corrections import Corrections, CorrectionError, ayah_reference  # noqa: E402
-from src.quran import get_quran  # noqa: E402
+from src.quran import get_quran, _fold, MIN_CHARS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB_DATA = ROOT / "web" / "data"
@@ -190,6 +190,77 @@ class Asserted:
         return f"{self.surah}:{a}"
 
 
+AR_TOKEN = re.compile(r"\S+")
+# How much of a quotation has to be scripture before saying so is a statement
+# and not a coincidence. Three words found things like رضي الله عنهم inside a
+# hadith and called them al-Ma'idah 5:119, which is worse than saying nothing:
+# those words are in a verse, but the Shaykh is not quoting one. Six words and
+# thirty letters is the point at which the run stops being an accident of two
+# texts sharing a language.
+INNER_MIN_WORDS = 6
+INNER_MIN_CHARS = 30
+
+
+def quran_run(text: str, s: int, e: int, quran, table):
+    """The longest run inside this quotation that is verbatim Qur'an.
+
+    The edition's braces mark where a quotation begins and ends, not what it
+    is. Plenty of hadith open with a verse and carry on in the Prophet's own
+    words -- {من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت} opens with six
+    words of al-Talaq 65:2 -- and the whole of it is rightly not called
+    scripture. But the six words are, and saying nothing about them serves
+    nobody. So the run is found and named, and stops where it stops.
+
+    Offsets come back absolute, in the same coordinates as the span, so the
+    page slices the very string it is rendering.
+    """
+    words = [(m.start() + s, m.end() + s) for m in AR_TOKEN.finditer(text[s:e])]
+    n = len(words)
+    if n < INNER_MIN_WORDS:
+        return None
+    best = None
+    for i in range(n):
+        if best and n - i <= best[2]:
+            break                       # no room left to beat what we have
+        # A run under the matcher's character floor can never be located, so
+        # the search starts where it first could be. Starting at three words
+        # regardless was enough to lose {من كان يؤمن...}: its first three words
+        # are eleven characters, one under the floor, so the whole run from
+        # there went unexplored and the answer began a word late.
+        floor = i + INNER_MIN_WORDS
+        while floor <= n and len(_fold(text[words[i][0]:words[floor - 1][1]])) < MIN_CHARS:
+            floor += 1
+        # a cheap look first: if the shortest run from here is not scripture,
+        # nothing longer from here is either
+        if floor > n or not quran.locate(text[words[i][0]:words[floor - 1][1]]):
+            continue
+        lo, hi, at, got = floor, n, floor, None
+        while lo <= hi:                 # a substring's prefixes are substrings,
+            mid = (lo + hi) // 2        # so the longest run binary-searches
+            found = quran.locate(text[words[i][0]:words[mid - 1][1]])
+            if found:
+                at, got, lo = mid, found, mid + 1
+            else:
+                hi = mid - 1
+        if got and (best is None or at - i > best[2]):
+            best = (words[i][0], words[at - 1][1], at - i, got)
+    if best is None:
+        return None
+    start, end, _, (i0, i1) = best
+    if len(_fold(text[start:end])) < INNER_MIN_CHARS:
+        return None
+    return [start, end, table.index(quran.match_at(i0, i1))]
+
+
+def narration_span(m, text, quran, table):
+    """A quotation not identified as Qur'an, carrying the scripture inside it."""
+    span = [m.start(), m.end(), NARRATION, BRACED]
+    run = quran_run(text, m.start(1), m.end(1), quran, table)
+    if run:
+        span.append([run])
+    return span
+
+
 def scan_arabic(text: str, quran, table: RefTable, override=None):
     """Every { } in the printed Arabic, placed and identified."""
     spans, unknown = [], 0
@@ -199,7 +270,7 @@ def scan_arabic(text: str, quran, table: RefTable, override=None):
         verdict = override(inner) if override else None
         if verdict == "narration":
             unknown += 1
-            spans.append([m.start(), m.end(), NARRATION, BRACED])
+            spans.append(narration_span(m, text, quran, table))
             continue
         if verdict:
             spans.append([m.start(), m.end(), table.index(Asserted(verdict, quran)), BRACED])
@@ -212,7 +283,7 @@ def scan_arabic(text: str, quran, table: RefTable, override=None):
             # Every brace gets a span, however short. The braces are the
             # edition's markup, not its prose, and a quotation with no span
             # would have them rendered raw on the page.
-            spans.append([m.start(), m.end(), NARRATION, BRACED])
+            spans.append(narration_span(m, text, quran, table))
     return spans, unknown
 
 

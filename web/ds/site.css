@@ -4,7 +4,8 @@
   --leading: 28px;
   --half: 14px;
   --edge: clamp(20px, 5vw, 72px);
-  --font-arabic: "Amiri", "Scheherazade New", var(--font-heading), serif;
+  --font-arabic: "KFGQPC Uthman Taha Naskh", "Amiri",
+    "Scheherazade New", var(--font-heading), serif;
   --readsize: 0px;
 }
 body { margin: 0; text-wrap: pretty; }
@@ -131,10 +132,20 @@ body[data-lang="ar"] .a-label { letter-spacing: 0; text-transform: none; font-si
 a.ayah { color: inherit; text-decoration: none; }
 a.ayah:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
 
-a.narration { color: inherit; text-decoration: none;
+a.narration, span.narration { color: inherit; text-decoration: none;
   border-bottom: 1px dashed color-mix(in srgb, var(--color-text) 42%, transparent); }
 a.narration:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent);
   border-bottom-color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+/* A quotation the build could not name entire, but which carries a verse
+   inside it. The verse is a link of its own, and an anchor cannot be nested in
+   an anchor, so here the quotation is a span and the sunnah.com lookup rides on
+   its label instead. The broken rule underneath still says what it is; the gold
+   rule inside still says how far the scripture goes. */
+span.narration:hover { border-bottom-color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+span.narration .ayah { border-bottom-color: var(--color-accent); }
+a.narration-ref { color: inherit; text-decoration: none;
+  border-bottom: 1px dotted currentColor; }
+a.narration-ref:hover { color: var(--color-text); }
 
 /* the reference, riding just after the closing mark: this is where it ends,
    and this is what it was */
@@ -142,7 +153,7 @@ a.narration:hover { background: color-mix(in srgb, var(--color-text) 7%, transpa
   letter-spacing: 0.04em; vertical-align: super; white-space: nowrap;
   margin-inline-start: 3px; font-feature-settings: "tnum" 1;
   color: var(--color-accent-700); unicode-bidi: isolate; }
-a.narration .qref { color: color-mix(in srgb, var(--color-text) 58%, transparent);
+a.narration .qref, span.narration > .qref { color: color-mix(in srgb, var(--color-text) 58%, transparent);
   font-style: italic; letter-spacing: 0; }
 .read-ar .qref, .q-ar .qref, .a-ar .qref { font-size: 12px; }
 .ayahs .quiet { color: color-mix(in srgb, var(--color-text) 62%, transparent); }

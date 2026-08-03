@@ -11,7 +11,8 @@
  */
 
 :root {
-  --font-arabic: "Amiri", "Scheherazade New", var(--font-heading), serif;
+  --font-arabic: "KFGQPC Uthman Taha Naskh", "Amiri",
+    "Scheherazade New", var(--font-heading), serif;
 }
 
 html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f3f2f2; }

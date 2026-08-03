@@ -349,6 +349,49 @@ class QuranIndex:
                         self._ayah_at_bare(pos + len(qbare) - 1))
         return None
 
+    def locate(self, text: str):
+        """Where this exact text sits in the Qur'an, or None.
+
+        _lookup will fall back to a prefix of what it is given; this will not.
+        It answers one question -- is all of this scripture, and where -- which
+        is what finding the Qur'anic run inside a longer quotation needs.
+        """
+        qnorm = _fold(text)
+        if len(qnorm.split()) < 2:
+            return None
+        for prep, hay, at in (
+            (lambda s: s, self.joined, self._ayah_at),
+            (_despace, self.joined_ns, self._ayah_at_ns),
+            (_skeleton, self.joined_sk, self._ayah_at_sk),
+        ):
+            needle = prep(qnorm)
+            if len(needle) < MIN_CHARS:
+                continue
+            pos = hay.find(needle)
+            if pos >= 0:
+                return at(pos), at(pos + len(needle) - 1)
+        qbare = _bare(text)
+        if len(qbare) >= MIN_CHARS:
+            pos = self.joined_bare.find(qbare)
+            if pos >= 0:
+                return (self._ayah_at_bare(pos),
+                        self._ayah_at_bare(pos + len(qbare) - 1))
+        return None
+
+    def match_at(self, i0: int, i1: int) -> QuranMatch:
+        """A QuranMatch for an ayah range already located."""
+        if self.ayat[i0]["surah"] != self.ayat[i1]["surah"]:
+            i1 = i0
+        a0, a1 = self.ayat[i0], self.ayat[i1]
+        return QuranMatch(
+            quote="", found=True, surah=a0["surah"],
+            surah_name_ar=a0["surah_name"], surah_translit=a0["translit"],
+            ayah_start=a0["ayah"], ayah_end=a1["ayah"],
+            arabic=" ".join(self.ayat[j]["ar"] for j in range(i0, i1 + 1)),
+            english=" ".join(self.ayat[j]["en"] for j in range(i0, i1 + 1)),
+            url=f"https://quran.com/{a0['surah']}/{a0['ayah']}",
+        )
+
     def identify(self, text: str) -> list[QuranMatch]:
         out: list[QuranMatch] = []
         seen: set = set()

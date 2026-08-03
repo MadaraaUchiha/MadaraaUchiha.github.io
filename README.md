@@ -91,6 +91,29 @@ ed. Ibn Qasim, 1416/1995).
   six words of al-Ṭalāq 65:2 and is a hadith, which is what the coverage guard
   is for.
 
+### Scripture inside a narration
+
+The edition's braces mark where a quotation begins and ends, not what it is.
+Plenty of hadith open with a verse and carry on in the Prophet's own words, and
+the whole of such a quotation is rightly not called scripture — but the verse
+inside it is, and saying nothing about it serves nobody.
+
+So the longest run inside an unidentified quotation that is verbatim Qur'an is
+found, ruled in gold and named, and stops where it stops. The enclosing
+quotation keeps its broken rule and its sunnah.com lookup: what is scripture is
+marked as scripture, and what is not is still not claimed.
+
+The threshold is **six words and thirty letters**. Three words found things like
+`رضي الله عنهم` inside a hadith and called them al-Māʾidah 5:119 — those words
+are in a verse, but the Shaykh is not quoting one, and that is worse than
+silence. At six words the coincidences fall away: **70** narrations across the
+corpus carry a marked verse, among them al-Baqarah 14:27 in the hadith of the
+grave and Āl ʿImrān 3:144 in Abū Bakr's speech.
+
+A verse inside a narration is a link inside a link, which HTML does not allow,
+so there the quotation is rendered as a span and the sunnah.com lookup moves to
+its label.
+
 ### Which brace is which, in the translation
 
 The edition marks every quotation in the Arabic, and `scan_arabic` says what
@@ -125,3 +148,21 @@ against it.
 Text: OpenITI corpus (openly licensed scholarly editions). The underlying work by
 Ibn Taymiyyah (d. 728 AH / 1328 CE) is public domain. Respect OpenITI's license
 and cite the edition when redistributing.
+
+### The Arabic face
+
+All Arabic on the site asks for **KFGQPC Uthman Taha Naskh** first — the King
+Fahd Glorious Qur'an Printing Complex's own type, the house that set the edition
+this corpus is transcribed from.
+
+The font files are **not committed**. The Complex publishes them itself under
+its own terms, and those are its to give rather than this repository's to pass
+on, so `scripts/fetch_arabic_font.py` fetches them into `web/fonts/` instead.
+Until they are there, `ds/arabic.css` simply fails to load them and every page
+falls through to Amiri, which is vendored — nothing breaks, the Arabic is just
+set in Amiri.
+
+The Complex's Mushaf face, KFGQPC Uthmanic Script HAFS, is declared alongside it
+but not wired in: it is drawn for the Uthmani orthography with full tashkeel and
+this corpus prints its Qur'anic quotations in imla'i without it. `ds/arabic.css`
+says in one line how to set the quotations in it should you want that.

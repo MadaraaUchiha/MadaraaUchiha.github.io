@@ -39,7 +39,7 @@ OUT = WEB / "f"
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=3"
-SITE_CSS_V = "?v=2"
+SITE_CSS_V = "?v=3"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -99,9 +99,34 @@ def paragraph_ranges(text: str, target: int = 620):
     return out
 
 
-def quotation(inner: str, ref, lang: str, quoted_before: bool, quoted_after: bool) -> str:
+def mark_runs(text: str, s: int, en_: int, kind, runs, refs, lang: str) -> str:
+    """The body of a quotation not identified as scripture entire, with the run
+    inside it that *is* scripture ruled in gold and named."""
+    bs, be = s, en_
+    if kind == BRACED:
+        while bs < be and (text[bs].isspace() or text[bs] == '{'):
+            bs += 1
+        while be > bs and (text[be - 1].isspace() or text[be - 1] == '}'):
+            be -= 1
+    out, last = [], bs
+    for rs, r_end, r_idx in runs:
+        if r_idx >= len(refs) or rs < last or r_end > be:
+            continue
+        r = refs[r_idx]
+        out.append(e(text[last:rs]))
+        label = r["ar"] if lang == "ar" else r["en"]
+        out.append(f'<a class="ayah" href="{e(r["u"])}" target="_blank"'
+                   f' rel="noopener" title="{e(r["en"] + " — " + r["t"])}">'
+                   f'{e(text[rs:r_end])}<sup class="qref">{e(label)}</sup></a>')
+        last = r_end
+    out.append(e(text[last:be]))
+    return "".join(out)
+
+
+def quotation(inner: str, ref, lang: str, quoted_before: bool, quoted_after: bool,
+              body_html: str = "") -> str:
     """One quotation, marked as the application marks it."""
-    body = e(inner)
+    body = body_html or e(inner)
     if ref is not None:
         label = ref["ar"] if lang == "ar" else ref["en"]
         open_m = "﴿" if lang == "ar" else ("" if quoted_before else "“")
@@ -120,6 +145,14 @@ def quotation(inner: str, ref, lang: str, quoted_before: bool, quoted_after: boo
              if lang == "ar" else
              "Not Qur’ān. Searches sunnah.com for these words — a search, not a citation.")
     url = "https://sunnah.com/search?q=" + quote(" ".join(words[:12]))
+    # A quotation carrying a verse inside it holds a link of its own, and an
+    # anchor cannot be nested in an anchor. There the quotation is a span and
+    # the lookup moves to its label.
+    if body_html:
+        lookup = (f'<a class="narration-ref" href="{url}" target="_blank"'
+                  f' rel="noopener" title="{e(title)}">{label}</a>')
+        return (f'<span class="narration">{n_open}{body}{n_close}'
+                f'<sup class="qref">{lookup}</sup></span>')
     return (f'<a class="narration" href="{url}" target="_blank" rel="noopener"'
             f' title="{e(title)}">{n_open}{body}{n_close}'
             f'<sup class="qref">{label}</sup></a>')
@@ -130,7 +163,9 @@ def render(text: str, spans, refs, lang: str, offset: int = 0, used=None) -> str
     if not spans:
         return e(text)
     out, last = [], 0
-    for s0, e0, ref_idx, kind in spans:
+    for span in spans:
+        s0, e0, ref_idx, kind = span[:4]
+        runs = span[4] if len(span) > 4 else None
         s, en_ = s0 - offset, e0 - offset
         if s < last or s < 0 or en_ > len(text):
             continue
@@ -140,10 +175,19 @@ def render(text: str, spans, refs, lang: str, offset: int = 0, used=None) -> str
         before = (text[max(0, s - 2):s].strip() or " ")[-1]
         after = (text[en_:en_ + 2].strip() or " ")[0]
         ref = refs[ref_idx] if ref_idx >= 0 and ref_idx < len(refs) else None
+        # the runs arrive in whole-passage coordinates, like the span itself,
+        # and this call is working on one paragraph of it
+        local = [[a - offset, b - offset, i] for a, b, i in (runs or [])]
+        marked = (mark_runs(text, s, en_, kind, local, refs, lang)
+                  if ref is None and local else "")
         out.append(quotation(inner, ref, lang,
-                             bool(QUOTE_MARK.match(before)), bool(QUOTE_MARK.match(after))))
-        if used is not None and ref_idx >= 0:
-            used.add(ref_idx)
+                             bool(QUOTE_MARK.match(before)),
+                             bool(QUOTE_MARK.match(after)), marked))
+        if used is not None:
+            if ref_idx >= 0:
+                used.add(ref_idx)
+            for r in (runs or []):
+                used.add(r[2])
         last = en_
     out.append(e(text[last:]))
     return "".join(out)
@@ -340,6 +384,7 @@ def page(f, cites, neighbours) -> str:
 <link rel="preload" href="../fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="../fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../ds/fonts.css?v=1" />
+<link rel="stylesheet" href="../ds/arabic.css?v=1" />
 <script type="speculationrules">
 {{"prerender":[{{"where":{{"href_matches":"/f/*"}},"eagerness":"moderate"}}],
   "prefetch":[{{"where":{{"href_matches":"/search.html*"}},"eagerness":"moderate"}}]}}
