@@ -167,9 +167,17 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
   font-family: var(--font-heading); font-size: 12px; letter-spacing: .1em;
   text-transform: uppercase; color: var(--muted); margin-top: 10px;
 }
-/* The design leaves these five frames empty for a photograph to be dropped in.
-   Until one is, the frame says which photograph belongs in it rather than
-   showing a blank grey box. */
+/* The photograph itself, once one is in the frame. The plate already holds the
+   aspect the design chose, so the image fills it and is cropped to it rather
+   than the frame bending to whatever the photograph happens to be. */
+.fig .plate img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+/* The design left these frames empty for a photograph to be dropped in. Until
+   one is, the frame says which photograph belongs in it rather than showing a
+   blank grey box. */
 .slot {
   position: absolute; inset: 0;
   display: grid; place-items: center; padding: 10% 12%;
