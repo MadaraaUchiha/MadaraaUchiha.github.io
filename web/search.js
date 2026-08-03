@@ -1329,17 +1329,22 @@ function paragraphRanges(text, target = 620) {
   }
   if (!pieces.length) return [[0, src.length]];
 
+  // Tile the whole string, from 0 to the end, whatever the pattern did with
+  // it. That regex wants a non-terminator before any terminator, so a run of
+  // terminators standing on its own matches nothing -- which is how the stray
+  // second ؟ ending five of the edition's questions was being dropped. The
+  // ranges are contiguous by construction, so anchoring both ends makes losing
+  // a character impossible rather than unlikely. Same fix as prerender.py;
+  // the two renderers have to agree character for character.
   const out = [];
-  let start = pieces[0][0];
-  let end = start;
+  let start = 0;
   for (const [, pe] of pieces) {
-    end = pe;
-    if (end - start >= target && balanced(start, end)) {
-      out.push([start, end]);
-      start = end;
+    if (pe - start >= target && balanced(start, pe)) {
+      out.push([start, pe]);
+      start = pe;
     }
   }
-  if (end > start) out.push([start, end]);
+  if (src.length > start) out.push([start, src.length]);
   return out;
 }
 

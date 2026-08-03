@@ -155,7 +155,16 @@ a.narration-ref:hover { color: var(--color-text); }
   color: var(--color-accent-700); unicode-bidi: isolate; }
 a.narration .qref, span.narration > .qref { color: color-mix(in srgb, var(--color-text) 58%, transparent);
   font-style: italic; letter-spacing: 0; }
-.read-ar .qref, .q-ar .qref, .a-ar .qref { font-size: 12px; }
+/* An Arabic reference in the Arabic face. --font-body is Lora, which has no
+   Arabic at all, so البقرة and حديث؟ were falling out of the stack onto
+   whatever the reader's system happened to offer -- a different letterform on
+   every platform, sitting right beside text set in the Complex's own type.
+   Keyed off the Arabic *blocks*, not :lang(ar): the language switch writes the
+   UI language onto <html>, so in Arabic mode :lang(ar) matches the whole
+   document and would have set "An-Nur 24:44" inside an English paragraph in a
+   Mushaf face. Which block the label rides in is the thing that is true. */
+.read-ar .qref, .q-ar .qref, .a-ar .qref {
+  font-size: 12px; font-family: var(--font-arabic); letter-spacing: 0; }
 .ayahs .quiet { color: color-mix(in srgb, var(--color-text) 62%, transparent); }
 .render { direction: ltr; text-align: left; font-family: var(--font-body); margin-top: var(--half); font-size: 15.5px; line-height: var(--leading); max-width: 68ch;
   color: color-mix(in srgb, var(--color-text) 74%, transparent); }

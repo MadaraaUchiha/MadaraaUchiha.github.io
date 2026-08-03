@@ -39,7 +39,7 @@ OUT = WEB / "f"
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=3"
-SITE_CSS_V = "?v=4"
+SITE_CSS_V = "?v=5"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -88,14 +88,20 @@ def paragraph_ranges(text: str, target: int = 620):
         pieces.append((s, end))
     if not pieces:
         return [(0, len(src))]
-    out, start, end = [], pieces[0][0], pieces[0][0]
+    # Tile the whole string, from 0 to the end, whatever SENTENCE did with it.
+    # That pattern wants a non-terminator before any terminator, so a run of
+    # terminators standing on its own matches nothing at all -- which is how the
+    # stray second ؟ ending five of the edition's questions was being dropped
+    # from the page. Anchoring both ends makes losing a character impossible
+    # rather than unlikely: the ranges are contiguous by construction, so if
+    # they start at 0 and finish at len(src) they cover every character between.
+    out, start = [], 0
     for _, pe in pieces:
-        end = pe
-        if end - start >= target and balanced(src[start:end]):
-            out.append((start, end))
-            start = end
-    if end > start:
-        out.append((start, end))
+        if pe - start >= target and balanced(src[start:pe]):
+            out.append((start, pe))
+            start = pe
+    if len(src) > start:
+        out.append((start, len(src)))
     return out
 
 
