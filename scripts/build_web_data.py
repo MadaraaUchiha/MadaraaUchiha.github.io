@@ -321,7 +321,62 @@ def home_lines(fatwas, citations):
     return out
 
 
-def scan_english(text: str, table: RefTable):
+# An Arabic brace with no verse behind it offers no English to compare against,
+# so it scores a flat middling amount: enough to take an English brace that
+# matches no verse well, not enough to outbid one that does.
+NARR_SIM = 0.35
+
+
+def align_braces(en_quotes, ar_marks, table):
+    """Give each English brace the Arabic brace it is, in order.
+
+    Every English brace takes one Arabic brace; Arabic braces may be skipped,
+    because the translator drops some. Maximising the total similarity over the
+    whole passage is what keeps a short verse of common words from stealing a
+    long quotation: it would have to displace a better-fitting neighbour.
+    """
+    m, n = len(en_quotes), len(ar_marks)
+    if not m:
+        return []
+    if m > n:                       # more braces than the Arabic has: give up
+        return [(s, e, inner, NARRATION) for s, e, inner in en_quotes]
+
+    def sim(inner, mark):
+        if mark == NARRATION:
+            return NARR_SIM
+        auth = {w for w, _, _ in en_words(table.refs[mark]["t"])}
+        got = {w for w, _, _ in en_words(inner)}
+        if not auth or not got:
+            return 0.0
+        i = len(auth & got)
+        return min(i / len(auth), i / len(got))
+
+    NEG = float("-inf")
+    best = [[NEG] * (n + 1) for _ in range(m + 1)]
+    back = [[None] * (n + 1) for _ in range(m + 1)]
+    for j in range(n + 1):
+        best[0][j] = 0.0
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if best[i][j - 1] > best[i][j]:
+                best[i][j] = best[i][j - 1]
+                back[i][j] = (0, j - 1)
+            cand = best[i - 1][j - 1] + sim(en_quotes[i - 1][2], ar_marks[j - 1])
+            if cand > best[i][j]:
+                best[i][j] = cand
+                back[i][j] = (1, j - 1)
+    taken = [NARRATION] * m
+    i, j = m, n
+    while i > 0 and j > 0 and back[i][j] is not None:
+        kind, at = back[i][j]
+        if kind:
+            taken[i - 1] = ar_marks[at]
+            i -= 1
+        j = at
+    return [(s, e, inner, mark) for (s, e, inner), mark in zip(en_quotes, taken)]
+
+
+def scan_english(text: str, table: RefTable, ar_marks: list[int]):
     """The same quotations in the translation, where they can be proven."""
     if not text:
         return [], 0
@@ -329,38 +384,30 @@ def scan_english(text: str, table: RefTable):
     placed: set[int] = set()
     words = en_words(text)
 
-    # 1. the translation kept the braces
+    # 1. the translation kept the braces.
+    #
+    # Which brace is which is settled by the Arabic, not guessed at again here.
+    # The edition marks every quotation in the Arabic and scan_arabic has already
+    # said what each one is; the translator keeps some of those braces and drops
+    # others, but never reorders them. So the English braces are a subsequence of
+    # the Arabic ones, and the honest question is which Arabic brace each English
+    # one is -- answered by aligning the two sequences in order, best total score.
+    #
+    # Matching each English brace to whichever verse it happened to look most
+    # like was how As-Saffat 37:87 came to be printed against Al 'Imran 3:79.
+    # Worse, an English brace nobody could place was then asserted to be a
+    # narration -- so Ash-Sharh 94:7, Al-Ma'idah 5:44 and Al-Baqarah 2:186 were
+    # all shown to the reader as narrations in the translation while the Arabic
+    # beside them was correctly cited. Failing to place a quotation is not
+    # evidence that it is not scripture.
     unknown = 0
-    for m in BRACES.finditer(text):
-        inner = m.group(1).strip()
-        inner_words = {w for w, _, _ in en_words(inner)}
-        best, best_overlap = None, 0.0
-        for idx, ref in enumerate(table.refs):
-            if idx in placed:
-                continue
-            auth = {w for w, _, _ in en_words(ref["t"])}
-            if not auth or not inner_words:
-                continue
-            # Both ways round. Dividing by the smaller set alone lets a short
-            # verse made of common words claim any long quotation that happens
-            # to contain them: As-Saffat 37:87, "Then what is your thought
-            # about the Lord of the worlds?", shares then/what/is/the/lord/of
-            # with the translation of Al 'Imran 3:79 and scored exactly the
-            # threshold on it -- and was printed against it, because 3:79 had
-            # failed to identify on the Arabic side and was not in this table
-            # to win instead. A citation that is wrong is worse than one that
-            # is missing, so the quote must be mostly the verse *and* the verse
-            # mostly in the quote.
-            inter = len(auth & inner_words)
-            overlap = min(inter / len(auth), inter / len(inner_words))
-            if overlap > best_overlap:
-                best, best_overlap = idx, overlap
-        if best is not None and best_overlap >= BRACE_OVERLAP:
-            placed.add(best)
-            spans.append([m.start(), m.end(), best, BRACED])
-        else:
+    en_quotes = [(m.start(), m.end(), m.group(1).strip()) for m in BRACES.finditer(text)]
+    for s, e, inner, mark in align_braces(en_quotes, ar_marks, table):
+        if mark == NARRATION:
             unknown += 1
-            spans.append([m.start(), m.end(), NARRATION, BRACED])
+        else:
+            placed.add(mark)
+        spans.append([s, e, mark, BRACED])
 
     # 2. a verbatim run of the authoritative English, occurring exactly once
     grams: dict[tuple, list[int]] = {}
@@ -474,7 +521,8 @@ def main() -> int:
             if "{" not in ar_text:
                 continue
             ar_spans, unknown = scan_arabic(ar_text, quran, table, override)
-            en_spans, _ = scan_english(f.get(en_field) or "", table)
+            en_spans, _ = scan_english(f.get(en_field) or "", table,
+                                       [s[2] for s in ar_spans])
             if not ar_spans and not en_spans:
                 continue
             block = {}

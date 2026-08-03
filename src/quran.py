@@ -230,8 +230,13 @@ class QuranIndex:
         wins over the loose one.
         """
         words = qnorm.split()
-        if len(words) < MIN_WORDS:
-            return None
+        # Under the word floor, a quotation may still be identified -- but only
+        # if it occurs exactly once in the whole Qur'an. Two words are usually
+        # too little to be sure of, which is what the floor is for; but
+        # {وإياي فارهبون} is two words, is al-Baqarah 2:40, and is nowhere else,
+        # and refusing to say so served nobody. Uniqueness is the guarantee the
+        # word count was standing in for.
+        unique_only = len(words) < MIN_WORDS
 
         # The quotation itself, then its longest prefixes -- but only those long
         # enough to still be most of it.
@@ -263,8 +268,11 @@ class QuranIndex:
                 if len(needle) < MIN_CHARS:
                     continue
                 pos = hay.find(needle)
-                if pos >= 0:
-                    return at(pos), at(pos + len(needle) - 1)
+                if pos < 0:
+                    continue
+                if unique_only and hay.find(needle, pos + 1) >= 0:
+                    continue            # short and ambiguous: say nothing
+                return at(pos), at(pos + len(needle) - 1)
         return None
 
     def identify(self, text: str) -> list[QuranMatch]:

@@ -54,18 +54,41 @@ ed. Ibn Qasim, 1416/1995).
   dagger on a waw is a written alef only in the closed set that ends in a tāʾ
   marbūṭa or al-ribā's silent alef — `ٱلسَّمَٰوَٰت` really is `السماوات`.
 
-  Fixing these took identification from 8,848 to **9,456** quotations. Al ʿImrān
-  3:79 and 3:80 were being called narrations in all twelve places they are
-  quoted, because both carry `النبيين` or `ربانيين`.
+  A quotation under the three-word floor is now identified too, if it occurs
+  **exactly once** in the whole Qur'an — `{وإياي فارهبون}` is two words, is
+  al-Baqarah 2:40, and is nowhere else. Uniqueness is the guarantee the word
+  count was standing in for; `{قال الله}` still says nothing.
 
-  Every one of the 9,456 was then checked against an independent copy of the
+  Together these took identification from 8,848 to **9,613** quotations. Al
+  ʿImrān 3:79 and 3:80 were being called narrations in all twelve places they
+  are quoted, because both carry `النبيين` or `ربانيين`.
+
+  Every one of the 9,613 was then checked against an independent copy of the
   text — the complete Uthmani edition from
   [alquran.cloud](https://alquran.cloud/api), fetched once — and **none is the
-  wrong verse**: 9,388 appear in the claimed verse word for word, and the other
+  wrong verse**: 9,545 appear in the claimed verse word for word, and the other
   68 are the same verse with a word in the other orthography, or quoted without
   its opening word, or with its basmala. Searching that same independent text
-  for every one of the 7,053 spans still marked a narration turns up **no verse
-  the matcher is missing**.
+  for every span still marked a narration turns up **no verse the matcher is
+  missing**.
+
+### Which brace is which, in the translation
+
+The edition marks every quotation in the Arabic, and `scan_arabic` says what
+each one is. The translator keeps some of those braces and drops others, but
+never reorders them — so the English braces are a *subsequence* of the Arabic
+ones, and which is which is settled by aligning the two sequences in order
+rather than guessing again from the English.
+
+This matters because the old code did guess, and then asserted the guess.
+An English quotation it could not place was marked **narration** — so Ash-Sharḥ
+94:7, al-Māʾidah 5:44 and al-Baqarah 2:186 were all shown to the reader as
+narrations in the translation while the Arabic beside them carried the right
+citation. Failing to place a quotation is not evidence that it is not scripture.
+
+The alignment agrees with 469 of the references the old code was confident
+about, and resolves 536 of its false "narration" labels. English placement is
+back to 56.2% and is now inherited from the Arabic rather than re-derived.
 
 ## Source & licensing
 
