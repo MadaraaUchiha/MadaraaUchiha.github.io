@@ -39,7 +39,7 @@ OUT = WEB / "f"
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=3"
-SITE_CSS_V = "?v=3"
+SITE_CSS_V = "?v=4"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -384,7 +384,7 @@ def page(f, cites, neighbours) -> str:
 <link rel="preload" href="../fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="../fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../ds/fonts.css?v=1" />
-<link rel="stylesheet" href="../ds/arabic.css?v=2" />
+<link rel="stylesheet" href="../ds/arabic.css?v=3" />
 <script type="speculationrules">
 {{"prerender":[{{"where":{{"href_matches":"/f/*"}},"eagerness":"moderate"}}],
   "prefetch":[{{"where":{{"href_matches":"/search.html*"}},"eagerness":"moderate"}}]}}

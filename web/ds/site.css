@@ -398,14 +398,22 @@ body[data-lang="en"] .linklike { font-size: 14px; }
 .toast.show { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 
+/* Night. These are the landing page's own colours, not a second dark theme.
+ *
+ * The two were set independently and drifted: the landing page grounds on ink,
+ * #14120e, and this was #201f1d -- a lighter, greyer, cooler dark. Going from
+ * the home page into a fatwa changed the colour of the room, which reads as two
+ * different sites. index.html is the reference because it is what a reader sees
+ * first, so its ground, surface, ink and gold are repeated here exactly. If one
+ * moves, move the other. */
 [data-theme="night"] {
-  --color-bg: #201f1d;
-  --color-surface: #2d2b2b;
-  --color-text: #f8f4f4;
-  --color-divider: color-mix(in srgb, #f8f4f4 17%, transparent);
-  --color-accent: #e1ad66;
+  --color-bg: #14120e;
+  --color-surface: #211d16;
+  --color-text: #eae7e7;
+  --color-divider: color-mix(in srgb, #eae7e7 16%, transparent);
+  --color-accent: #b68235;
   --color-accent-600: #facb8d;
-  --color-accent-700: #facb8d;
+  --color-accent-700: #e1ad66;
   --shadow-sm: 0 1px 2px color-mix(in srgb, #000 40%, transparent);
   --shadow-md: 0 3px 10px color-mix(in srgb, #000 45%, transparent);
   --shadow-lg: 0 12px 32px color-mix(in srgb, #000 55%, transparent);
