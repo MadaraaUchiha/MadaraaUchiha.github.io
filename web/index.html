@@ -91,7 +91,10 @@ body[data-lang="ar"] .life .note, body[data-lang="ar"] .specimen .aside { line-h
 .langswitch button[lang="ar"] { font-family: var(--font-arabic); text-transform: none; letter-spacing: 0; font-size: 15px; }
 .langswitch button:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); color: var(--color-accent-700); }
 .langswitch button[aria-pressed="true"] { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 14%, transparent); }
-@media (max-width: 780px) { .nav a { display: none; } }
+/* Narrow: the section links go, the wordmark stays. It is an <a> too, so a bare
+   `.nav a` took it with them and left the masthead holding nothing but the
+   language switch -- no name, and no way back to the top of the site. */
+@media (max-width: 780px) { .nav a:not(.nav-brand) { display: none; } }
 
 /* — hairline seams — */
 .rule { height: 1px; border: 0; margin: 0; background: var(--color-divider); }
@@ -381,9 +384,6 @@ footer [lang="ar"] { font-size: 15px; }
     <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
     <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>
   </div>
-  <button type="button" class="btn btn-primary" data-seek-focus>
-    <span class="en">Search</span><span class="ar" lang="ar">ابحث</span>
-  </button>
 </nav>
 
 <header class="hero beacon">
@@ -557,6 +557,6 @@ footer [lang="ar"] { font-size: 15px; }
     <span class="edition ar" lang="ar">المصدر: مجموع فتاوى شيخ الإسلام أحمد بن تيمية، جمع وترتيب عبد الرحمن بن قاسم. مطبوع مجمع الملك فهد لطباعة المصحف الشريف (١٤١٦هـ / ١٩٩٥م). والكتاب في الملك العام، والنسخة المحرَّرة مستعملةٌ بموجب رخصتها المفتوحة.</span>
   </footer>
 </div>
-<script src="home.js?v=1"></script>
+<script src="home.js?v=2"></script>
 </body>
 </html>

@@ -66,10 +66,12 @@
 
   /* ── the search: the page's one action ───────────────────────────────── */
 
+  // The nav used to carry a Search button that did nothing but focus this
+  // field. The nav is static, so it never outlives the hero it sits above --
+  // the button only ever existed a few hundred pixels from the field itself,
+  // with both on screen at once. Two ways to reach one thing, in view of each
+  // other, is one too many; the field is the page's one action.
   const firstField = document.querySelector('#seek input[name="q"]');
-  for (const b of document.querySelectorAll('[data-seek-focus]')) {
-    b.addEventListener('click', () => { firstField.focus({ preventScroll: false }); });
-  }
   for (const c of document.querySelectorAll('.chip')) {
     c.addEventListener('click', () => {
       firstField.value = c.textContent.trim();
