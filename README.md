@@ -59,18 +59,37 @@ ed. Ibn Qasim, 1416/1995).
   al-Baqarah 2:40, and is nowhere else. Uniqueness is the guarantee the word
   count was standing in for; `{قال الله}` still says nothing.
 
-  Together these took identification from 8,848 to **9,613** quotations. Al
+  A **fourth reading** then gives up three more distinctions, each a place where
+  the two orthographies simply disagree and neither is wrong — and each enough
+  on its own to make a verse quoted word for word read as a narration:
+
+  | | Uthmani | printed | verse it cost |
+  |---|---|---|---|
+  | the hamza seat | `وَإِيتَآئِ` | `وإيتاء` | al-Naḥl 16:90 |
+  | the open tāʾ | `نِعۡمَتَ` | `نعمة` | Fāṭir 35:3 |
+  | the doubled letter | `ٱلَّيۡلَ` | `الليل` | al-Anbiyāʾ 21:33 |
+
+  It is the loosest reading and the last one tried, so an exact match always
+  wins ahead of it. What keeps it honest is that the whole quotation must still
+  appear, in order, in a third of a million letters.
+
+  Together these took identification from 8,848 to **10,043** quotations. Al
   ʿImrān 3:79 and 3:80 were being called narrations in all twelve places they
   are quoted, because both carry `النبيين` or `ربانيين`.
 
-  Every one of the 9,613 was then checked against an independent copy of the
+  Every one of the 10,043 was then checked against an independent copy of the
   text — the complete Uthmani edition from
   [alquran.cloud](https://alquran.cloud/api), fetched once — and **none is the
-  wrong verse**: 9,545 appear in the claimed verse word for word, and the other
-  68 are the same verse with a word in the other orthography, or quoted without
-  its opening word, or with its basmala. Searching that same independent text
-  for every span still marked a narration turns up **no verse the matcher is
-  missing**.
+  wrong verse**: 10,039 appear in the claimed verse word for word and the other
+  four are the same verse with a word spelled the other way.
+
+  As a second audit, every quotation the Shaykh introduces with `قال تعالى` or
+  its like — 10,503 of them — was checked for how much of it is verbatim
+  Qur'an. The ones still called a narration while reading mostly as scripture
+  fell from 232 to **19**, and at least three of those nineteen are correctly
+  narrations: `{من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت}` opens with
+  six words of al-Ṭalāq 65:2 and is a hadith, which is what the coverage guard
+  is for.
 
 ### Which brace is which, in the translation
 
@@ -87,8 +106,19 @@ narrations in the translation while the Arabic beside them carried the right
 citation. Failing to place a quotation is not evidence that it is not scripture.
 
 The alignment agrees with 469 of the references the old code was confident
-about, and resolves 536 of its false "narration" labels. English placement is
-back to 56.2% and is now inherited from the Arabic rather than re-derived.
+about, and resolves its false "narration" labels. English placement is now
+inherited from the Arabic rather than re-derived, and only **7%** of braced
+English quotations are still called narrations, down from most of them.
+
+Similarity is measured as how much of the **quotation** the verse accounts for,
+not how much of the verse the quotation covers. The Shaykh quotes the clause he
+is arguing from, not the whole āyah: `{Who is it that intercedes with Him except
+by His permission?}` is eleven words of al-Baqarah 2:255, which runs to ninety.
+Measuring against the whole verse scored that at 0.11, lost it to the flat
+narration score, and printed a verse quoted in part as though it were not
+scripture at all. That direction cannot be gamed the other way — a short verse
+cannot claim a long quotation, because the words it fails to account for count
+against it.
 
 ## Source & licensing
 

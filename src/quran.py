@@ -114,13 +114,17 @@ _PRONOUN_YEH = re.compile(rf"(ه[{_VOWEL}]*)ۦ(?=[{_MARK}]*(?:\s|$))")
 _SMALL_YEH = re.compile("[ۦۧ]")
 
 
-def _fold(text: str) -> str:
-    text = _MAQSURA_SUFFIXED.sub(r"ا\1\2", text)
+def _prepare(text: str) -> str:
+    """Uthmani marks promoted to the letters the printed text writes."""
+    text = _MAQSURA_SUFFIXED.sub("ا\\1\\2", text)
     text = _WAW_FOR_ALEF.sub("ا", text)
-    text = _DAGGER_ON_ALEF.sub(r"\1\2", text)
-    text = _PRONOUN_YEH.sub(r"\1", text)
-    text = _SMALL_YEH.sub("ي", text)
-    return normalize_for_search(text.translate(_UTHMANI_LETTERS))
+    text = _DAGGER_ON_ALEF.sub("\\1\\2", text)
+    text = _PRONOUN_YEH.sub("\\1", text)
+    return _SMALL_YEH.sub("ي", text)
+
+
+def _fold(text: str) -> str:
+    return normalize_for_search(_prepare(text).translate(_UTHMANI_LETTERS))
 
 
 def _despace(text: str) -> str:
@@ -147,6 +151,57 @@ _BASMALA = tuple(_fold(s) for s in (
     "بسم الله الرحمن الرحيم",
     "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ",
 ))
+
+
+# Reading four, and the last: the hamza goes too.
+#
+# The Uthmani seats its hamza where the printed text writes it bare -- وَإِيتَآٓئِ
+# against وإيتاء -- and normalize_for_search turns a seated hamza into a
+# letter (ئ -> ي) and a bare one into nothing. The same word therefore comes out
+# a letter apart, which is why {إن الله يأمر بالعدل والإحسان وإيتاء ذي القربى},
+# al-Nahl 16:90 word for word, was read as a narration.
+#
+# Dropping the seat on both sides settles it. This is the loosest reading and
+# the last one tried, so an exact match always wins ahead of it.
+# Both spellings of a seat: the precomposed letter, and a bare ya or waw
+# carrying a combining hamza -- this file writes وَإِيتَآٓيِٕ the second way, so
+# matching only the first left the seat behind as a plain ya.
+_SEATED_HAMZA = re.compile("[ئؤ]|[يو][ٕٔ]")
+
+
+def _collapse(text: str) -> str:
+    """Runs of the same letter reduced to one.
+
+    A shadda in the Uthmani is a doubled letter in the printed text where the
+    two would otherwise agree: ٱلَّيۡلَ is الليل, with the article's lam
+    written out. Collapsing both sides settles it without having to know which
+    shadda doubles and which does not.
+    """
+    out = []
+    for ch in text:
+        if not out or out[-1] != ch:
+            out.append(ch)
+    return "".join(out)
+
+
+def _bare(text: str) -> str:
+    """The loosest reading, and the last one tried.
+
+    On top of the skeleton it gives up three more distinctions, each of which is
+    a place the two orthographies simply disagree and neither is wrong:
+
+      the hamza seat   وَإِيتَآٓئِ against وإيتاء   (al-Nahl 16:90)
+      the open ta      نِعۡمَتَ against نعمة     (Fatir 35:3)
+      the doubled letter ٱلَّيۡلَ against الليل (al-Anbiya 21:33)
+
+    All three were enough on their own to make a verse quoted word for word read
+    as a narration. What holds this honest is that the whole quotation still has
+    to appear, in order, in a third of a million letters -- and that every
+    citation it produces is checked against an independent copy of the text.
+    """
+    t = normalize_for_search(_SEATED_HAMZA.sub("", _prepare(text)))
+    t = t.replace("ت", "ه")      # the open ta, to the ha a ta marbuta already became
+    return _collapse(_skeleton(t))
 
 
 @dataclass
@@ -199,16 +254,23 @@ class QuranIndex:
         # else -- the letters must still agree, in order.
         self.joined_ns = _despace(self.joined)
         self.joined_sk = _skeleton(self.joined)
+        # The fourth reading is built from the ayat themselves, not from the
+        # folded text: dropping a hamza seat needs the seat, which folding has
+        # already spent.
+        self.joined_bare = "".join(_bare(a["ar"]) for a in self.ayat)
         self.starts_ns: list[int] = []
         self.starts_sk: list[int] = []
-        run_ns = run_sk = 0
+        self.starts_bare: list[int] = []
+        run_ns = run_sk = run_bare = 0
         for i, start in enumerate(self.starts):
             end = self.starts[i + 1] if i + 1 < len(self.starts) else len(self.joined)
             piece = self.joined[start:end]
             self.starts_ns.append(run_ns)
             self.starts_sk.append(run_sk)
+            self.starts_bare.append(run_bare)
             run_ns += len(_despace(piece))
             run_sk += len(_skeleton(piece))
+            run_bare += len(_bare(self.ayat[i]["ar"]))
 
     def _ayah_at(self, pos: int) -> int:
         return max(0, bisect.bisect_right(self.starts, pos) - 1)
@@ -219,7 +281,10 @@ class QuranIndex:
     def _ayah_at_sk(self, pos: int) -> int:
         return max(0, bisect.bisect_right(self.starts_sk, pos) - 1)
 
-    def _lookup(self, qnorm: str):
+    def _ayah_at_bare(self, pos: int) -> int:
+        return max(0, bisect.bisect_right(self.starts_bare, pos) - 1)
+
+    def _lookup(self, qnorm: str, qbare: str = ""):
         """Where this quotation sits in the Qur'an, if it sits there at all.
 
         Three readings of the same text, each blind to one more difference
@@ -273,6 +338,15 @@ class QuranIndex:
                 if unique_only and hay.find(needle, pos + 1) >= 0:
                     continue            # short and ambiguous: say nothing
                 return at(pos), at(pos + len(needle) - 1)
+
+        # Reading four, and only ever for the quotation entire: the loosest of
+        # them, so it is not let near a fragment.
+        if qbare and len(qbare) >= MIN_CHARS:
+            pos = self.joined_bare.find(qbare)
+            if pos >= 0 and not (unique_only
+                                 and self.joined_bare.find(qbare, pos + 1) >= 0):
+                return (self._ayah_at_bare(pos),
+                        self._ayah_at_bare(pos + len(qbare) - 1))
         return None
 
     def identify(self, text: str) -> list[QuranMatch]:
@@ -280,7 +354,7 @@ class QuranIndex:
         seen: set = set()
         for m in BRACES.finditer(text):
             quote = m.group(1).strip()
-            res = self._lookup(_fold(quote))
+            res = self._lookup(_fold(quote), _bare(quote))
             if not res:
                 key = ("?", quote[:30])
                 if key not in seen:

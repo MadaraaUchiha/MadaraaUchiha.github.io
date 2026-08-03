@@ -348,8 +348,18 @@ def align_braces(en_quotes, ar_marks, table):
         got = {w for w, _, _ in en_words(inner)}
         if not auth or not got:
             return 0.0
-        i = len(auth & got)
-        return min(i / len(auth), i / len(got))
+        # How much of the *quotation* the verse accounts for, and not how much
+        # of the verse the quotation covers. The Shaykh quotes the clause he is
+        # arguing from, not the whole ayah: {Who is it that intercedes with Him
+        # except by His permission?} is eleven words of al-Baqarah 2:255, which
+        # runs to ninety. Measuring against the whole verse scored that at 0.11
+        # and lost it to the flat narration score, so a passage quoted in part
+        # was shown to the reader as though it were not scripture at all.
+        #
+        # This direction cannot be gamed the other way: a short verse cannot
+        # claim a long quotation, because the words it fails to account for
+        # count against it.
+        return len(auth & got) / len(got)
 
     NEG = float("-inf")
     best = [[NEG] * (n + 1) for _ in range(m + 1)]
