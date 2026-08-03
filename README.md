@@ -38,6 +38,35 @@ ed. Ibn Qasim, 1416/1995).
   wants one written, `أُو۟لَٰٓئِكَ` does not). Together these took identification
   from 14,531 to 19,552 āyāt across the corpus, **+35%**.
 
+  Before any of that can help, the two spellings have to be brought onto common
+  ground, and four places where they were not cost the site real verses:
+
+  | Uthmani | is | was read as |
+  |---|---|---|
+  | `ٱلنَّبِيِّـۧنَ` `إِبۡرَٰهِـۧمَ` `يُحۡيِۦ` | `النبيين` `إبراهيم` `يحيي` | `النبين` `ابراهم` `يحي` |
+  | `هَدَىٰنَا` `ٱلتَّوۡرَىٰةَ` `أَدۡرَىٰكَ` | `هدانا` `التوراة` `أدراك` | `هدينا` `التوريه` `ادريك` |
+  | `ٱلصَّلَوٰةَ` `ٱلۡحَيَوٰةِ` `ٱلرِّبَوٰا۟` | `الصلاة` `الحياة` `الربا` | `الصلواه` `الحيواه` `الربواا` |
+  | `۞` `۩` and one thin space | nothing | themselves |
+
+  A small ya is the pronoun only in a word-final `هِۦ`; everywhere else it is a
+  ya the printed text writes out. A dagger alef on an alef maqsura is a reading
+  mark at the end of a word and a written alef as soon as a suffix follows. A
+  dagger on a waw is a written alef only in the closed set that ends in a tāʾ
+  marbūṭa or al-ribā's silent alef — `ٱلسَّمَٰوَٰت` really is `السماوات`.
+
+  Fixing these took identification from 8,848 to **9,456** quotations. Al ʿImrān
+  3:79 and 3:80 were being called narrations in all twelve places they are
+  quoted, because both carry `النبيين` or `ربانيين`.
+
+  Every one of the 9,456 was then checked against an independent copy of the
+  text — the complete Uthmani edition from
+  [alquran.cloud](https://alquran.cloud/api), fetched once — and **none is the
+  wrong verse**: 9,388 appear in the claimed verse word for word, and the other
+  68 are the same verse with a word in the other orthography, or quoted without
+  its opening word, or with its basmala. Searching that same independent text
+  for every one of the 7,053 spans still marked a narration turns up **no verse
+  the matcher is missing**.
+
 ## Source & licensing
 
 Text: OpenITI corpus (openly licensed scholarly editions). The underlying work by

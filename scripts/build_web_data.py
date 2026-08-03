@@ -341,7 +341,18 @@ def scan_english(text: str, table: RefTable):
             auth = {w for w, _, _ in en_words(ref["t"])}
             if not auth or not inner_words:
                 continue
-            overlap = len(auth & inner_words) / min(len(auth), len(inner_words))
+            # Both ways round. Dividing by the smaller set alone lets a short
+            # verse made of common words claim any long quotation that happens
+            # to contain them: As-Saffat 37:87, "Then what is your thought
+            # about the Lord of the worlds?", shares then/what/is/the/lord/of
+            # with the translation of Al 'Imran 3:79 and scored exactly the
+            # threshold on it -- and was printed against it, because 3:79 had
+            # failed to identify on the Arabic side and was not in this table
+            # to win instead. A citation that is wrong is worse than one that
+            # is missing, so the quote must be mostly the verse *and* the verse
+            # mostly in the quote.
+            inter = len(auth & inner_words)
+            overlap = min(inter / len(auth), inter / len(inner_words))
             if overlap > best_overlap:
                 best, best_overlap = idx, overlap
         if best is not None and best_overlap >= BRACE_OVERLAP:

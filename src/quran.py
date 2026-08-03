@@ -39,18 +39,87 @@ FRAG_MIN_SHARE = 0.8   # ...only if it accounts for most of it. Plenty of hadith
 # the BM25 index built on normalize_for_search is untouched.
 _UTHMANI_LETTERS = str.maketrans({
     "ٰ": "ا",   # superscript alef: stands in for an alef the printed text writes
-    "ۥ": "",    # small waw:  lengthens the pronoun in هُۥ, which is plain ه here
-    "ۦ": "",    # small ya:   likewise
+    "ۥ": "",    # small waw: lengthens the pronoun in هُۥ, which is plain ه here
+    # ۞ and ۩ are the reciter's furniture, a rub-el-hizb marker and a place of
+    # prostration. They sit at the edge of a verse and appear nowhere in the
+    # printed fatawa, so a quotation running across a verse join trips on them.
+    "۞": "",
+    "۩": "",
+    # one thin space, mid-verse in 2:72: typography inside a single word
+    # (فَٱدَّٰرَ ٰتُمۡ), not a word break. It comes out.
+    " ": "",
 })
 
-# A superscript alef sitting on an alef or an alef maqsura is a reading mark on
-# that letter, not a letter of its own: ٱتَّقَىٰ is اتقى, not اتقىا. Everywhere
-# else it stands in for an alef that the Uthmani spelling leaves out.
-_DAGGER_ON_ALEF = re.compile(r"([اى])([ً-ٟ]*)ٰ")
+# Written with explicit code points: every one of these is invisible or
+# combining, and a literal here is a character nobody can review.
+#   064B-065F vowels, sukun, shadda, maddah, hamza above/below, subscript alef
+#   0640      tatweel, which the Uthmani stretches a letter with
+#   0670      the dagger alef
+#   06D6-06DC 06DF-06E4 06E7-06ED  the reciter's pause and small-letter marks
+_MARK = "\u064b-\u065f\u0640\u0670\u06d6-\u06dc\u06df-\u06e4\u06e7-\u06ed"
+# The same, less the dagger alef: the two rules below look either side of a
+# dagger, so their own classes must not swallow it.
+_VOWEL = "\u064b-\u065f\u0640"
+
+# An alef maqsura carrying a dagger alef is a long a. Standing at the end of a
+# word the printed text writes it as an alef maqsura too --
+#     ٱتَّقَىٰ    is اتقى
+# -- but the moment a suffix follows, imla'i writes the alef out in full:
+#     هَدَىٰنَا   is هدانا,   not هدينا
+#     ٱلتَّوۡرَىٰةَ is التوراة, not التوريه
+#     أَدۡرَىٰكَ   is أدراك,   not ادريك
+# Dropping the dagger in both cases, as this did, put a ya where the printed
+# text has an alef in 338 places, and no amount of matching afterwards recovers
+# a letter that is simply the wrong one.
+_MAQSURA_SUFFIXED = re.compile(
+    rf"\u0649([{_VOWEL}]*)\u0670([{_VOWEL}]*)(?=[^\s{_MARK}])")
+
+# The same trick with a waw. Uthmani writes the long a of a small closed set of
+# words with a waw carrying a dagger --
+#     ٱلصَّلَوٰة  is الصلاة, not الصلواه
+#     ٱلےحَيَوٰة  is الحياة, not الحيواه
+#     ٱلزَّكَوٰة  is الزكاة, not الزكواه
+#     ٱلرِّبَوٰا  is الربا,  not الربواا
+# It is emphatically NOT the general rule for a waw carrying a dagger:
+# ٱلسَّمَٰوَٰت really is السماوات and وَٰحِدَة really is واحدة, both of
+# which fold correctly already. What marks the set is what follows: a ta
+# marbuta, or the silent alef of al-riba. 182 places.
+_WAW_FOR_ALEF = re.compile(
+    rf"و[{_VOWEL}]*ٰ[{_VOWEL}]*(?:ا|(?=ة))")
+
+# What is left is the word-final case, and the same mark sitting on a full alef,
+# where it really is only a reading mark on the letter it is on. Everywhere else
+# a dagger stands in for an alef the Uthmani spelling leaves out, and
+# _UTHMANI_LETTERS promotes it.
+_DAGGER_ON_ALEF = re.compile(rf"([\u0627\u0649])([{_VOWEL}]*)\u0670")
+
+# The small ya is two different things, and telling them apart is worth a letter
+# on every verse that carries one.
+#
+#   هِۦ at the end of a word is the pronoun, lengthened for recitation. The
+#   printed text writes it plain -- بِهِۦ is به -- so it comes out.
+#
+#   Anywhere else it stands in for a ya the printed text writes in full, and
+#   dropping it costs the match a letter it will never get back:
+#     ٱلنَّبِيِّـۧنَ  is النبيين, not النبين
+#     إِبۡرَٰهِـۧمَ   is إبراهيم,  not ابراهم
+#     يُحۡيِۦ        is يحيي,    not يحي
+#     إِۦلَٰفِهِمۡ    is إيلافهم,  not الافهم
+#   which is why Al 'Imran 3:79 and 3:80 -- both of them carrying النبيين or
+#   ربانيين -- were read as narrations everywhere they are quoted.
+#
+# U+06E7 is the same mark in the small-high form; it never falls at the end of a
+# word in this text, and always stands for a written ya.
+_PRONOUN_YEH = re.compile(rf"(ه[{_VOWEL}]*)ۦ(?=[{_MARK}]*(?:\s|$))")
+_SMALL_YEH = re.compile("[ۦۧ]")
 
 
 def _fold(text: str) -> str:
+    text = _MAQSURA_SUFFIXED.sub(r"ا\1\2", text)
+    text = _WAW_FOR_ALEF.sub("ا", text)
     text = _DAGGER_ON_ALEF.sub(r"\1\2", text)
+    text = _PRONOUN_YEH.sub(r"\1", text)
+    text = _SMALL_YEH.sub("ي", text)
     return normalize_for_search(text.translate(_UTHMANI_LETTERS))
 
 
@@ -70,6 +139,14 @@ def _skeleton(text: str) -> str:
     whole quotation, in order, in a corpus of a third of a million letters.
     """
     return _despace(text).replace("ا", "")
+
+
+# Both spellings: the Uthmani writes the Merciful with a dagger alef and the
+# printed fatawa write it out, so the two fold differently.
+_BASMALA = tuple(_fold(s) for s in (
+    "بسم الله الرحمن الرحيم",
+    "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ",
+))
 
 
 @dataclass
@@ -159,6 +236,16 @@ class QuranIndex:
         # The quotation itself, then its longest prefixes -- but only those long
         # enough to still be most of it.
         probes = [qnorm]
+        # A verse quoted with the basmala in front of it. The basmala is only
+        # numbered as an ayah in al-Fatiha, so everywhere else it pushes the
+        # verse under the coverage floor and the whole quotation reads as a
+        # narration -- which is what became of {بسم الله الرحمن الرحيم إنا
+        # أعطيناك الكوثر}. Tried after the quotation itself, so it can only
+        # ever add a match, never move one.
+        for b in _BASMALA:
+            if qnorm.startswith(b) and len(qnorm) > len(b) + MIN_CHARS:
+                probes.append(qnorm[len(b):].strip())
+                break
         floor = FRAG_MIN_SHARE * len(qnorm)
         for k in range(len(words) - 1, FRAG_WORDS - 1, -1):
             prefix = " ".join(words[:k])
