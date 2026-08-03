@@ -149,20 +149,55 @@ Text: OpenITI corpus (openly licensed scholarly editions). The underlying work b
 Ibn Taymiyyah (d. 728 AH / 1328 CE) is public domain. Respect OpenITI's license
 and cite the edition when redistributing.
 
+Type: `web/fonts/kfgqpc-hafs.woff2` is KFGQPC HAFS Uthmanic Script, drawn and
+released by the King Fahd Glorious Qur'an Printing Complex, converted here from
+the `.ttf` that [QUL](https://qul.tarteel.ai/resources/font/245) publishes and
+its own documentation links directly. The Complex releases it for use and
+neither page attaches an explicit licence text; it is vendored on that basis,
+recorded here so the provenance is traceable. `scripts/fetch_arabic_font.py`
+reproduces the file from source, so it can be dropped and refetched at will.
+The other vendored faces — Amiri, Cormorant Garamond, Lora — are SIL OFL.
+
 ### The Arabic face
 
-All Arabic on the site asks for **KFGQPC Uthman Taha Naskh** first — the King
-Fahd Glorious Qur'an Printing Complex's own type, the house that set the edition
-this corpus is transcribed from.
+All Arabic on the site is set in **KFGQPC HAFS Uthmanic Script** — the King Fahd
+Glorious Qur'an Printing Complex's own type, Uthman Taha's hand, from the house
+that set the edition this corpus is transcribed from. 105 KB as woff2, fetched
+by `scripts/fetch_arabic_font.py` from
+[QUL](https://qul.tarteel.ai/resources/font/245), which is where the Complex's
+fonts are published in a form you can actually link.
 
-The font files are **not committed**. The Complex publishes them itself under
-its own terms, and those are its to give rather than this repository's to pass
-on, so `scripts/fetch_arabic_font.py` fetches them into `web/fonts/` instead.
-Until they are there, `ds/arabic.css` simply fails to load them and every page
-falls through to Amiri, which is vendored — nothing breaks, the Arabic is just
-set in Amiri.
+Which of the Complex's fonts matters more than it sounds. Most of them are
+**page-by-page**: 604 separate files, one per page of the Madinah Mushaf, where
+a glyph is a whole word at a private-use codepoint. Ask one for a plain Arabic
+letter and it has none — `p1.woff2` maps 36 codepoints, all in U+FC41–FC64, and
+not `ا`, `ل` or `آ` among them. Those fonts set the Mushaf and nothing else.
+This corpus is prose, so it needs the *Unicode text* font, which is this one.
 
-The Complex's Mushaf face, KFGQPC Uthmanic Script HAFS, is declared alongside it
-but not wired in: it is drawn for the Uthmani orthography with full tashkeel and
-this corpus prints its Qur'anic quotations in imla'i without it. `ds/arabic.css`
-says in one line how to set the quotations in it should you want that.
+Two things were measured rather than assumed:
+
+- The Complex ships TrueType; the site serves woff2, which is the same outlines
+  under better compression — 291 KB down to 105 KB. Rendered to a canvas and
+  compared pixel by pixel against the original `.ttf`, nine samples from single
+  letters to full sentences are **identical, not one pixel apart**.
+- The font has **no precomposed alef madda**, because the Mushaf writes آ as an
+  alef plus a combining madda — and the corpus uses U+0622 nearly twelve
+  thousand times. It renders correctly regardless: HarfBuzz decomposes a
+  character the font lacks, and Chrome, Firefox and Edge all shape with
+  HarfBuzz. Measured, `آ` is 252 ink pixels against a bare alef's 160, the madda
+  sitting twelve pixels higher.
+
+  Giving it a precomposed glyph was tried and thrown away. The geometry is not
+  the problem — the font's own GPOS anchors put the madda at (−100, +1350) on
+  the alef, and a composite built there is right in isolation. But a glyph
+  invented after the fact belongs to no GSUB coverage, so it never gets its
+  joined form: `الآخرة` came out **1,133 pixels** away from the shaper's own
+  rendering while an isolated alef matched exactly. Doing it properly needs a
+  `ccmp` decomposition rule, which is what HarfBuzz already does for free. So
+  the font ships as the Complex made it, and on a shaper that does not
+  decompose that one character falls through to Amiri, which draws it correctly.
+
+There is one weight — the Complex draws no bold, so bold Arabic is synthesised,
+as it was before. On the life page the Arabic is marked `lang="ar"` rather than
+classed, so the face is keyed off `:lang(ar)`; 47 elements there were inheriting
+a Latin face until it was.

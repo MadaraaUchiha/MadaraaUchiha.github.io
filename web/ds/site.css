@@ -4,7 +4,7 @@
   --leading: 28px;
   --half: 14px;
   --edge: clamp(20px, 5vw, 72px);
-  --font-arabic: "KFGQPC Uthman Taha Naskh", "Amiri",
+  --font-arabic: "KFGQPC HAFS Uthmanic Script", "Amiri",
     "Scheherazade New", var(--font-heading), serif;
   --readsize: 0px;
 }

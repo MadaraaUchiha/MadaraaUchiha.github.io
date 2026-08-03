@@ -384,7 +384,7 @@ def page(f, cites, neighbours) -> str:
 <link rel="preload" href="../fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="../fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../ds/fonts.css?v=1" />
-<link rel="stylesheet" href="../ds/arabic.css?v=1" />
+<link rel="stylesheet" href="../ds/arabic.css?v=2" />
 <script type="speculationrules">
 {{"prerender":[{{"where":{{"href_matches":"/f/*"}},"eagerness":"moderate"}}],
   "prefetch":[{{"where":{{"href_matches":"/search.html*"}},"eagerness":"moderate"}}]}}

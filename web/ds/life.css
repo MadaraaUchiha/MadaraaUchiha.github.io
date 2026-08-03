@@ -11,7 +11,7 @@
  */
 
 :root {
-  --font-arabic: "KFGQPC Uthman Taha Naskh", "Amiri",
+  --font-arabic: "KFGQPC HAFS Uthmanic Script", "Amiri",
     "Scheherazade New", var(--font-heading), serif;
 }
 
@@ -223,6 +223,14 @@ html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: 
 
 .arabic { font-family: var(--font-arabic); direction: rtl; }
 .arabic--rt { text-align: right; }
+
+/* The page marks its Arabic with lang="ar" in a good many places -- the station
+ * eyebrows and titles especially -- and until this rule those inherited
+ * whichever Latin face the heading was set in. The attribute is already the
+ * truth about the content, so key off it rather than tag each span again.
+ * isolate keeps a right-to-left run from dragging the punctuation around it
+ * when it sits inside an English line, which is where most of these are. */
+:lang(ar) { font-family: var(--font-arabic); unicode-bidi: isolate; }
 
 /* The honorific after his name, set in the Arabic face and held back from the
    name by a word space, so it reads as said rather than as part of the title.
