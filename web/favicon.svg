@@ -1,22 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- The brand mark: the ornate bracket the masthead carries, drawn.
-       It used to be a text element set in Amiri. A favicon renders in its own
-       document, where the site's @font-face never reaches it, so the glyph fell
-       back to whatever system serif happened to hold U+FD3F, usually a plain
-       round bracket and sometimes nothing at all. Drawn as paths it is the same
-       mark on every machine.
-       No ground behind it either: a white plate is only right on a white tab
-       strip, and it showed as a pale square everywhere else. The gold follows
-       the reader's theme, the same two golds the site uses.
-       (No double hyphen anywhere in here: XML forbids it inside a comment, and
-       one crept in and made the whole file unparseable, so nothing drew.) -->
-  <style>
-    .mark { fill: none; stroke: #b68235; stroke-linecap: round; }
-    @media (prefers-color-scheme: dark) { .mark { stroke: #e1ad66; } }
-  </style>
-  <!-- One stroke, not two. A second inner bracket read as ornament at 64px and
-       as grey mush at 16, where the tab actually shows it: 4.4 units here is
-       2.2 device pixels at tab size, which lands solid instead of being all
-       antialiasing. Centred on the box by its outer edges, not its path. -->
-  <path class="mark" stroke-width="4.4" d="M11 4.5C18.6 9.5 21 12.4 21 16S18.6 22.5 11 27.5"/>
+  <!-- The brand mark: the ornate opening bracket, in the system's accent.
+       Same glyph the masthead carries.
+       No ground behind it: the plate here was #f3f2f2, which is only right on a
+       white tab strip and showed as a pale square against every dark one. -->
+  <text x="16" y="23" font-family="Amiri, Scheherazade New, serif" font-size="24"
+        text-anchor="middle" fill="#b68235">&#xFD3F;</text>
 </svg>
