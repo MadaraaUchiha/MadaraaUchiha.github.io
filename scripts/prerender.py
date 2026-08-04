@@ -39,7 +39,7 @@ OUT = WEB / "f"
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=3"
-SITE_CSS_V = "?v=5"
+SITE_CSS_V = "?v=6"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -240,10 +240,20 @@ NAV = """<nav class="nav">
   </button>
 </nav>"""
 
-FOOT = """<hr class="rule" />
+def foot(f) -> str:
+    """The footer, with a way to report what is wrong with *this* page.
+
+    The link carries the volume and page as ?ref=, so a reader who has found a
+    misprint does not have to describe where they were: the form opens with the
+    place already filled in. That is the difference between a report that can be
+    checked and one that cannot."""
+    ref = quote(f"Majmu' al-Fatawa, {cite_en(f)} ({f['id']})")
+    return f"""<hr class="rule" />
   <footer>
     <span class="en">Printed text from <em>Majmūʿ al-Fatāwā</em>, King Fahd Complex edition (1416 AH / 1995 CE), from the OpenITI corpus. The English is a machine translation provided for reading only; where it differs from the Arabic, the Arabic is what the Shaykh wrote. This is a research and retrieval tool: it surfaces what Ibn Taymiyyah wrote, with the source, and issues no rulings of its own.</span>
     <span class="ar" lang="ar">نصٌّ مطبوع من «مجموع الفتاوى»، طبعة مجمع الملك فهد (١٤١٦هـ / ١٩٩٥م)، من ذخيرة OpenITI. والترجمة الإنجليزية آليةٌ للاستئناس فقط، فإن خالفت العربية فالعربية هي ما كتبه الشيخ. وهذه أداة بحثٍ واستخراج، تُظهر ما كتبه ابن تيمية بعزوه، ولا تُفتي من نفسها.</span>
+    <span class="tellus en">Something wrong on this page? <a href="../corrections.html?ref={ref}">Tell us</a>.</span>
+    <span class="tellus ar" lang="ar">أفي هذه الصفحة خطأ؟ <a href="../corrections.html?ref={ref}">فأخبرنا</a>.</span>
   </footer>"""
 
 SCRIPT = """<script>
@@ -435,7 +445,7 @@ def page(f, cites, neighbours) -> str:
     </div>
     <aside class="reading-rail">{rail}</aside>
   </article>
-  {FOOT}
+  {foot(f)}
 </div>
 {SCRIPT}
 </body>
@@ -474,7 +484,8 @@ def main() -> int:
         total_bytes += len(out.encode("utf-8"))
 
     today = date.today().isoformat()
-    urls = [f"{SITE_URL}/", f"{SITE_URL}/search.html", f"{SITE_URL}/life.html"]
+    urls = [f"{SITE_URL}/", f"{SITE_URL}/search.html", f"{SITE_URL}/life.html",
+            f"{SITE_URL}/corrections.html"]
     urls += [f"{SITE_URL}/f/{f['id']}.html" for f in fatwas]
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

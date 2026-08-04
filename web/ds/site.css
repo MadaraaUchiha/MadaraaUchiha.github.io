@@ -183,6 +183,11 @@ a.narration .qref, span.narration > .qref { color: color-mix(in srgb, var(--colo
 footer { padding: calc(2 * var(--leading)) 0; font-size: 13px; line-height: var(--leading);
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 footer span { display: block; max-width: 78ch; }
+/* The one line in the footer worth clicking. Set apart from the colophon above
+   it, and in the accent, because a reader who has just found a misprint should
+   not have to hunt for where to say so. */
+footer .tellus { margin-top: var(--half); }
+footer .tellus a { color: var(--color-accent-700); }
 footer [lang="ar"] { font-size: 15px; }
 @media (max-width: 720px) {
   .nav { flex-wrap: wrap; }

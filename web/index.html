@@ -250,6 +250,8 @@ footer { padding: calc(2.5 * var(--leading)) 0 calc(3 * var(--leading)); font-si
   color: color-mix(in srgb, var(--color-text) 70%, transparent); }
 footer .edition { display: block; max-width: 78ch; }
 footer .edition + .edition { margin-top: var(--half); }
+footer .tellus { display: block; max-width: 78ch; margin-top: var(--leading); }
+footer .tellus a { color: var(--color-accent-700); }
 footer [lang="ar"] { font-size: 15px; }
 
 /* — responsive collapse — */
@@ -380,6 +382,7 @@ footer [lang="ar"] { font-size: 15px; }
   <a href="#specimen" aria-current="location"><span class="en">One result</span><span class="ar" lang="ar">نتيجة واحدة</span></a>
   <a href="#volumes"><span class="en">Volumes</span><span class="ar" lang="ar">المجلدات</span></a>
   <a href="life.html"><span class="en">His life</span><span class="ar" lang="ar">سيرته</span></a>
+  <a href="corrections.html"><span class="en">Corrections</span><span class="ar" lang="ar">التصويبات</span></a>
   <div class="langswitch" role="group" aria-label="Language / اللغة">
     <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
     <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>
@@ -555,6 +558,8 @@ footer [lang="ar"] { font-size: 15px; }
   <footer>
     <span class="edition en">Source: <em>Majmūʿ Fatāwā Shaykh al-Islām Aḥmad Ibn Taymiyyah</em>, compiled and arranged by ʿAbd al-Raḥmān b. Qāsim. King Fahd Complex for the Printing of the Noble Qur'ān, 1416 AH / 1995 CE. The work is in the public domain; the transcription is used under its open licence.</span>
     <span class="edition ar" lang="ar">المصدر: مجموع فتاوى شيخ الإسلام أحمد بن تيمية، جمع وترتيب عبد الرحمن بن قاسم. مطبوع مجمع الملك فهد لطباعة المصحف الشريف (١٤١٦هـ / ١٩٩٥م). والكتاب في الملك العام، والنسخة المحرَّرة مستعملةٌ بموجب رخصتها المفتوحة.</span>
+    <span class="tellus en">Found a mistake, or something that could be better? <a href="corrections.html">Write to us</a>.</span>
+    <span class="tellus ar" lang="ar">وقفتَ على خطأ، أو على ما يمكن أن يكون أحسن؟ <a href="corrections.html">فاكتب إلينا</a>.</span>
   </footer>
 </div>
 <script src="home.js?v=2"></script>

@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Corrections · MAJMŪʿ</title>
+<meta name="description" content="Found a mistake in the text, a Qur'ānic citation named wrongly, or something broken on the site? Write in. Corrections and suggestions for the Majmūʿ al-Fatāwā reading site." />
+<meta name="theme-color" content="#f3f2f2" />
+<meta name="robots" content="index, follow" />
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml" />
+<link rel="preload" href="fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/cormorant-garamond-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="ds/fonts.css?v=1" />
+<link rel="stylesheet" href="ds/arabic.css?v=3" />
+<link rel="stylesheet" href="ds/classical.css?v=3" />
+<link rel="stylesheet" href="ds/site.css?v=6" />
+<style>
+/* Corrections. Layout only; every colour, face and radius is the design
+   system's. The page is one column at a reading measure, because it is a page
+   for writing on and nothing should compete with the field you write in. */
+.write { max-width: 720px; margin: 0 auto; padding-bottom: calc(3 * var(--leading)); }
+.write .lede { font-size: 17px; line-height: var(--leading); margin: var(--leading) 0 0;
+  color: color-mix(in srgb, var(--color-text) 88%, transparent); }
+body[data-lang="ar"] .write .lede { font-size: 18px; line-height: 1.85; }
+
+/* what is worth reporting, and what to put in it */
+.asks { margin: var(--leading) 0 0; padding: 0; list-style: none;
+  border-top: 1px solid var(--color-divider); }
+.asks li { border-bottom: 1px solid var(--color-divider); padding: 12px 0;
+  display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: baseline;
+  font-size: 15px; line-height: 1.55; }
+.asks .n { font-family: var(--font-heading); font-size: 12px; letter-spacing: .1em;
+  color: var(--color-accent-700); font-feature-settings: "tnum" 1; }
+
+/* the form */
+.form { margin-top: calc(1.5 * var(--leading)); display: grid; gap: var(--leading); }
+.field { display: grid; gap: 8px; }
+.field > label, .legend { font-family: var(--font-heading); font-size: 12.5px;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent); }
+body[data-lang="ar"] .field > label, body[data-lang="ar"] .legend {
+  letter-spacing: 0; text-transform: none; font-size: 15px; }
+.field .hint { font-size: 13.5px; line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text) 62%, transparent); }
+fieldset.field { border: 0; margin: 0; padding: 0; }
+
+/* the kinds of report, as a wrapping set of choices */
+.kinds { display: flex; flex-wrap: wrap; gap: 8px; }
+.kinds label { cursor: pointer; }
+.kinds span { display: block; padding: 7px 13px; font-size: 14px; line-height: 1.3;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--color-text) 78%, transparent); transition: none; }
+.kinds input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.kinds label:hover span { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.kinds input:focus-visible + span { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.kinds input:checked + span { border-color: var(--color-accent); color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+
+/* the message: the point of the page, so it is the biggest thing on it and it
+   grows as you write rather than making you scroll a small box */
+textarea.say { min-height: 220px; font-size: 15.5px; line-height: var(--leading);
+  resize: vertical; overflow: hidden; }
+body[data-lang="ar"] textarea.say { font-size: 16.5px; line-height: 1.9; }
+.saybar { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline;
+  font-size: 13px; color: color-mix(in srgb, var(--color-text) 58%, transparent); }
+.saybar .warn { color: var(--color-accent-700); }
+
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;
+  margin-top: calc(0.5 * var(--leading)); }
+.actions .btn { min-height: 44px; padding-inline: var(--space-5); font-size: 15px; }
+.said { font-size: 13.5px; color: var(--color-accent-700); min-height: 1.2em; }
+
+/* the address itself, for anyone who would rather write in their own client */
+.direct { margin-top: calc(1.5 * var(--leading)); padding-top: var(--leading);
+  border-top: 1px solid var(--color-divider); font-size: 14.5px; line-height: 1.6;
+  color: color-mix(in srgb, var(--color-text) 74%, transparent); }
+.direct a { color: var(--color-accent-700); }
+.direct .addr { font-family: var(--font-body); font-feature-settings: "tnum" 1; }
+
+@media (max-width: 600px) {
+  .actions { display: grid; }
+  .actions .btn { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body data-lang="en">
+<a class="skip" href="#say"><span class="en">Skip to the message</span><span class="ar" lang="ar">تخطَّ إلى الرسالة</span></a>
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <span class="mark" aria-hidden="true">﴿</span>
+    <span class="name en">MAJMŪʿ</span>
+    <span class="name ar" lang="ar">المجموع</span>
+  </a>
+  <form class="bar-seek" action="search.html" method="get" role="search" autocomplete="off">
+    <div class="field-wrap">
+      <span class="ico" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      </span>
+      <input class="input" type="search" name="q" id="q" spellcheck="false" aria-label="Search the fatāwā" />
+    </div>
+    <button type="submit" class="btn btn-primary"><span class="en">Search</span><span class="ar" lang="ar">ابحث</span></button>
+  </form>
+  <div class="langswitch" role="group" aria-label="Language / اللغة">
+    <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
+    <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>
+  </div>
+  <button type="button" class="btn nightswitch" data-theme-btn aria-label="Night reading / القراءة الليلية">
+    <svg class="i-day" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+    <svg class="i-night" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"></path></svg>
+  </button>
+</nav>
+
+<div class="wrap">
+  <div class="write">
+    <section class="head">
+      <span class="kicker en">Write to us</span>
+      <span class="kicker ar" lang="ar">راسلنا</span>
+      <h1>
+        <span class="en">Corrections and suggestions</span>
+        <span class="ar" lang="ar">التصويبات والاقتراحات</span>
+      </h1>
+      <p class="lede en">This site is a transcription of a printed edition, read by a machine
+        and checked by hand only in places. Its English is a machine rendering. Some of it will be
+        wrong. If you find something wrong, or something that could be better, tell us and it will
+        be looked at.</p>
+      <p class="lede ar" lang="ar">هذا الموضع نسخةٌ محرَّرة عن طبعةٍ مطبوعة، قرأتها آلةٌ ولم
+        تُراجَع باليد إلا في مواضع. وترجمته الإنجليزية آلية. ولا بدَّ أن يكون فيه خطأ. فإن وقفتَ
+        على خطأ، أو على ما يمكن أن يكون أحسن، فاكتب إلينا يُنظَر فيه.</p>
+    </section>
+
+    <ul class="asks">
+      <li><span class="n" aria-hidden="true">01</span>
+        <span class="en">A word wrong in the Arabic, against the printed page. These matter most: the Arabic is the thing this site exists to carry faithfully.</span>
+        <span class="ar" lang="ar">كلمةٌ خطأ في العربية، خلافَ ما في المطبوع. وهذا أهمُّها، فالعربية هي التي قام هذا الموضع على نقلها كما هي.</span></li>
+      <li><span class="n" aria-hidden="true">02</span>
+        <span class="en">A Qur'ānic verse named wrongly, or a verse quoted and not marked as one at all.</span>
+        <span class="ar" lang="ar">آيةٌ عُزيت إلى غير موضعها، أو آيةٌ نُقلت ولم تُعرَف قرآناً.</span></li>
+      <li><span class="n" aria-hidden="true">03</span>
+        <span class="en">Something marked as a narration that is not one, or a narration you can place.</span>
+        <span class="ar" lang="ar">ما وُسم بأنه حديث وليس بحديث، أو حديثٌ تعرف تخريجه.</span></li>
+      <li><span class="n" aria-hidden="true">04</span>
+        <span class="en">An English rendering that says something the Arabic does not.</span>
+        <span class="ar" lang="ar">ترجمةٌ إنجليزية تقول ما لا تقوله العربية.</span></li>
+      <li><span class="n" aria-hidden="true">05</span>
+        <span class="en">Something broken: a page that will not open, a link that goes nowhere, text that will not read on your screen.</span>
+        <span class="ar" lang="ar">عطبٌ في الموضع: صفحةٌ لا تُفتح، أو رابطٌ لا يُفضي إلى شيء، أو نصٌّ لا يُقرأ على شاشتك.</span></li>
+      <li><span class="n" aria-hidden="true">06</span>
+        <span class="en">Anything else at all — a suggestion, a question, or something that simply reads badly.</span>
+        <span class="ar" lang="ar">وأيُّ شيءٍ سوى ذلك: اقتراحٌ، أو سؤالٌ، أو ما تراه ركيكاً.</span></li>
+    </ul>
+
+    <!-- Nothing is submitted anywhere. The page composes a message and hands it
+         to your own mail client, or to your clipboard: no third-party form
+         service, no request leaves this origin, and nothing you type is sent
+         until you send it yourself. -->
+    <form class="form" id="form" data-to="uchihaxa@gmail.com" novalidate>
+      <fieldset class="field">
+        <legend class="legend en">What is it about</legend>
+        <legend class="legend ar" lang="ar">في أيِّ شيء</legend>
+        <div class="kinds" id="kinds">
+          <label><input type="radio" name="kind" value="the Arabic text" data-ar="النص العربي" checked />
+            <span class="en">The Arabic text</span><span class="ar" lang="ar">النص العربي</span></label>
+          <label><input type="radio" name="kind" value="a Qur'anic citation" data-ar="عزو آية" />
+            <span class="en">A Qur'ānic citation</span><span class="ar" lang="ar">عزو آية</span></label>
+          <label><input type="radio" name="kind" value="a narration" data-ar="حديث" />
+            <span class="en">A narration</span><span class="ar" lang="ar">حديث</span></label>
+          <label><input type="radio" name="kind" value="the English" data-ar="الترجمة" />
+            <span class="en">The English</span><span class="ar" lang="ar">الترجمة</span></label>
+          <label><input type="radio" name="kind" value="something broken" data-ar="عطب في الموقع" />
+            <span class="en">Something broken</span><span class="ar" lang="ar">عطب في الموقع</span></label>
+          <label><input type="radio" name="kind" value="a suggestion" data-ar="اقتراح" />
+            <span class="en">A suggestion</span><span class="ar" lang="ar">اقتراح</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="where"><span class="en">Where</span><span class="ar" lang="ar">الموضع</span></label>
+        <input class="input" type="text" id="where" name="where" autocomplete="off"
+               placeholder="Volume 27, p. 64 — or paste the address of the page" />
+        <p class="hint en">The volume and page, or the address of the page you were reading. If you
+          came here from a fatwa, this is filled in already.</p>
+        <p class="hint ar" lang="ar">المجلد والصفحة، أو عنوان الصفحة التي كنت تقرؤها. وإن جئتَ من
+          فتوى فهذا مملوءٌ لك.</p>
+      </div>
+
+      <div class="field">
+        <label for="say"><span class="en">What is wrong, and what it should be</span><span class="ar" lang="ar">ما الخطأ، وما صوابه</span></label>
+        <textarea class="input say" id="say" name="say" rows="9" spellcheck="true"
+                  placeholder="Quote the words as the site shows them, then the words as they should be. Anything you can add — the printed page, an edition, a reference — makes it quicker to check."></textarea>
+        <div class="saybar">
+          <span id="count"></span>
+          <span id="long" class="warn" hidden></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="who"><span class="en">Your name, if you would like it known</span><span class="ar" lang="ar">اسمك، إن أحببت</span></label>
+        <input class="input" type="text" id="who" name="who" autocomplete="name" />
+        <p class="hint en">Optional. Your mail client will show your address to us whichever way you send it.</p>
+        <p class="hint ar" lang="ar">اختياري. وبريدك يظهر لنا على كل حال من برنامج بريدك.</p>
+      </div>
+
+      <div class="actions">
+        <!-- A real link, not a button that navigates. It carries a working
+             mailto: from the moment the page loads and is rewritten as you
+             type, so it can be right-clicked, opened in a new tab, and still
+             reaches the right address with JavaScript switched off. -->
+        <a class="btn btn-primary" id="send" href="mailto:uchihaxa@gmail.com">
+          <span class="en">Open this in your mail app</span><span class="ar" lang="ar">افتحها في بريدك</span>
+        </a>
+        <button type="button" class="btn btn-secondary" id="copy">
+          <span class="en">Copy the message instead</span><span class="ar" lang="ar">انسخ الرسالة بدلاً من ذلك</span>
+        </button>
+        <span class="said" id="said" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <p class="direct">
+      <span class="en">Or write to <a class="addr" id="mailto1" href="#">the address</a> yourself, from
+        whatever you use. A draft you leave half-written here is kept on this device until you send
+        it, and never leaves it.</span>
+      <span class="ar" lang="ar">أو اكتب إلى <a class="addr" id="mailto2" href="#">العنوان</a> بنفسك
+        من حيث شئت. وما تبدأ كتابته هنا يُحفظ على جهازك حتى ترسله، ولا يفارقه.</span>
+    </p>
+  </div>
+
+  <hr class="rule" />
+  <footer>
+    <span class="en">Nothing on this page is submitted to a server. The message is composed here and handed to your own mail client or your clipboard, so nothing you write is sent anywhere until you send it.</span>
+    <span class="ar" lang="ar">لا يُرفَع من هذه الصفحة شيءٌ إلى خادم. وإنما تُنشَأ الرسالة هنا ثم تُسلَّم إلى برنامج بريدك أو إلى حافظتك، فلا يُرسَل ما تكتبه إلى أحدٍ حتى ترسله أنت.</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const root = document.documentElement, body = document.body;
+  const form = document.getElementById('form');
+
+  /* The address everything on this page goes to. It is written once, here, in
+     the form's data-to attribute -- the two links in the prose below are filled
+     from it too, so changing that one attribute changes the whole page. */
+  const TO = form.dataset.to;
+
+  const setLang = (lang, persist) => {
+    body.dataset.lang = lang;
+    root.lang = lang;
+    root.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    for (const b of document.querySelectorAll('[data-lang-btn]'))
+      b.setAttribute('aria-pressed', String(b.dataset.langBtn === lang));
+    const q = document.querySelector('input[name="q"]');
+    if (q) q.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    /* The fields hold what the writer typed, so they follow the writer, not the
+       interface: an Arabic message stays right-to-left even in the English UI. */
+    for (const el of [where, say, who]) el.dir = 'auto';
+    say.placeholder = lang === 'ar' ? PLACE.ar : PLACE.en;
+    where.placeholder = lang === 'ar' ? WHERE.ar : WHERE.en;
+    count();
+    refresh();
+    if (persist) { try { localStorage.setItem('majmu:lang', lang); } catch (e) {} }
+  };
+  const setTheme = (t, persist) => {
+    root.dataset.theme = t;
+    document.querySelector('meta[name="theme-color"]')
+      .setAttribute('content', t === 'night' ? '#14120e' : '#f3f2f2');
+    if (persist) { try { localStorage.setItem('majmu:theme', t); } catch (e) {} }
+  };
+
+  const where = document.getElementById('where');
+  const say = document.getElementById('say');
+  const who = document.getElementById('who');
+  const said = document.getElementById('said');
+
+  const PLACE = {
+    en: say.placeholder,
+    ar: 'انقل الكلام كما يعرضه الموضع، ثم كما ينبغي أن يكون. وكل ما تضيفه — الصفحة المطبوعة، أو طبعة، أو مرجع — يُعجِّل التحقق منه.'
+  };
+  const WHERE = {
+    en: where.placeholder,
+    ar: 'المجلد ٢٧، ص ٦٤ — أو الصق عنوان الصفحة'
+  };
+
+  /* Where they came from. A link anywhere on the site can carry ?ref=, and a
+     reader arriving straight from a page of the edition gets it filled in
+     rather than being asked to describe where they were. */
+  const params = new URLSearchParams(location.search);
+  const ref = params.get('ref');
+  if (ref) where.value = ref.slice(0, 300);
+  else if (document.referrer && document.referrer.indexOf(location.origin) === 0
+           && document.referrer.indexOf('corrections.html') < 0) {
+    where.value = document.referrer;
+  }
+
+  /* A half-written message survives a reload, a closed tab, a misclick. It is
+     kept on this device only, and cleared the moment it is sent or copied. */
+  const KEY = 'majmu:draft';
+  const load = () => {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (!d) return;
+    if (d.say) say.value = d.say;
+    if (d.who) who.value = d.who;
+    if (d.where && !where.value) where.value = d.where;
+    if (d.kind) {
+      const r = form.querySelector('input[name="kind"][value="' + CSS.escape(d.kind) + '"]');
+      if (r) r.checked = true;
+    }
+  };
+  const save = () => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        say: say.value, who: who.value, where: where.value, kind: kind()
+      }));
+    } catch (e) {}
+  };
+  const forget = () => { try { localStorage.removeItem(KEY); } catch (e) {} };
+
+  const kind = () => (form.querySelector('input[name="kind"]:checked') || {}).value || '';
+  const kindAr = () => {
+    const r = form.querySelector('input[name="kind"]:checked');
+    return r ? (r.dataset.ar || r.value) : '';
+  };
+
+  /* The textarea grows with what is written in it, so a long correction is not
+     written through a letterbox. It never shrinks below its CSS min-height. */
+  const grow = () => {
+    say.style.height = 'auto';
+    say.style.height = Math.max(say.scrollHeight, 220) + 'px';
+  };
+
+  const MAILTO_SAFE = 1800;   // beyond this some mail clients truncate the body
+  function count() {
+    const n = say.value.trim() ? say.value.trim().split(/\s+/).length : 0;
+    const ar = body.dataset.lang === 'ar';
+    document.getElementById('count').textContent =
+      n === 0 ? '' : (ar ? n + ' كلمة' : n + (n === 1 ? ' word' : ' words'));
+    const longEl = document.getElementById('long');
+    const over = body_().length > MAILTO_SAFE;
+    longEl.hidden = !over;
+    longEl.textContent = over
+      ? (ar ? 'رسالةٌ طويلة — بعض برامج البريد تقطعها. فالأولى أن تنسخها.'
+            : 'This is long enough that some mail apps will cut it short. Copying is safer.')
+      : '';
+  }
+
+  function subject() {
+    const k = body.dataset.lang === 'ar' ? kindAr() : kind();
+    return 'MAJMUʿ — ' + k + (where.value.trim() ? ' — ' + where.value.trim() : '');
+  }
+  function body_() {
+    const ar = body.dataset.lang === 'ar';
+    const L = ar
+      ? { k: 'في', w: 'الموضع', m: 'الرسالة', n: 'الاسم' }
+      : { k: 'About', w: 'Where', m: 'Message', n: 'From' };
+    const lines = [
+      L.k + ': ' + (ar ? kindAr() : kind()),
+      where.value.trim() ? L.w + ': ' + where.value.trim() : '',
+      '',
+      say.value.trim(),
+      '',
+      who.value.trim() ? L.n + ': ' + who.value.trim() : ''
+    ];
+    return lines.filter((l, i) => l !== '' || i === 2 || i === 4).join('\n').trim();
+  }
+  const href = () => 'mailto:' + encodeURIComponent(TO)
+    + '?subject=' + encodeURIComponent(subject())
+    + '&body=' + encodeURIComponent(body_());
+
+  function tell(msg) {
+    said.textContent = msg;
+    clearTimeout(tell._t);
+    tell._t = setTimeout(() => { said.textContent = ''; }, 6000);
+  }
+  const empty = () => {
+    const ar = body.dataset.lang === 'ar';
+    say.focus();
+    tell(ar ? 'اكتب الرسالة أولاً.' : 'Write the message first.');
+    return true;
+  };
+
+  const send = document.getElementById('send');
+  /* The link's href is the message. Rewritten on every keystroke so what it
+     opens is always what is on screen, and so it can be inspected. */
+  const refresh = () => { send.href = href(); };
+  send.addEventListener('click', (e) => {
+    if (!say.value.trim()) { e.preventDefault(); return void empty(); }
+    forget();
+  });
+  form.addEventListener('submit', (e) => { e.preventDefault(); send.click(); });
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    if (!say.value.trim()) return void empty();
+    const ar = body.dataset.lang === 'ar';
+    const text = TO + '\n' + subject() + '\n\n' + body_();
+    try {
+      await navigator.clipboard.writeText(text);
+      forget();
+      tell(ar ? 'نُسخت الرسالة مع العنوان.' : 'Copied, with the address.');
+    } catch (err) {
+      say.select();
+      tell(ar ? 'انسخها بنفسك: النص محدَّد.' : 'Copy it yourself — the text is selected.');
+    }
+  });
+
+  for (const el of [say, where, who]) {
+    el.addEventListener('input', () => { save(); count(); refresh(); });
+    el.dir = 'auto';
+  }
+  say.addEventListener('input', grow);
+  document.getElementById('kinds').addEventListener('change', () => { save(); count(); refresh(); });
+
+  /* Ctrl+Enter, or Cmd+Enter, sends without reaching for the mouse. */
+  say.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') send.click();
+  });
+
+  for (const id of ['mailto1', 'mailto2']) {
+    const a = document.getElementById(id);
+    a.textContent = TO;
+    a.href = 'mailto:' + encodeURIComponent(TO);
+  }
+
+  let lang = null, theme = null;
+  try { lang = localStorage.getItem('majmu:lang'); theme = localStorage.getItem('majmu:theme'); } catch (e) {}
+  load();
+  setLang(lang === 'ar' ? 'ar' : 'en');
+  setTheme(theme === 'night' ? 'night' : 'day');
+  grow();
+  count();
+  refresh();
+  for (const b of document.querySelectorAll('[data-lang-btn]'))
+    b.addEventListener('click', () => setLang(b.dataset.langBtn, true));
+  for (const b of document.querySelectorAll('[data-theme-btn]'))
+    b.addEventListener('click', () => setTheme(root.dataset.theme === 'night' ? 'day' : 'night', true));
+})();
+</script>
+</body>
+</html>
