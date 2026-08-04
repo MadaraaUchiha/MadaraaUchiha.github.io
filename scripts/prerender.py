@@ -39,7 +39,7 @@ OUT = WEB / "f"
 # back to the dev server, which is only ever used for looking at the pages.
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8777").rstrip("/")
 CSS_V = "?v=3"
-SITE_CSS_V = "?v=6"
+SITE_CSS_V = "?v=8"
 
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 BRACED, NARRATION = 0, -1
@@ -230,6 +230,7 @@ NAV = """<nav class="nav">
     </div>
     <button type="submit" class="btn btn-primary"><span class="en">Search</span><span class="ar" lang="ar">ابحث</span></button>
   </form>
+  <a class="nav-write" href="../corrections.html" aria-label="Write to us / راسلنا"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.6 6.2 8.4 5.9 8.4-5.9"/></svg><span class="lbl en">Write to us</span><span class="lbl ar" lang="ar">راسلنا</span></a>
   <div class="langswitch" role="group" aria-label="Language / اللغة">
     <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
     <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>

@@ -94,7 +94,28 @@ body[data-lang="ar"] .life .note, body[data-lang="ar"] .specimen .aside { line-h
 /* Narrow: the section links go, the wordmark stays. It is an <a> too, so a bare
    `.nav a` took it with them and left the masthead holding nothing but the
    language switch -- no name, and no way back to the top of the site. */
-@media (max-width: 780px) { .nav a:not(.nav-brand) { display: none; } }
+/* Write to us. The one invitation in the masthead, so it keeps its gold and
+   stays put where the section links are dropped: someone who has just found a
+   misprint on a phone should not have to scroll to the foot of a forty-thousand
+   character answer to say so. The label gives way to the envelope when the bar
+   is tight -- on the search and reading pages that bar is already carrying a
+   search field, and the field matters more than the word. */
+/* .nav a sets `color: inherit`, and it out-specifies a bare .nav-write, so this
+   is written as .nav a.nav-write or the invitation comes out in body text
+   colour instead of gold. */
+.nav a.nav-write { display: inline-flex; align-items: center; gap: 7px;
+  white-space: nowrap; text-decoration: none; color: var(--color-accent-700);
+  min-height: 36px; padding-inline: 8px; border-radius: var(--radius-md); }
+.nav a.nav-write svg { display: block; flex: none; }
+.nav a.nav-write:hover { color: var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+/* Once the label goes the link is an icon, and an icon needs a target a thumb
+   can actually hit: 16px of envelope in a 36px box, not 16px of envelope. */
+@media (max-width: 900px) {
+  .nav a.nav-write .lbl { display: none; }
+  .nav a.nav-write { min-width: 36px; justify-content: center; padding-inline: 0; }
+}
+@media (max-width: 780px) { .nav a:not(.nav-brand):not(.nav-write) { display: none; } }
 
 /* — hairline seams — */
 .rule { height: 1px; border: 0; margin: 0; background: var(--color-divider); }
@@ -382,7 +403,7 @@ footer [lang="ar"] { font-size: 15px; }
   <a href="#specimen" aria-current="location"><span class="en">One result</span><span class="ar" lang="ar">نتيجة واحدة</span></a>
   <a href="#volumes"><span class="en">Volumes</span><span class="ar" lang="ar">المجلدات</span></a>
   <a href="life.html"><span class="en">His life</span><span class="ar" lang="ar">سيرته</span></a>
-  <a href="corrections.html"><span class="en">Corrections</span><span class="ar" lang="ar">التصويبات</span></a>
+  <a class="nav-write" href="corrections.html" aria-label="Write to us / راسلنا"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.6 6.2 8.4 5.9 8.4-5.9"/></svg><span class="lbl en">Write to us</span><span class="lbl ar" lang="ar">راسلنا</span></a>
   <div class="langswitch" role="group" aria-label="Language / اللغة">
     <button type="button" data-lang-btn="en" aria-pressed="true">English</button>
     <button type="button" data-lang-btn="ar" lang="ar" aria-pressed="false">العربية</button>

@@ -36,6 +36,28 @@ body[data-lang="ar"] .en { display: none; }
 .langswitch button:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); color: var(--color-accent-700); }
 .langswitch button[aria-pressed="true"] { color: var(--color-accent-700); background: color-mix(in srgb, var(--color-accent) 14%, transparent); }
 @media (max-width: 720px) { .nav-brand .name { display: none; } }
+/* Write to us. The one invitation in the masthead, so it keeps its gold and
+   stays put where the section links are dropped: someone who has just found a
+   misprint on a phone should not have to scroll to the foot of a forty-thousand
+   character answer to say so. The label gives way to the envelope when the bar
+   is tight -- on the search and reading pages that bar is already carrying a
+   search field, and the field matters more than the word. */
+/* .nav a sets `color: inherit`, and it out-specifies a bare .nav-write, so this
+   is written as .nav a.nav-write or the invitation comes out in body text
+   colour instead of gold. */
+.nav a.nav-write { display: inline-flex; align-items: center; gap: 7px;
+  white-space: nowrap; text-decoration: none; color: var(--color-accent-700);
+  min-height: 36px; padding-inline: 8px; border-radius: var(--radius-md); }
+.nav a.nav-write svg { display: block; flex: none; }
+.nav a.nav-write:hover { color: var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+/* Once the label goes the link is an icon, and an icon needs a target a thumb
+   can actually hit: 16px of envelope in a 36px box, not 16px of envelope. */
+@media (max-width: 900px) {
+  .nav a.nav-write .lbl { display: none; }
+  .nav a.nav-write { min-width: 36px; justify-content: center; padding-inline: 0; }
+}
+
 
 /* — the count line and the filters — */
 .head { padding: calc(1.75 * var(--leading)) 0 0; }
