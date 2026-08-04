@@ -391,7 +391,7 @@ def page(f, cites, neighbours) -> str:
 <meta property="og:description" content="{e(desc)}" />
 <meta property="og:url" content="{url}" />
 <meta property="og:site_name" content="MAJMŪʿ" />
-<link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../favicon.svg?v=2" type="image/svg+xml" />
 <link rel="preload" href="../fonts/lora-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="../fonts/amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../ds/fonts.css?v=1" />
