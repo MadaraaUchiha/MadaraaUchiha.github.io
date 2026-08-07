@@ -32,6 +32,24 @@ os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 # Raw source text (OpenITI mARkdown, Shamela 7289 = King Fahd Complex edition).
 RAW_TEXT_FILE = RAW_DIR / "MajmucFatawa.Shamela0007289-ara1.txt"
 
+# The Qur'an the reader is shown: Dr. Mustafa Khattab's The Clear Qur'an,
+# Allah edition, which is what quran.com shows by default. Fetched by
+# scripts/fetch_quran_translation.py. quran_en.json, Saheeh International, is
+# still here and IKE_QURAN_FILE=quran_en.json puts it back.
+#
+# The Arabic is the same in both and is always the Uthmani text from
+# quran_en.json: src/quran.py matches the printed fatawa against that spelling
+# and carries a translation table built for it.
+QURAN_FILE = RAW_DIR / os.environ.get("IKE_QURAN_FILE", "quran_en_khattab.json")
+
+# The translation a verse is *found* by, which need not be the one shown. See
+# src.quran.get_quran_for_matching: placement works by finding a run of the
+# authoritative English inside the machine's own literal wording, so a literal
+# translation finds far more of them than a free one. Leave this on Saheeh
+# International even when the reader is shown something else.
+QURAN_MATCH_FILE = RAW_DIR / os.environ.get("IKE_QURAN_MATCH_FILE",
+                                            "quran_en.json")
+
 # Processed artifacts
 PASSAGES_FILE = PROCESSED_DIR / "passages.jsonl"          # one passage per line
 EMBEDDINGS_FILE = INDEX_DIR / "embeddings.npy"            # float32 [N, dim]

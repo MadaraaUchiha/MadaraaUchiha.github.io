@@ -32,6 +32,7 @@ data cannot support.
 """
 from __future__ import annotations
 
+import functools
 import json
 import re
 import sys
@@ -47,7 +48,8 @@ if hasattr(sys.stdout, "reconfigure"):
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.corrections import Corrections, CorrectionError, ayah_reference  # noqa: E402
-from src.quran import get_quran, _fold, MIN_CHARS  # noqa: E402
+from src.quran import (get_quran, get_quran_for_matching,  # noqa: E402
+                       _fold, MIN_CHARS)
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB_DATA = ROOT / "web" / "data"
@@ -129,6 +131,26 @@ def ref_of(m) -> dict:
         "t": m.english,
         "u": m.url,
     }
+
+
+@functools.lru_cache(maxsize=None)
+def match_english(ref: str) -> str:
+    """The wording a verse is hunted for by, which is not what is shown.
+
+    ref_of stores the English the reader sees. Placing a verse inside the
+    translation is a different job: it works by finding a verbatim run of an
+    authoritative English in the machine's own literal wording, so the closer
+    that authority is to literal, the more verses are found. Saheeh
+    International places 57.8% of them and Khattab 34.8% -- the same verses,
+    the same corpus, only a freer English to look for.
+
+    So the two are allowed to differ. When they are the same file this returns
+    the same string and nothing changes.
+    """
+    try:
+        return ayah_reference(get_quran_for_matching(), ref)["english"]
+    except Exception:                                # noqa: BLE001
+        return ""
 
 
 def en_words(text: str):
@@ -500,7 +522,7 @@ def scan_english(text: str, table: RefTable, ar_marks: list[int]):
     for idx, ref in enumerate(table.refs):
         if idx in placed:
             continue
-        auth = [w for w, _, _ in en_words(ref["t"])]
+        auth = [w for w, _, _ in en_words(match_english(ref["r"]) or ref["t"])]
         if len(auth) < RUN:
             continue
         anchor = None                    # (index into auth, index into text)

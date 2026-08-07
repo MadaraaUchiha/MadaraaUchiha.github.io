@@ -1,7 +1,22 @@
 {
+  "itq_00002": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'Lord-devoted ones'. Standardised -- see itq_00065 for the word, and the note there. The 7:36 assertion is the worked example from example.json, kept here because the build refuses the same fatwa in two files, and example.json is retired now that there are real corrections.",
+    "replace": [
+      { "field": "ae", "find": "be Lord-devoted ones (rabbaniyyin) by", "with": "be master scholars (rabbaniyyin) by" }
+    ],
+    "quotations": [
+      {
+        "quote": "والذين كذبوا بآياتنا واستكبروا عنها أولئك أصحاب النار هم فيها خالدون",
+        "is": "7:36",
+        "why": "Second half of the passage quoting al-A'raf 7:35-36."
+      }
+    ]
+  },
+
   "itq_00065": {
     "by": "Madara",
-    "why": "'godly' for الرباني is wrong: it renders the word as piety alone. The classical definition is a scholar who is complete — learned, acting on what he knows, and teaching it (Ibn 'Abbas: 'la yusamma rabbaniyyan hatta yakuna 'aliman mu'alliman 'amilan'; al-Qamus: 'al-'alim al-'amil al-mu'allim al-murabbi'). 'Master scholar' carries that; 'godly' does not.",
+    "why": "'godly' for الرباني is wrong: it renders the word as piety alone. The classical definition is a scholar who is complete -- learned, acting on what he knows, and teaching it (Ibn 'Abbas: 'la yusamma rabbaniyyan hatta yakuna 'aliman mu'alliman 'amilan'; al-Tabari: 'al-'alim al-rasikh fi al-'ilm'; al-Qamus: 'al-'alim al-'amil al-mu'allim al-murabbi'). 'Master scholar' carries that; 'godly' does not. This is the rendering the rest of the corpus is now standardised to.",
     "replace": [
       { "field": "qe", "find": "The godly scholar Taqi al-Din", "with": "The master scholar Taqi al-Din" }
     ]
@@ -9,7 +24,7 @@
 
   "itq_00144": {
     "by": "Madara",
-    "why": "Same word, الرباني, rendered 'Lordly' here. In English 'lordly' means haughty or imperious, which is the opposite of the praise intended. Made consistent with itq_00065.",
+    "why": "الرباني as 'Lordly'. In English 'lordly' means haughty or imperious, which is the opposite of the praise intended.",
     "replace": [
       { "field": "qe", "find": "the Lordly scholar-mujtahid", "with": "the master scholar and mujtahid" }
     ]
@@ -17,9 +32,100 @@
 
   "itq_00228": {
     "by": "Madara",
-    "why": "Same word again, رباني الأمة, rendered 'the Lord-devoted one of the community'. The nisba to الرب is the etymology, not the claim; the claim is that he is the community's complete scholar. Made consistent with itq_00065.",
+    "why": "رباني الأمة as 'the Lord-devoted one of the community'. The nisba to الرب is the etymology, not the claim; the claim is that he is the community's complete scholar.",
     "replace": [
       { "field": "ae", "find": "the Lord-devoted one of the community", "with": "the master scholar of the community" }
+    ]
+  },
+
+  "itq_00009": {
+    "by": "Madara",
+    "why": "Two of الرباني in one fatwa, and not the same sense. The first is Al 'Imran 3:79, where the ayah itself grounds the word in teaching and studying the Book, so 'master scholars' is exactly what it asks for. The second is مظهر رباني, said by the people of ittihad of a tyrant king: there the nisba really is to الرب and nothing about scholarship is meant, so the rendering has to differ.",
+    "replace": [
+      { "field": "ae", "find": "be Lordly [scholars] by", "with": "be master scholars (rabbaniyyin) by" },
+      { "field": "ae", "find": "or 'a Lordly locus-of-manifestation'", "with": "or 'a locus-of-manifestation of the Lord'" }
+    ]
+  },
+
+  "itq_00145": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'worshippers of the Lord'. That is the one thing the ayah does not say: it is contrasting being worshipped with being a teacher of the Book. Standardised.",
+    "replace": [
+      { "field": "ae", "find": "be worshippers of the Lord (rabbaniyyin) by", "with": "be master scholars (rabbaniyyin) by" }
+    ]
+  },
+
+  "itq_00569": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'lordly [scholars]'. Standardised.",
+    "replace": [
+      { "field": "ae", "find": "be lordly [scholars] by", "with": "be master scholars (rabbaniyyin) by" }
+    ]
+  },
+
+  "itq_00655": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'devoted [scholars] of the Lord'. Standardised.",
+    "replace": [
+      { "field": "ae", "find": "be devoted [scholars] of the Lord (rabbaniyyin), by", "with": "be master scholars (rabbaniyyin), by" }
+    ]
+  },
+
+  "itq_00657": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'Lordly [scholars]'. Standardised.",
+    "replace": [
+      { "field": "ae", "find": "be Lordly [scholars] by", "with": "be master scholars (rabbaniyyin) by" }
+    ]
+  },
+
+  "itq_00688": {
+    "by": "Madara",
+    "why": "Al 'Imran 3:79, ربانيين, as 'Lordly [scholars]'. Standardised. The transliteration the machine put here is the one now carried at all seven places the ayah appears.",
+    "replace": [
+      { "field": "ae", "find": "be Lordly [scholars] (rabbaniyyin) by", "with": "be master scholars (rabbaniyyin) by" }
+    ]
+  },
+
+
+  "itq_00012": {
+    "by": "Madara",
+    "why": "ربيون in Al 'Imran 3:146 as 'godly men'. Checked against the editions before changing it: Khattab has 'devotees', Pickthall 'devoted men', while 'godly men' is in fact Abdel Haleem's and Yusuf Ali's wording, so the machine did not invent it. Changed anyway -- 'godly' collapses the word into piety, and itq_00160 already renders this same ayah 'many devoted men', so the corpus now agrees with itself and with Pickthall.",
+    "replace": [
+      { "field": "ae", "find": "with him many godly men", "with": "with him many devoted men" }
+    ]
+  },
+
+  "itq_00129": {
+    "by": "Madara",
+    "why": "القصائد الربانية as 'the Lordly odes'. A third sense of the word again: neither scholars nor a manifestation of the Lord, but odes claimed to be about Him, which is why the passage is sceptical of them.",
+    "replace": [
+      { "field": "ae", "find": "listen to the [supposedly] Lordly odes", "with": "listen to the [supposedly] devotional odes" },
+      { "field": "ae", "find": "recite the Lordly odes", "with": "recite the [supposedly] devotional odes" }
+    ]
+  },
+
+  "itq_00142": {
+    "by": "Madara",
+    "why": "الإرادة الربانية as 'the Lordly will'. Here الرباني qualifies an attribute of Allah, not a man. 'Of the Lord' keeps the nisba and parallels 'the general divine volition' standing beside it.",
+    "replace": [
+      { "field": "ae", "find": "the encompassing Lordly will", "with": "the encompassing will of the Lord" }
+    ]
+  },
+
+  "itq_00182": {
+    "by": "Madara",
+    "why": "الحقائق الكونية القدرية الربانية as 'the cosmic, predestinarian, Lordly realities'. The sentence turns on a contrast with الحقائق الدينية الشرعية الإلهية, already rendered 'the religious, legal, divine realities', so 'divine' is spoken for and ربانية needs 'of the Lord'.",
+    "replace": [
+      { "field": "ae", "find": "the cosmic, predestinarian, Lordly realities", "with": "the cosmic, predestinarian realities of the Lord" }
+    ]
+  },
+
+  "itq_01049": {
+    "by": "Madara",
+    "why": "المنح الربانية as 'the Lordly gifts'. Same attribute sense as itq_00142.",
+    "replace": [
+      { "field": "ae", "find": "the Lordly gifts", "with": "the gifts of the Lord" }
     ]
   }
 }

@@ -18,6 +18,7 @@ data/processed/
 data/raw/*
 !data/raw/quran.json
 !data/raw/quran_en.json
+!data/raw/quran_en_khattab.json
 
 # ── The website ──────────────────────────────────────────────────────────
 # Built, not authored, and large enough to make the repository unclonable if

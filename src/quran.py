@@ -18,7 +18,7 @@ from functools import lru_cache
 from src import config
 from src.arabic import normalize_for_search
 
-QURAN_FILE = config.RAW_DIR / "quran_en.json"
+QURAN_FILE = config.QURAN_FILE
 BRACES = re.compile(r"\{([^{}]+)\}")
 MIN_WORDS = 3          # don't try to identify quotes shorter than this
 MIN_CHARS = 12         # nor ones with too few letters to be sure of
@@ -225,8 +225,8 @@ class QuranMatch:
 
 
 class QuranIndex:
-    def __init__(self):
-        data = json.loads(QURAN_FILE.read_text(encoding="utf-8"))
+    def __init__(self, path=None):
+        data = json.loads((path or QURAN_FILE).read_text(encoding="utf-8"))
         self.ayat: list[dict] = []
         buf: list[str] = []
         self.starts: list[int] = []
@@ -426,3 +426,20 @@ class QuranIndex:
 @lru_cache(maxsize=1)
 def get_quran() -> QuranIndex:
     return QuranIndex()
+
+
+@lru_cache(maxsize=1)
+def get_quran_for_matching() -> QuranIndex:
+    """The translation used to *locate* a verse inside the English, which is
+    not always the one shown to the reader.
+
+    A verse is placed in the translation by finding a verbatim run of an
+    authoritative English inside the machine's own words. That only works when
+    the two resemble each other, so the literal Saheeh International places far
+    more than a free translation does: 57.8% of verses against Khattab's 34.8%
+    on the same corpus. Matching stays on the literal one and the reader is
+    shown whichever config.QURAN_FILE names.
+    """
+    if config.QURAN_MATCH_FILE == QURAN_FILE:
+        return get_quran()
+    return QuranIndex(config.QURAN_MATCH_FILE)
