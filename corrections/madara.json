@@ -1,0 +1,25 @@
+{
+  "itq_00065": {
+    "by": "Madara",
+    "why": "'godly' for الرباني is wrong: it renders the word as piety alone. The classical definition is a scholar who is complete — learned, acting on what he knows, and teaching it (Ibn 'Abbas: 'la yusamma rabbaniyyan hatta yakuna 'aliman mu'alliman 'amilan'; al-Qamus: 'al-'alim al-'amil al-mu'allim al-murabbi'). 'Master scholar' carries that; 'godly' does not.",
+    "replace": [
+      { "field": "qe", "find": "The godly scholar Taqi al-Din", "with": "The master scholar Taqi al-Din" }
+    ]
+  },
+
+  "itq_00144": {
+    "by": "Madara",
+    "why": "Same word, الرباني, rendered 'Lordly' here. In English 'lordly' means haughty or imperious, which is the opposite of the praise intended. Made consistent with itq_00065.",
+    "replace": [
+      { "field": "qe", "find": "the Lordly scholar-mujtahid", "with": "the master scholar and mujtahid" }
+    ]
+  },
+
+  "itq_00228": {
+    "by": "Madara",
+    "why": "Same word again, رباني الأمة, rendered 'the Lord-devoted one of the community'. The nisba to الرب is the etymology, not the claim; the claim is that he is the community's complete scholar. Made consistent with itq_00065.",
+    "replace": [
+      { "field": "ae", "find": "the Lord-devoted one of the community", "with": "the master scholar of the community" }
+    ]
+  }
+}
